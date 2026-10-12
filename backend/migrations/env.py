@@ -23,9 +23,19 @@ if not database_url:
 
 # Validate the target before Alembic can make schema changes.
 url = make_url(database_url)
-if url.drivername != "postgresql+psycopg" or url.database != "ai_detective_v3":
+
+if url.drivername != "postgresql+psycopg":
     raise RuntimeError(
-        "Alembic is restricted to the ai_detective_v3 PostgreSQL database."
+        "Alembic requires the postgresql+psycopg driver."
+    )
+
+if not (
+    url.host
+    and url.host.endswith(".neon.tech")
+    and url.database == "neondb"
+):
+    raise RuntimeError(
+        "Alembic is restricted to the configured Neon neondb database."
     )
 
 config.set_main_option(
