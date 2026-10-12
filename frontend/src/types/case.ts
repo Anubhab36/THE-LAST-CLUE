@@ -1,0 +1,12 @@
+export type Difficulty="easy"|"medium"|"hard"|"expert";
+export interface Victim{id:string;name:string;age:number;occupation:string;cause_of_death:string}
+export interface Suspect{id:string;name:string;age:number;occupation:string;relationship_to_victim:string;description:string}
+export interface Location{id:string;name:string;description:string}
+export interface Evidence{id:string;name:string;description:string;location_id:string;discoverable:boolean;requires_evidence_ids?:string[];requires_action_ids?:string[];unlock_hint?:string|null;importance:"critical"|"supporting"|"red_herring"}
+export interface TimelineEvent{id:string;time:string;description:string;location_id:string|null;suspect_ids:string[];victim_involved:boolean}
+export interface RedHerring{id:string;description:string;misleading_suspect_id:string|null}
+export interface InterrogationQuestion{id:string;text:string;requires_evidence_ids?:string[];requires_action_ids?:string[];unlock_hint?:string|null}
+export interface InterrogationProfile{suspect_id:string;questions:InterrogationQuestion[]}
+export interface InvestigationAction{id:string;title:string;category:"forensics"|"records"|"follow_up";description:string;requires_evidence_ids:string[];requires_action_ids:string[];unlocks_evidence_ids:string[];result_text:string;time_cost_seconds:number}
+export interface Case{case_id:string;title:string;description:string;difficulty:Difficulty;target_minutes:number;victim:Victim;suspects:Suspect[];locations:Location[];evidence:Evidence[];timeline:TimelineEvent[];red_herrings:RedHerring[];interrogation:InterrogationProfile[];investigation_actions:InvestigationAction[]}
+export interface AccusationResult{correct:boolean;correct_killer:boolean;correct_motive:boolean;correct_method:boolean;solution:{killer_id:string;motive:string;method:string;murder_time:string;explanation:string};score:{killer:number;motive:number;method:number;evidence:number;deductions:number;interrogation:number;time_bonus:number;total:number;grade:string}}

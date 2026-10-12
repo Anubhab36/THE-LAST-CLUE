@@ -1,0 +1,48 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Frontend dependencies and build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Local databases and application data
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Backup and temporary files
+*.bak
+*.tmp
+.gitignore.backup
+
+# Historical source backups
+*.before_scoring
+*.before-path-fix
+*.initial-backup
+*.backup
+*.tsbuildinfo
+*.tmp

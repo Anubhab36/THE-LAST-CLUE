@@ -1,0 +1,70 @@
+html,body,#root{margin:0;min-height:100%;}body{min-width:320px}
+
+/* THE LAST CLUE branding */
+
+.welcome-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.welcome-brand-name {
+  color: #e9e4d9;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.welcome-brand-subtitle {
+  color: #818991;
+  font-family: monospace;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  line-height: 1.6;
+}
+
+.welcome-hero h1.welcome-title {
+  color: #f0eee7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(54px, 8vw, 88px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -2px;
+}
+
+.welcome-hero h1.welcome-title em {
+  color: #c6a45e;
+  font-weight: 500;
+}
+
+.developer-game-name {
+  margin-bottom: 8px;
+  color: #c6a45e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.app .topbar .brand-title {
+  color: #e9e4d9;
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 1.5px;
+}
+
+.app .topbar .brand-mark,
+.loading-screen .loading-mark {
+  color: #c6a45e;
+  border-color: #c6a45e;
+}
+
+@media (max-width: 600px) {
+  .welcome-brand-subtitle {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+
+  .welcome-hero h1.welcome-title {
+    letter-spacing: -1px;
+  }
+}
