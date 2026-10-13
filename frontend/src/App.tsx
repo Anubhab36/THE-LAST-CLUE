@@ -16,6 +16,7 @@ import {
   recordAnalysis,
   getCase,
   generateCase,
+  refineSessionScore,
 } from "./services/api";
 import Timer from "./components/Timer/Timer";
 import CrimeScene from "./components/CrimeScene/CrimeScene";
@@ -264,12 +265,14 @@ export default function App() {
       return;
     }
 
+    const activeSessionId = sessionId;
+
     setSubmittingAccusation(true);
     setError(null);
 
     try {
       await recordAnalysis(
-        sessionId,
+        activeSessionId,
         connections,
         important,
         timedOut
@@ -277,7 +280,7 @@ export default function App() {
           : Math.min(gameCase.target_minutes * 60, elapsed),
       );
 
-      const response = await accuseSession(sessionId, {
+      const response = await accuseSession(activeSessionId, {
         killer_id: killerId,
         motive,
         method,
@@ -286,6 +289,64 @@ export default function App() {
       setResult(response);
       setAccusing(false);
       setScreen("results");
+
+      void refineSessionScore(activeSessionId, { motive, method })
+        .then((refinement) => {
+
+      setResult((current) => {
+  if (!current) {
+    return current;
+  }
+
+  const extraMotive =
+    refinement.motive_upgrade && !current.correct_motive;
+  const extraMethod =
+    refinement.method_upgrade && !current.correct_method;
+
+  if (!extraMotive && !extraMethod) {
+    return current;
+  }
+
+  const score = { ...current.score };
+
+  if (extraMotive) {
+    score.motive = 15;
+  }
+
+  if (extraMethod) {
+    score.method = 15;
+  }
+
+  score.total = Math.min(
+    100,
+    score.total +
+      (extraMotive ? 15 : 0) +
+      (extraMethod ? 15 : 0),
+  );
+
+  score.grade =
+    score.total >= 90 ? "S" :
+    score.total >= 80 ? "A" :
+    score.total >= 70 ? "B" :
+    score.total >= 55 ? "C" :
+    score.total >= 40 ? "D" : "F";
+
+  const correctMotive = current.correct_motive || extraMotive;
+  const correctMethod = current.correct_method || extraMethod;
+
+  return {
+    ...current,
+    correct: current.correct_killer && correctMotive && correctMethod,
+    correct_motive: correctMotive,
+    correct_method: correctMethod,
+    score,
+  };
+});
+
+        })
+        .catch(() => {
+          // AI refinement is optional. Keep the initial score on failure.
+        });
     } catch (caught) {
       setError(
         getDisplayError(caught, "Could not submit accusation."),

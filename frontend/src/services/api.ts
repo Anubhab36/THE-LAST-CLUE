@@ -173,3 +173,24 @@ export async function accuseSession(
     post(payload),
   );
 }
+
+
+
+export interface ScoreRefinement {
+  motive_upgrade: boolean;
+  method_upgrade: boolean;
+}
+
+
+export async function refineSessionScore(
+  sessionId: string,
+  payload: {
+    motive: string;
+    method: string;
+  },
+): Promise<ScoreRefinement> {
+  return request<ScoreRefinement>(
+    `/api/sessions/${sessionId}/score-refinement`,
+    post(payload),
+  );
+}

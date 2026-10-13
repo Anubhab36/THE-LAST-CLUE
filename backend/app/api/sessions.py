@@ -17,7 +17,7 @@ from app.services.session_service import (
     get_case_data,
 )
 from app.services.session_service import mark_question_asked
-from app.services.scoring_engine import score_case
+from app.services.scoring_engine import score_case, refine_semantic_answers
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
@@ -62,6 +62,10 @@ class FinalAccusationRequest(BaseModel):
     motive: str
     method: str
     elapsed_seconds: int = Field(default=0, ge=0)
+
+class ScoreRefinementRequest(BaseModel):
+    motive: str
+    method: str
 
 
 @router.post("")
@@ -130,3 +134,40 @@ def accuse(session_id: str, request: FinalAccusationRequest):
     result = score_case(case, trusted_request)
     close_session(session_id)
     return result
+
+
+
+
+@router.post("/{session_id}/score-refinement")
+def refine_score(session_id: str, request: ScoreRefinementRequest):
+    session_data = get_session(session_id)
+
+    if session_data["status"] != "completed":
+        raise HTTPException(
+            status_code=409,
+            detail="The game must be scored before its score can be refined.",
+        )
+
+    case = get_case_data(session_data["case_id"])
+
+    from app.services.scoring_engine import _keyword_match, _semantic_match
+
+    # Report only answers that failed keyword matching but passed
+    # semantic evaluation. These are the only possible score upgrades.
+    motive_upgrade = False
+    method_upgrade = False
+
+    if not _keyword_match(request.motive, case.solution.motive):
+        motive_upgrade = _semantic_match(
+            request.motive, case.solution.motive
+        )
+
+    if not _keyword_match(request.method, case.solution.method):
+        method_upgrade = _semantic_match(
+            request.method, case.solution.method
+        )
+
+    return {
+        "motive_upgrade": motive_upgrade,
+        "method_upgrade": method_upgrade,
+    }
