@@ -41,6 +41,19 @@ const SESSION_LOCAL_KEY_PREFIX = "the-last-clue-session-local:";
 
 const CASE_PROGRESS_KEY = "the-last-clue-case-progress";
 
+const suspectPortrait = (suspectId: string): string => {
+  const portraits = [
+    "photo-1500648767791-00dcc994a43e",
+    "photo-1534528741775-53994a69daeb",
+    "photo-1506794778202-cad84cf45f1d",
+    "photo-1531123897727-8f129e1688ce",
+    "photo-1507003211169-0a1dd7228f2d",
+    "photo-1544005313-94ddf0286df2",
+  ];
+  const index = [...suspectId].reduce((sum, char) => sum + char.charCodeAt(0), 0) % portraits.length;
+  return `https://images.unsplash.com/${portraits[index]}?auto=format&fit=crop&w=120&h=120&q=80`;
+};
+
 interface CaseProgressRecord {
   attempts: number;
   bestScore: number;
@@ -742,7 +755,7 @@ export default function App() {
               <strong>{gameCase.target_minutes} MIN</strong>
             </div>
             <button
-              className="quiet-button"
+              className="quiet-button leave-case-button"
               onClick={() => setConfirmLeave(true)}
             >
               LEAVE CASE
@@ -832,6 +845,7 @@ export default function App() {
                   onClick={() => setSuspect(item)}
                 >
                   <div className="suspect-card-main">
+                    <img className="suspect-board-portrait" src={suspectPortrait(item.id)} alt="" loading="lazy" />
                     <span className="suspect-number">
                       {item.id.replace("suspect_", "").padStart(2, "0")}
                     </span>
