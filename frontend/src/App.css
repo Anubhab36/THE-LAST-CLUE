@@ -1365,3 +1365,107 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* Investigation and interrogation: editorial noir surfaces */
+.app {
+  background:
+    radial-gradient(ellipse at 85% 0%, rgba(112,88,43,.08), transparent 34rem),
+    #0b0b0b;
+  color: #e8e1d4;
+}
+.app > main { width: min(1280px, calc(100% - 36px)); margin-inline: auto; }
+.app .case-header {
+  padding: clamp(22px, 3.5vw, 42px) 0 28px;
+  border-bottom: 1px solid rgba(185,154,83,.28);
+  gap: 24px;
+}
+.app .case-header h1 {
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -.025em;
+}
+.app .case-description { max-width: 720px; color: #aaa49a; line-height: 1.8; }
+.app .meta-item { border-left: 1px solid rgba(185,154,83,.45); padding-left: 14px; }
+.app .meta-item strong { color: #d4bc82; }
+.app .panel {
+  border: 1px solid rgba(185,154,83,.23);
+  background: linear-gradient(150deg, rgba(24,23,21,.98), rgba(14,14,14,.98));
+  box-shadow: 0 14px 40px rgba(0,0,0,.16);
+}
+.app .panel-heading { border-bottom-color: rgba(185,154,83,.2); }
+.app .panel-number { color: var(--noir-gold-bright); }
+.app .count { color: #aaa08c; }
+.app .victim-content { gap: 22px; }
+.app .victim-name h3 { font-size: clamp(22px, 2.5vw, 30px); }
+.app .victim-details > div { border-left: 1px solid rgba(185,154,83,.26); padding-left: 13px; }
+.app .victim-details strong { color: #ddd5c6; }
+.app .suspect-card {
+  border: 1px solid #302d27;
+  background: linear-gradient(110deg, #1b1916, #111111 78%);
+  min-height: 72px;
+}
+.app .suspect-card:hover { background: linear-gradient(110deg, #282116, #151412 78%); }
+.app .suspect-number {
+  display: grid; place-items: center; width: 38px; height: 38px;
+  border: 1px solid rgba(185,154,83,.45); color: var(--noir-gold-bright);
+  font: 11px "DM Mono", monospace;
+}
+.app .suspect-card-main strong { color: #e9e2d6; }
+.app .suspect-card-main span:not(.suspect-number) { color: #9e988d; }
+.app .scene { border-color: rgba(185,154,83,.25); }
+.app .scene-caption { border-top-color: rgba(185,154,83,.25); background: rgba(9,9,9,.88); }
+.app .scene-caption strong { color: var(--noir-ivory); }
+.app .action-bar {
+  border: 1px solid rgba(185,154,83,.24);
+  background: linear-gradient(100deg, #191713, #101010);
+  padding: 16px;
+  gap: 16px;
+}
+.app .action-bar > span { color: #a59e91; line-height: 1.7; }
+.overlay { background: rgba(0,0,0,.82); backdrop-filter: blur(9px); padding: 18px; }
+.modal {
+  border: 1px solid rgba(185,154,83,.48);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(185,154,83,.09), transparent 45%),
+    #121211;
+  box-shadow: 0 30px 100px rgba(0,0,0,.6);
+}
+.modal h2 { color: var(--noir-ivory); font-size: clamp(27px, 4vw, 38px); }
+.modal .muted { color: #b5a57e; }
+.modal .questions button {
+  border-color: #343027;
+  background: linear-gradient(110deg, #1b1916, #121212);
+  color: #e0d9cd;
+  text-align: left;
+  line-height: 1.65;
+}
+.modal .questions button:hover:not(:disabled) {
+  border-color: var(--noir-gold);
+  background: #211d15;
+}
+.modal .questions button:disabled { opacity: .58; }
+.interrogation-transcript {
+  border-top: 1px solid rgba(185,154,83,.28);
+  margin-top: 22px;
+  padding-top: 18px;
+}
+.transcript-heading { color: var(--noir-gold-bright); letter-spacing: .12em; }
+.transcript-entry {
+  margin-top: 12px; padding: 15px;
+  border-left: 2px solid rgba(185,154,83,.7);
+  background: rgba(255,255,255,.025);
+}
+.transcript-question { color: #d7c49b; }
+.transcript-answer { color: #d6d1c7; line-height: 1.8; }
+.transcript-note { color: #9a9387; font-size: 12px; line-height: 1.7; }
+.close { color: #d4bc82; }
+.welcome-error { border-color: rgba(173,100,80,.55); }
+.loading-screen { background: radial-gradient(ellipse at center, #1a1711, #090909 65%); }
+@media (max-width: 700px) {
+  .app > main { width: calc(100% - 24px); }
+  .app .case-header { align-items: flex-start; }
+  .app .case-header-meta { flex-wrap: wrap; }
+  .app .victim-details { grid-template-columns: 1fr; }
+  .app .action-bar { align-items: stretch; flex-direction: column; }
+}
