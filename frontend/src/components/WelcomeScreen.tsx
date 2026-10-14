@@ -8,6 +8,18 @@ interface CaseProgressRecord {
   solved: boolean;
 }
 
+const caseArtwork = (title: string): string => {
+  const normalized = title.toLowerCase();
+  if (normalized.includes("study") || normalized.includes("room")) return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85";
+  if (normalized.includes("gallery") || normalized.includes("glass")) return "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=900&q=85";
+  if (normalized.includes("train") || normalized.includes("vanishing")) return "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=900&q=85";
+  if (normalized.includes("broadcast") || normalized.includes("archive")) return "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=85";
+  if (normalized.includes("blueprint") || normalized.includes("protocol")) return "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=85";
+  if (normalized.includes("vessel") || normalized.includes("ship")) return "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&q=85";
+  if (normalized.includes("witness") || normalized.includes("paradox")) return "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=85";
+  return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=900&q=85";
+};
+
 const levels: {
   id: Difficulty;
   title: string;
@@ -52,13 +64,20 @@ export default function WelcomeScreen({
       </header>
 
       <section className="welcome-hero">
-        <span className="eyebrow">THE CASE IS NEVER WHAT IT FIRST SEEMS</span>
-        <h1 className="welcome-title">THE LAST<br /><em>CLUE.</em></h1>
-        <p>Investigate crime scenes, challenge suspect statements, follow emerging leads, and build a case from evidence—not assumptions.</p>
-        <div className="welcome-features">
-          <span>PROGRESSIVE CLUES</span>
-          <span>BRANCHING LEADS</span>
-          <span>YOUR OWN NOTES</span>
+        <div className="welcome-hero-copy">
+          <span className="eyebrow">THE CASE IS NEVER WHAT IT FIRST SEEMS</span>
+          <h1 className="welcome-title">THE LAST<br /><em>CLUE.</em></h1>
+          <p>Every detail matters. Every statement can crack. Build your case from evidence—not assumptions.</p>
+          <div className="welcome-features">
+            <span>PROGRESSIVE CLUES</span>
+            <span>BRANCHING LEADS</span>
+            <span>YOUR OWN NOTES</span>
+          </div>
+        </div>
+        <div className="welcome-hero-visual" role="img" aria-label="Atmospheric noir crime-scene investigation">
+          <div className="hero-visual-vignette" />
+          <div className="hero-file-stamp"><span>CONFIDENTIAL</span><strong>CASE FILE</strong><small>INVESTIGATION UNIT / 03</small></div>
+          <div className="hero-visual-caption"><span>THE DETAILS NEVER LIE</span><span>EST. 2026</span></div>
         </div>
       </section>
 
@@ -89,6 +108,11 @@ export default function WelcomeScreen({
                     aria-pressed={selectedCaseId === item.case_id}
                     disabled={busy}
                   >
+                    <span
+                      className="case-library-art"
+                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,8,9,.04) 0%, rgba(8,8,9,.82) 100%), url("${caseArtwork(item.title)}")` }}
+                      aria-hidden="true"
+                    />
                     <span className="case-library-card-top">
                       <strong>{item.title}</strong>
                       <small>{item.target_minutes} MIN</small>
