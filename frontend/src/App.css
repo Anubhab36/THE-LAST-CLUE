@@ -1923,3 +1923,161 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 @media (prefers-reduced-motion: reduce) {
   .suspect-dossier { transition: none; }
 }
+
+
+/* Suspect board portraits and clearer subject dossiers */
+.suspect-board-portrait {
+  width: 48px;
+  height: 54px;
+  flex: 0 0 48px;
+  object-fit: cover;
+  object-position: center 35%;
+  filter: grayscale(.55) saturate(.55) brightness(.84);
+  border: 1px solid #5b5037;
+  background: #191d1c;
+}
+.suspect-card:hover .suspect-board-portrait {
+  filter: grayscale(.25) saturate(.7) brightness(.96);
+  border-color: #b89a5b;
+}
+.suspect-card-main { gap: 12px; }
+.suspect-card-main > div { min-width: 0; }
+.suspect-card-main strong { overflow-wrap: anywhere; }
+
+/* Make the exit control visible without competing with the case title */
+.leave-case-button {
+  padding: 10px 13px;
+  border: 1px solid rgba(184,154,91,.48);
+  color: #d1b779;
+  background: linear-gradient(135deg, rgba(184,154,91,.10), rgba(184,154,91,.025));
+  box-shadow: inset 0 0 0 1px rgba(184,154,91,.035);
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  transition: border-color .18s ease, color .18s ease, background .18s ease;
+}
+.leave-case-button::before { content: "← "; color: #a88b51; }
+.leave-case-button:hover {
+  border-color: #c2a568;
+  color: #f0d9a1;
+  background: rgba(184,154,91,.14);
+}
+
+/* More tactile, dossier-like interrogation interface */
+.interrogation-profile {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  margin: 8px 0 18px;
+  padding: 0 0 18px;
+  border-bottom: 1px solid #2b302d;
+}
+.interrogation-portrait {
+  width: 84px;
+  height: 96px;
+  flex: 0 0 84px;
+  object-fit: cover;
+  object-position: center 30%;
+  filter: grayscale(.45) saturate(.58) brightness(.86);
+  border: 1px solid #75613a;
+  padding: 3px;
+  background: #171a18;
+}
+.interrogation-profile-copy { min-width: 0; }
+.interrogation-profile-copy h2 { margin: 7px 0 5px; overflow-wrap: anywhere; }
+.interrogation-profile-copy p { margin: 0 0 7px; line-height: 1.55; }
+.interrogation-subject-id {
+  color: #8c784c;
+  font: 8px "DM Mono", monospace;
+  letter-spacing: .1em;
+}
+.interrogation-progress {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin: 0 0 20px;
+}
+.interrogation-progress > span {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px;
+  border: 1px solid #2b302c;
+  color: #777f77;
+  background: #0e1110;
+  font: 8px "DM Mono", monospace;
+  letter-spacing: .045em;
+}
+.interrogation-progress strong { color: #d2b779; font-size: 17px; font-weight: 400; }
+.interrogation-question-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 10px;
+}
+.questions { gap: 7px; }
+.questions button {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 12px;
+  border: 1px solid #2b302d;
+  border-radius: 2px;
+  background: linear-gradient(105deg, rgba(184,154,91,.035), transparent 65%), #0d1010;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.questions button:not(:disabled):hover {
+  border-color: #887144;
+  background: linear-gradient(105deg, rgba(184,154,91,.09), transparent 80%), #131615;
+  transform: translateX(2px);
+}
+.questions button:disabled { cursor: default; }
+.questions button:disabled:not(:has(.question-lock-hint)) { opacity: .68; }
+.question-number {
+  flex: 0 0 24px;
+  padding-top: 1px;
+  color: #a68b52;
+  font: 10px "DM Mono", monospace;
+}
+.question-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 7px; }
+.question-copy > span:first-child { color: #d6d4cb; font-size: 11px; line-height: 1.65; }
+.question-state {
+  color: #777e73;
+  font: 7px "DM Mono", monospace;
+  letter-spacing: .08em;
+}
+.question-action { flex: 0 0 auto; color: #b89a5b; font: 13px "DM Mono", monospace; }
+.question-lock-hint { color: #a88961; font-size: 10px; line-height: 1.5; }
+.interrogation-transcript {
+  max-height: 300px;
+  overflow-y: auto;
+  scrollbar-color: #5b4c30 #101312;
+}
+.transcript-entry {
+  margin-top: 9px;
+  padding: 13px;
+  border-left: 2px solid #806a40;
+  background: linear-gradient(90deg, rgba(184,154,91,.055), transparent);
+}
+.transcript-question { color: #d7c79f; font-size: 11px; line-height: 1.6; }
+.transcript-answer { color: #b1b5ac; font-size: 11px; line-height: 1.8; white-space: pre-line; }
+.questions button:focus-visible, .leave-case-button:focus-visible {
+  outline: 2px solid #d2b66f;
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .case-header { flex-direction: column; gap: 20px; }
+  .case-header-meta { flex-wrap: wrap; gap: 14px; }
+  .suspect-board-portrait { width: 43px; height: 48px; flex-basis: 43px; }
+  .interrogation-progress { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .interrogation-progress > span { padding: 8px 6px; font-size: 7px; }
+}
+@media (max-width: 420px) {
+  .interrogation-profile { align-items: flex-start; gap: 12px; }
+  .interrogation-portrait { width: 66px; height: 78px; flex-basis: 66px; }
+  .interrogation-question-heading { flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .questions button, .leave-case-button { transition: none; }
+  .questions button:not(:disabled):hover { transform: none; }
+}
