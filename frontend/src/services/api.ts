@@ -16,6 +16,18 @@ export interface SessionProgress {
   time_penalty_seconds: number;
 }
 
+export interface CaseCatalogItem {
+  case_id: string;
+  title: string;
+  description: string;
+  difficulty: Difficulty;
+  target_minutes: number;
+}
+
+export async function getCaseCatalog(): Promise<CaseCatalogItem[]> {
+  return request<CaseCatalogItem[]>("/api/cases/catalog");
+}
+
 export interface GameSession {
   session_id: string;
   case_id: string;
@@ -27,19 +39,45 @@ async function request<T>(
   url: string,
   init?: RequestInit,
 ): Promise<T> {
-  let response: Response;
+  const method = (init?.method ?? "GET").toUpperCase();
+  const maxAttempts = method === "GET" ? 2 : 1;
+  let response: Response | undefined;
+  let networkFailure = false;
 
-  try {
-    response = await fetch(`${API}${url}`, init);
-  } catch {
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    networkFailure = false;
+
+    try {
+      response = await fetch(`${API}${url}`, init);
+    } catch {
+      networkFailure = true;
+      response = undefined;
+    }
+
+    if (
+      response &&
+      (response.status < 500 || attempt === maxAttempts)
+    ) {
+      break;
+    }
+
+    if (attempt < maxAttempts) {
+      await new Promise<void>((resolve) =>
+        window.setTimeout(resolve, 700 * attempt),
+      );
+    }
+  }
+
+  if (!response) {
     throw new Error(
-      "Cannot connect to the game server. Please make sure the backend is running and try again.",
+      networkFailure
+        ? "Cannot connect to the game server. Check your connection and try again."
+        : "The server did not return a response. Please try again.",
     );
   }
 
   if (!response.ok) {
     const body: unknown = await response.json().catch(() => null);
-
     let detail: string | undefined;
 
     if (
@@ -55,6 +93,13 @@ async function request<T>(
       throw new Error(
         detail ??
           "AI Cases are not available right now. Please try again later. Sorry for the inconvenience.",
+      );
+    }
+
+    if (response.status >= 500) {
+      throw new Error(
+        detail ??
+          "The game server is temporarily unavailable. Please try again shortly.",
       );
     }
 
@@ -97,6 +142,10 @@ export async function createSession(
     "/api/sessions",
     post({ case_id: caseId }),
   );
+}
+
+export async function getCaseById(caseId: string): Promise<Case> {
+  return request<Case>(`/api/cases/by-id/${encodeURIComponent(caseId)}`);
 }
 
 export async function getSession(

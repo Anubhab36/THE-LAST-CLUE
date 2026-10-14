@@ -10,7 +10,7 @@ from app.schemas.case import (
     AccusationResult,
     GenerateCaseRequest,
 )
-from app.services.case_generator import get_case
+from app.services.case_generator import get_case, get_case_by_id, get_case_catalog
 from app.services.ai_case_generator import generate_case
 from app.services.scoring_engine import score_case
 from app.services.case_registry import save_case, find_case
@@ -53,14 +53,6 @@ def format_quota_wait_time(error_text: str) -> str:
 
 router = APIRouter(prefix="/api/cases", tags=["cases"])
 
-BUILT_IN_CASES = {
-    "case_001": "easy",
-    "case_002": "medium",
-    "case_003": "hard",
-    "case_004": "expert",
-}
-
-
 def load(difficulty: Difficulty):
     try:
         return get_case(difficulty)
@@ -74,52 +66,55 @@ def load(difficulty: Difficulty):
 
 @router.post("/generate", response_model=PublicCase)
 def generate(request: GenerateCaseRequest):
+    # Only generation failures trigger the built-in fallback.
     try:
         generated = generate_case(request.difficulty, request.theme)
-        save_case(generated)
-
-    except Exception as exc:
-        logger.exception("Case generation or persistence failed")
-        message = str(exc)
-
-        # Detect Gemini quota exhaustion.
-        is_quota_error = (
-            getattr(exc, "code", None) == 429
-            or getattr(exc, "status_code", None) == 429
-            or "RESOURCE_EXHAUSTED" in message
-            or "quota exceeded" in message.lower()
-            or "generate_content_free_tier_requests" in message
+    except Exception:
+        logger.exception(
+            "AI case generation failed; using built-in %s case",
+            request.difficulty,
         )
-
-        if is_quota_error:
-            wait_time = format_quota_wait_time(message)
-
+        try:
+            fallback = get_case(request.difficulty)
+        except Exception as fallback_exc:
+            logger.exception("Unable to load built-in fallback case")
             raise HTTPException(
-                status_code=429,
-                detail=(
-                    "AI Cases are not available right now. "
-                    f"Please try again after {wait_time}. "
-                    "Sorry for the inconvenience."
-                ),
-            ) from exc
+                status_code=500,
+                detail="Unable to generate or load a case right now.",
+            ) from fallback_exc
 
-        # Keep configuration errors understandable.
-        if "GEMINI_API_KEY" in message:
-            raise HTTPException(
-                status_code=503,
-                detail="The AI service is not configured correctly.",
-            ) from exc
+        return to_public_case(fallback)
 
+    # Persistence errors must not be misreported as AI generation errors.
+    try:
+        save_case(generated)
+    except Exception as exc:
+        logger.exception("Generated case could not be persisted")
         raise HTTPException(
-            status_code=502,
-            detail=(
-                "We couldn't generate your AI case right now. "
-                "Please try again later."
-            ),
+            status_code=503,
+            detail="The case could not be saved right now. Please try again.",
         ) from exc
 
     return to_public_case(generated)
 
+
+@router.get("/catalog")
+def case_catalog():
+    """Return the selectable built-in case library."""
+    return get_case_catalog()
+
+
+@router.get("/by-id/{case_id}", response_model=PublicCase)
+def case_by_id(case_id: str):
+    """Return the public version of a specific persisted or built-in case."""
+    existing = find_case(case_id)
+    if existing is not None:
+        return to_public_case(existing)
+
+    try:
+        return to_public_case(get_case_by_id(case_id))
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Case not found.") from exc
 
 
 @router.get("/{difficulty}", response_model=PublicCase)
@@ -134,8 +129,9 @@ def accuse(case_id: str, request: AccusationRequest):
     if generated is not None:
         return score_case(generated, request)
 
-    difficulty = BUILT_IN_CASES.get(case_id)
-    if difficulty is None:
-        raise HTTPException(status_code=404, detail="Case not found.")
+    try:
+        built_in = get_case_by_id(case_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Case not found.") from exc
 
-    return score_case(load(difficulty), request)
+    return score_case(built_in, request)

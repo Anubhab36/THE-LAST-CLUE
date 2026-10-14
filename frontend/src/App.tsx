@@ -1,5 +1,5 @@
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   AccusationResult,
   Case,
@@ -15,14 +15,18 @@ import {
   completeAction as completeActionOnServer,
   recordAnalysis,
   getCase,
+  getCaseById,
+  getSession,
   generateCase,
+  getCaseCatalog,
   refineSessionScore,
+  type CaseCatalogItem,
 } from "./services/api";
 import Timer from "./components/Timer/Timer";
 import CrimeScene from "./components/CrimeScene/CrimeScene";
 import EvidenceBoard from "./components/EvidenceBoard/EvidenceBoard";
 import Timeline from "./components/Timeline/Timeline";
-import Interrogation from "./components/Interrogation/Interrogation";
+import Interrogation, { type InterviewEntry } from "./components/Interrogation/Interrogation";
 import Accusation from "./components/Accusation/Accusation";
 import Results from "./components/Results/Results";
 import Notebook, { type NotebookNotes } from "./components/Notebook/Notebook";
@@ -31,6 +35,24 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import DeveloperFooter from "./components/DeveloperFooter";
 
 type Screen = "welcome" | "loading" | "game" | "results";
+
+const ACTIVE_SESSION_KEY = "the-last-clue-active-session";
+const SESSION_LOCAL_KEY_PREFIX = "the-last-clue-session-local:";
+
+const CASE_PROGRESS_KEY = "the-last-clue-case-progress";
+
+interface CaseProgressRecord {
+  attempts: number;
+  bestScore: number;
+  bestGrade: string;
+  solved: boolean;
+}
+
+
+interface SessionLocalState {
+  notes: NotebookNotes;
+  interviewTranscripts: Record<string, InterviewEntry[]>;
+}
 
 const emptyNotes: NotebookNotes = {
   findings: "",
@@ -108,6 +130,21 @@ function getDisplayError(
 export default function App() {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [caseCatalog, setCaseCatalog] = useState<CaseCatalogItem[]>([]);
+  const [selectedCaseId, setSelectedCaseId] = useState("case_001");
+
+  const [caseProgress, setCaseProgress] = useState<Record<string, CaseProgressRecord>>(() => {
+    try {
+      const saved = window.localStorage.getItem(CASE_PROGRESS_KEY);
+      return saved ? JSON.parse(saved) as Record<string, CaseProgressRecord> : {};
+    } catch {
+      return {};
+    }
+  });
+  const recordedCompletionSessionRef = useRef<string | null>(null);
+
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
   const [gameCase, setGameCase] = useState<Case | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -126,12 +163,239 @@ export default function App() {
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [result, setResult] = useState<AccusationResult | null>(null);
   const [hits, setHits] = useState(0);
+  const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const [timePenalty, setTimePenalty] = useState(0);
   const [timedOut, setTimedOut] = useState(false);
   const [notes, setNotes] = useState<NotebookNotes>(emptyNotes);
+  const [interviewTranscripts, setInterviewTranscripts] =
+    useState<Record<string, InterviewEntry[]>>({});
+
+  const loadCatalog = useCallback(async () => {
+    setCatalogLoading(true);
+    setCatalogError(null);
+
+    try {
+      const items = await getCaseCatalog();
+      setCaseCatalog(items);
+      setSelectedCaseId((current) =>
+        items.some((item) => item.case_id === current)
+          ? current
+          : items[0]?.case_id ?? "",
+      );
+
+      if (items.length === 0) {
+        setCatalogError("No cases are currently available. Please try loading the library again.");
+      }
+    } catch {
+      setCatalogError(
+        "The case library could not be loaded. Check your connection and try again.",
+      );
+    } finally {
+      setCatalogLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadCatalog();
+  }, [loadCatalog]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(CASE_PROGRESS_KEY, JSON.stringify(caseProgress));
+    } catch {
+      // Progress tracking must never interrupt gameplay if storage is unavailable.
+    }
+  }, [caseProgress]);
+
+  // Record each completed session once. If semantic scoring later improves
+  // the result, update the best score without counting a second attempt.
+  useEffect(() => {
+    if (screen !== "results" || !result || !gameCase || !sessionId) return;
+
+    const isNewAttempt = recordedCompletionSessionRef.current !== sessionId;
+    recordedCompletionSessionRef.current = sessionId;
+
+    setCaseProgress((current) => {
+      const previous = current[gameCase.case_id];
+      const isPersonalBest = !previous || result.score.total > previous.bestScore;
+      const bestScore = isPersonalBest ? result.score.total : previous.bestScore;
+      const bestGrade = isPersonalBest
+        ? result.score.grade
+        : previous.bestGrade;
+
+      return {
+        ...current,
+        [gameCase.case_id]: {
+          attempts: (previous?.attempts ?? 0) + (isNewAttempt ? 1 : 0),
+          bestScore,
+          bestGrade,
+          solved: Boolean(previous?.solved || result.correct),
+        },
+      };
+    });
+  }, [screen, result, gameCase, sessionId]);
+
+  // Keep the interval callback current without restarting its timer on every tick.
+  const progressRef = useRef({
+    connections,
+    important,
+    elapsed,
+    timedOut,
+    gameCase,
+  });
+  progressRef.current = { connections, important, elapsed, timedOut, gameCase };
+
+  useEffect(() => {
+    const savedSessionId = window.localStorage.getItem(ACTIVE_SESSION_KEY);
+    if (!savedSessionId) return;
+
+    let cancelled = false;
+
+    async function restoreSession() {
+      setScreen("loading");
+      try {
+        const session = await getSession(savedSessionId!);
+
+        if (session.status !== "active") {
+          window.localStorage.removeItem(ACTIVE_SESSION_KEY);
+          if (!cancelled) setScreen("welcome");
+          return;
+        }
+
+        const nextCase = await getCaseById(session.case_id);
+        if (cancelled) return;
+
+        const progress = session.progress;
+
+        let localState: SessionLocalState | null = null;
+        try {
+          const savedLocalState = window.localStorage.getItem(
+            `${SESSION_LOCAL_KEY_PREFIX}${session.session_id}`,
+          );
+          if (savedLocalState) {
+            localState = JSON.parse(savedLocalState) as SessionLocalState;
+          }
+        } catch {
+          // Ignore malformed local state and restore the server-side progress.
+        }
+
+        setNotes(localState?.notes ?? { ...emptyNotes });
+        setInterviewTranscripts(localState?.interviewTranscripts ?? {});
+        setGameCase(nextCase);
+        setSessionId(session.session_id);
+        setFound(progress.discovered_evidence ?? []);
+        setCompletedActions(progress.completed_actions ?? []);
+        setConnections(progress.evidence_connections ?? []);
+        setImportant(progress.important_events ?? []);
+        setHits(progress.interrogation_hits ?? 0);
+        setAskedQuestions(progress.asked_questions ?? []);
+        setElapsed(progress.elapsed_seconds ?? 0);
+        setTimePenalty(progress.time_penalty_seconds ?? 0);
+        setActionResults(
+          Object.fromEntries(
+            nextCase.investigation_actions
+              .filter((action) =>
+                (progress.completed_actions ?? []).includes(action.id)
+              )
+              .map((action) => [action.id, action.result_text])
+          )
+        );
+        setScreen("game");
+      } catch {
+        // Preserve the saved session if a temporary network/server failure occurs.
+        if (!cancelled) {
+          setError(
+            "Your saved investigation could not be restored right now. Refresh this page to retry, or start a new case."
+          );
+          setScreen("welcome");
+        }
+      }
+    }
+
+    void restoreSession();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (screen !== "game" || !sessionId) return;
+
+    const localState: SessionLocalState = { notes, interviewTranscripts };
+    try {
+      window.localStorage.setItem(
+        `${SESSION_LOCAL_KEY_PREFIX}${sessionId}`,
+        JSON.stringify(localState),
+      );
+    } catch {
+      // A full or unavailable browser storage must not interrupt gameplay.
+    }
+  }, [sessionId, screen, notes, interviewTranscripts]);
+
+  // Save evidence-board and timeline changes promptly, not only every 10 seconds.
+  useEffect(() => {
+    if (screen !== "game" || !sessionId || !gameCase) return;
+
+    const elapsedSeconds = timedOut
+      ? gameCase.target_minutes * 60
+      : Math.min(gameCase.target_minutes * 60, elapsed);
+
+    const timeoutId = window.setTimeout(() => {
+      void recordAnalysis(
+        sessionId,
+        connections,
+        important,
+        elapsedSeconds,
+      ).catch(() => {
+        // The periodic save remains as a fallback if this request fails.
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    connections,
+    important,
+    elapsed,
+    timedOut,
+    gameCase,
+    sessionId,
+    screen,
+  ]);
+
+  // Persist elapsed time and analysis progress periodically while the case is active.
+  useEffect(() => {
+    if (screen !== "game" || !sessionId) return;
+
+    const saveProgress = () => {
+      const current = progressRef.current;
+      if (!current.gameCase) return;
+
+      const elapsedSeconds = current.timedOut
+        ? current.gameCase.target_minutes * 60
+        : Math.min(
+            current.gameCase.target_minutes * 60,
+            current.elapsed,
+          );
+
+      void recordAnalysis(
+        sessionId,
+        current.connections,
+        current.important,
+        elapsedSeconds,
+      ).catch(() => {
+        // Retry on the next interval; never interrupt active gameplay.
+      });
+    };
+
+    const intervalId = window.setInterval(saveProgress, 10_000);
+    return () => window.clearInterval(intervalId);
+  }, [sessionId, screen]);
 
   const resetGameState = () => {
+    window.localStorage.removeItem(ACTIVE_SESSION_KEY);
+    setAskedQuestions([]);
+    setInterviewTranscripts({});
     setError(null);
     setGameCase(null);
     setSessionId(null);
@@ -159,10 +423,14 @@ export default function App() {
     resetGameState();
 
     try {
-      const nextCase = await getCase(difficulty);
+      if (!selectedCaseId) {
+        throw new Error("Choose a case from the library first.");
+      }
+      const nextCase = await getCaseById(selectedCaseId);
       const session = await createSession(nextCase.case_id);
 
       setSessionId(session.session_id);
+      window.localStorage.setItem(ACTIVE_SESSION_KEY, session.session_id);
       setGameCase(nextCase);
       setScreen("game");
     } catch (caught) {
@@ -171,7 +439,7 @@ export default function App() {
       );
       setScreen("welcome");
     }
-  }, [difficulty]);
+  }, [selectedCaseId]);
 
   const loadGenerated = useCallback(async () => {
     setScreen("loading");
@@ -182,7 +450,15 @@ export default function App() {
       const session = await createSession(nextCase.case_id);
 
       setSessionId(session.session_id);
+      window.localStorage.setItem(ACTIVE_SESSION_KEY, session.session_id);
       setGameCase(nextCase);
+
+      if (caseCatalog.some((item) => item.case_id === nextCase.case_id)) {
+        setError(
+          "AI case generation is temporarily unavailable. A built-in case of your selected difficulty has been loaded instead.",
+        );
+      }
+
       setScreen("game");
     } catch (caught) {
       setError(
@@ -193,7 +469,7 @@ export default function App() {
       );
       setScreen("welcome");
     }
-  }, [difficulty]);
+  }, [difficulty, caseCatalog]);
 
   const expire = useCallback(() => {
     if (screen === "game" && gameCase && !result) {
@@ -247,6 +523,8 @@ export default function App() {
   };
 
   const leaveToWelcome = () => {
+    window.localStorage.removeItem(ACTIVE_SESSION_KEY);
+    setAskedQuestions([]);
     setConfirmLeave(false);
     setGameCase(null);
     setSessionId(null);
@@ -288,6 +566,7 @@ export default function App() {
 
       setResult(response);
       setAccusing(false);
+      window.localStorage.removeItem(ACTIVE_SESSION_KEY);
       setScreen("results");
 
       void refineSessionScore(activeSessionId, { motive, method })
@@ -378,6 +657,18 @@ export default function App() {
         <WelcomeScreen
           difficulty={difficulty}
           onDifficulty={setDifficulty}
+          cases={caseCatalog}
+          caseProgress={caseProgress}
+          catalogLoading={catalogLoading}
+          catalogError={catalogError}
+          onRetryCatalog={() => void loadCatalog()}
+          selectedCaseId={selectedCaseId}
+          onSelectCase={(caseId) => {
+            setSelectedCaseId(caseId);
+            const selected = caseCatalog.find((item) => item.case_id === caseId);
+            if (selected) setDifficulty(selected.difficulty);
+            setError(null);
+          }}
           onStart={load}
           onGenerate={loadGenerated}
           busy={false}
@@ -417,6 +708,7 @@ export default function App() {
           </span>
           <Timer
             minutes={gameCase.target_minutes}
+            initialElapsedSeconds={elapsed}
             penaltySeconds={timePenalty}
             onTick={setElapsed}
             onExpire={expire}
@@ -577,6 +869,13 @@ export default function App() {
                 : [...current, [e, s]],
             )
           }
+          onDisconnect={(e, s) =>
+            setConnections((current) =>
+              current.filter(
+                (connection) => !(connection[0] === e && connection[1] === s),
+              ),
+            )
+          }
         />
 
         <Timeline
@@ -699,6 +998,22 @@ export default function App() {
           suspect={interrogating}
           found={found}
           completedActions={completedActions}
+          previouslyAsked={askedQuestions
+            .filter((key) => key.startsWith(`${interrogating.id}:`))
+            .map((key) => key.slice(interrogating.id.length + 1))}
+          previousTranscript={interviewTranscripts[interrogating.id] ?? []}
+          onTranscriptChange={(suspectId, transcript) =>
+            setInterviewTranscripts((current) => ({
+              ...current,
+              [suspectId]: transcript,
+            }))
+          }
+          onQuestionAsked={(suspectId, questionId) => {
+            const key = `${suspectId}:${questionId}`;
+            setAskedQuestions((current) =>
+              current.includes(key) ? current : [...current, key],
+            );
+          }}
           onClose={() => setInterrogating(null)}
           onHit={() => setHits((current) => current + 1)}
         />

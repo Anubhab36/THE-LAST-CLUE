@@ -3,13 +3,22 @@ import { useEffect, useRef, useState } from "react";
 interface TimerProps {
   minutes: number;
   penaltySeconds?: number;
+  initialElapsedSeconds?: number;
   onTick?: (elapsedSeconds: number) => void;
   onExpire: () => void;
 }
 
-export default function Timer({ minutes, penaltySeconds = 0, onTick, onExpire }: TimerProps) {
+export default function Timer({
+  minutes,
+  penaltySeconds = 0,
+  initialElapsedSeconds = 0,
+  onTick,
+  onExpire,
+}: TimerProps) {
   const totalSeconds = Math.max(0, Math.ceil(minutes * 60));
-  const [secondsRemaining, setSecondsRemaining] = useState(totalSeconds);
+  const [secondsRemaining, setSecondsRemaining] = useState(
+    Math.max(0, totalSeconds - initialElapsedSeconds),
+  );
   const previousPenalty = useRef(penaltySeconds);
   const expired = useRef(false);
 

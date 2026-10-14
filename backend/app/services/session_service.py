@@ -9,15 +9,7 @@ from app.db import SessionLocal
 from app.models.game import GameSession
 from app.schemas.case import Case
 from app.services.case_registry import find_case, save_case
-from app.services.case_generator import get_case
-
-
-BUILT_IN_CASES = {
-    "case_001": "easy",
-    "case_002": "medium",
-    "case_003": "hard",
-    "case_004": "expert",
-}
+from app.services.case_generator import get_case_by_id
 
 
 def get_case_data(case_id: str) -> Case:
@@ -25,13 +17,13 @@ def get_case_data(case_id: str) -> Case:
     if case is not None:
         return case
 
-    difficulty = BUILT_IN_CASES.get(case_id)
-    if difficulty:
-        case = get_case(difficulty)
-        save_case(case)
-        return case
+    try:
+        case = get_case_by_id(case_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail="Case not found.") from exc
 
-    raise HTTPException(status_code=404, detail="Case not found.")
+    save_case(case)
+    return case
 
 
 def _session_or_404(db, session_id: str) -> GameSession:

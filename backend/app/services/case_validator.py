@@ -10,6 +10,15 @@ def validate_case(case: Case) -> None:
     action_ids = {a.id for a in case.investigation_actions}
     if len(case.suspects) != 4:
         raise CaseValidationError("A playable case must contain exactly four suspects.")
+    interrogation_suspect_ids = [profile.suspect_id for profile in case.interrogation]
+    if len(interrogation_suspect_ids) != len(set(interrogation_suspect_ids)):
+        raise CaseValidationError("Duplicate interrogation profile identifiers.")
+    if any(suspect_id not in suspect_ids for suspect_id in interrogation_suspect_ids):
+        raise CaseValidationError("Interrogation references an unknown suspect.")
+    if set(interrogation_suspect_ids) != suspect_ids:
+        raise CaseValidationError(
+            "A playable case must have exactly one interrogation profile per suspect."
+        )
     for label, values in (("suspect", [x.id for x in case.suspects]), ("location", [x.id for x in case.locations]), ("timeline event", [x.id for x in case.timeline]), ("red herring", [x.id for x in case.red_herrings]), ("interrogation profile", [x.suspect_id for x in case.interrogation])):
         if len(values) != len(set(values)):
             raise CaseValidationError(f"Duplicate {label} identifiers.")

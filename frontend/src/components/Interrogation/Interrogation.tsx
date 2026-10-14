@@ -1,4 +1,10 @@
 import { useState } from "react";
+
+export interface InterviewEntry {
+  question: string;
+  answer: string;
+  hasInconsistency: boolean;
+}
 import type { Case, Suspect } from "../../types/case";
 import { interrogateSession } from "../../services/api";
 
@@ -10,15 +16,23 @@ interface InterrogationProps {
   onHit: () => void;
   found: string[];
   completedActions: string[];
+  previouslyAsked?: string[];
+  previousTranscript?: InterviewEntry[];
+  onQuestionAsked: (suspectId: string, questionId: string) => void;
+  onTranscriptChange: (suspectId: string, transcript: InterviewEntry[]) => void;
 }
 
 export default function Interrogation({
   gameCase, sessionId, suspect, onClose, onHit, found, completedActions,
+  previouslyAsked = [],
+  previousTranscript = [],
+  onQuestionAsked,
+  onTranscriptChange,
 }: InterrogationProps) {
   const profile = gameCase.interrogation.find((p) => p.suspect_id === suspect.id);
-  const [transcript, setTranscript] = useState<{ question: string; answer: string; hasInconsistency: boolean }[]>([]);
+  const [transcript, setTranscript] = useState<InterviewEntry[]>(previousTranscript);
   const [busy, setBusy] = useState(false);
-  const [asked, setAsked] = useState<string[]>([]);
+  const [asked, setAsked] = useState<string[]>(previouslyAsked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function ask(questionId: string) {
@@ -27,14 +41,24 @@ export default function Interrogation({
     try {
       const result = await interrogateSession(sessionId, suspect.id, questionId);
       setErrorMessage(null);
-      setAsked((current) => [...current, questionId]);
-      const questionText = profile?.questions.find((item) => item.id === questionId)?.text ?? "Question";
-      setTranscript((current) => [...current, {
+      setAsked((current) =>
+        current.includes(questionId) ? current : [...current, questionId],
+      );
+      onQuestionAsked(suspect.id, questionId);
+
+      const questionText =
+        profile?.questions.find((item) => item.id === questionId)?.text ?? "Question";
+      const entry: InterviewEntry = {
         question: questionText,
         // Never visually distinguish a suspect based on the case truth. Dialogue is displayed uniformly.
         answer: result.answer,
         hasInconsistency: false,
-      }]);
+      };
+      setTranscript((current) => {
+        const next = [...current, entry];
+        onTranscriptChange(suspect.id, next);
+        return next;
+      });
       if (result.hit) onHit();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "The interview could not be completed.");

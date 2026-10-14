@@ -227,3 +227,110 @@ def get_case(difficulty: str) -> Case:
     if difficulty not in {"easy", "medium", "hard", "expert"}:
         raise ValueError(f"Unknown difficulty: {difficulty}")
     return _configure_investigation({"easy": easy_case, "medium": medium_case, "hard": hard_case, "expert": expert_case}[difficulty]())
+
+
+# Stable case IDs used by the selectable case library.
+from app.services.additional_cases import build_additional_case, BLUEPRINTS
+# Additional cases will be registered here as their definitions are added.
+BUILT_IN_CASE_FACTORIES = {
+    "case_001": easy_case,
+    "case_002": medium_case,
+    "case_003": hard_case,
+    "case_004": expert_case,
+    **{case_id: (lambda case_id=case_id: build_additional_case(case_id))
+       for case_id in BLUEPRINTS},
+}
+
+BUILT_IN_CASE_METADATA = {
+    "case_001": {
+        "title": "The Locked Study",
+        "description": "A businessman's death, a broken paperweight, and missing company funds.",
+        "difficulty": "easy",
+        "target_minutes": 7,
+    },
+    "case_002": {
+        "title": "The Gallery After Midnight",
+        "description": "A gallery owner's death, a missing painting, and a suspicious alarm outage.",
+        "difficulty": "medium",
+        "target_minutes": 15,
+    },
+    "case_003": {
+        "title": "The Vanishing Hour",
+        "description": "Reconstruct a missing twelve-minute window on a restricted executive floor.",
+        "difficulty": "hard",
+        "target_minutes": 30,
+    },
+    "case_004": {
+        "title": "The Silent Archive",
+        "description": "A historian's death and a missing manuscript hide a layered sequence of events.",
+        "difficulty": "expert",
+        "target_minutes": 50,
+    },
+    "case_005": {
+        "title": "The Last Train",
+        "description": "A railway supervisor's death exposes a falsified safety inspection.",
+        "difficulty": "easy",
+        "target_minutes": 6,
+    },
+    "case_006": {
+        "title": "Death at Room 12",
+        "description": "A seaside hotel death, a missing key, and a corrected checkout entry.",
+        "difficulty": "easy",
+        "target_minutes": 7,
+    },
+    "case_007": {
+        "title": "The Midnight Broadcast",
+        "description": "A radio host dies on air while a recording segment disappears.",
+        "difficulty": "medium",
+        "target_minutes": 15,
+    },
+    "case_008": {
+        "title": "The Missing Blueprint",
+        "description": "An architect's death and a missing redevelopment plan.",
+        "difficulty": "medium",
+        "target_minutes": 16,
+    },
+    "case_009": {
+        "title": "The Blackout Protocol",
+        "description": "A control-room death amid contradictory power-grid telemetry.",
+        "difficulty": "hard",
+        "target_minutes": 30,
+    },
+    "case_010": {
+        "title": "Murder on the Research Vessel",
+        "description": "A marine research death involving sample tampering and a pressure log.",
+        "difficulty": "hard",
+        "target_minutes": 32,
+    },
+    "case_011": {
+        "title": "The Glasshouse Paradox",
+        "description": "A botanist dies in a sealed greenhouse as a rare plant vanishes.",
+        "difficulty": "expert",
+        "target_minutes": 45,
+    },
+    "case_012": {
+        "title": "The Seventh Witness",
+        "description": "A judge's death exposes a missing statement and a falsified chronology.",
+        "difficulty": "expert",
+        "target_minutes": 52,
+    },
+}
+
+
+def get_case_by_id(case_id: str) -> Case:
+    """Return a fresh, fully configured built-in case by its stable ID."""
+    factory = BUILT_IN_CASE_FACTORIES.get(case_id)
+    if factory is None:
+        raise ValueError(f"Unknown built-in case ID: {case_id}")
+
+    case = _configure_investigation(factory())
+    case.case_id = case_id
+    return case
+
+
+def get_case_catalog() -> list[dict]:
+    """Return public selection metadata, ordered by stable case ID."""
+    return [
+        {"case_id": case_id, **metadata}
+        for case_id, metadata in BUILT_IN_CASE_METADATA.items()
+    ]
