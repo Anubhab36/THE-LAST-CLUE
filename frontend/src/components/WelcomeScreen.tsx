@@ -8,6 +8,23 @@ interface CaseProgressRecord {
   solved: boolean;
 }
 
+const fallbackArtwork = "photo-1518709268805-4e9042af9f23";
+
+const caseArtworkByTitle: Record<string, string> = {
+  "the locked study": "photo-1511818966892-d7d671e672a2",
+  "the last train": "photo-1474487548417-781cb71495f3",
+  "death at room 12": "photo-1600210492486-724fe5c67fb0",
+  "the gallery after midnight": "photo-1577083552431-6e5fd01aa342",
+  "the midnight broadcast": "photo-1590602847861-f357a9332bbc",
+  "the missing blueprint": "photo-1503387762-592deb58ef4e",
+  "the vanishing hour": "photo-1519608487953-e999c86e7455",
+  "the blackout protocol": "photo-1518005020951-eccf5c9c4e1f",
+  "murder on the research vessel": "photo-1544551763-46a013bb70d5",
+  "the silent archive": "photo-1497366754035-f200968a6e72",
+  "the glasshouse paradox": "photo-1511497584788-876760111969",
+  "the seventh witness": "photo-1501785888041-af3ef285b470",
+};
+
 const caseArtworks = [
   "photo-1518709268805-4e9042af9f23",
   "photo-1600210492486-724fe5c67fb0",
@@ -21,45 +38,39 @@ const caseArtworks = [
   "photo-1497366754035-f200968a6e72",
   "photo-1511818966892-d7d671e672a2",
   "photo-1480714378408-67cf0d13bc1b",
-  "photo-1519608487953-e999c86e7455",
-  "photo-1518709268805-4e9042af9f23",
   "photo-1500530855697-b586d89ba3ee",
   "photo-1511497584788-876760111969",
   "photo-1518005020951-eccf5c9c4e1f",
   "photo-1500534623283-312aadec485b",
   "photo-1501785888041-af3ef285b470",
-  "photo-1519608487953-e999c86e7455",
-  "photo-1518837695005-2083093ee35b",
   "photo-1470770841072-f978cf4d019e",
-  "photo-1511818966892-d7d671e672a2",
-  "photo-1497366754035-f200968a6e72",
 ];
 
 const caseArtwork = (caseTitle: string, allTitles: string[]): string => {
-  // Allocate artwork by normalized case title, not by card position. Sorting
-  // makes the allocation stable; collision probing guarantees no repeats
-  // within the current case catalog as long as the pool has enough images.
-  const titles = [...new Set(allTitles)].sort((a, b) =>
-    a.localeCompare(b, undefined, { sensitivity: "base" }),
-  );
-  const allocated = new Map<string, number>();
-  const used = new Set<number>();
-
-  for (const title of titles) {
-    const normalized = title.trim().toLowerCase();
-    let hash = 0;
-    for (const char of normalized) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-    let index = hash % caseArtworks.length;
-    for (let attempt = 0; used.has(index) && attempt < caseArtworks.length; attempt++) {
-      index = (index + 1) % caseArtworks.length;
-    }
-    allocated.set(normalized, index);
-    used.add(index);
+  const normalizedTitle = caseTitle.trim().toLowerCase();
+  const specificArtwork = caseArtworkByTitle[normalizedTitle];
+  if (specificArtwork) {
+    return `https://images.unsplash.com/${specificArtwork}?auto=format&fit=crop&w=900&q=85`;
   }
 
-  const normalizedTitle = caseTitle.trim().toLowerCase();
-  const imageIndex = allocated.get(normalizedTitle) ?? 0;
-  return `https://images.unsplash.com/${caseArtworks[imageIndex]}?auto=format&fit=crop&w=900&q=85`;
+  // Stable, collision-free assignment for generated/new titles.
+  const titles = [...new Set(allTitles.map((title) => title.trim().toLowerCase()))]
+    .sort((a, b) => a.localeCompare(b));
+  const used = new Set<string>(Object.values(caseArtworkByTitle));
+  const available = caseArtworks.filter((image) => !used.has(image));
+  const allocated = new Map<string, string>();
+  for (const title of titles) {
+    if (caseArtworkByTitle[title]) continue;
+    let hash = 0;
+    for (const char of title) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    let index = hash % Math.max(available.length, 1);
+    while (available[index] && used.has(available[index])) index = (index + 1) % available.length;
+    const image = available[index] ?? fallbackArtwork;
+    allocated.set(title, image);
+    used.add(image);
+  }
+  const image = allocated.get(normalizedTitle) ?? fallbackArtwork;
+  return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=900&q=85`;
 };
 
 const levels: {
@@ -150,11 +161,18 @@ export default function WelcomeScreen({
                     aria-pressed={selectedCaseId === item.case_id}
                     disabled={busy}
                   >
-                    <span
-                      className="case-library-art"
-                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,8,9,.04) 0%, rgba(8,8,9,.82) 100%), url("${caseArtwork(item.title, cases.map((entry) => entry.title))}")` }}
-                      aria-hidden="true"
-                    />
+                    <span className="case-library-art" aria-hidden="true">
+                      <img
+                        src={caseArtwork(item.title, cases.map((entry) => entry.title))}
+                        alt=""
+                        loading="lazy"
+                        onError={(event) => {
+                          const image = event.currentTarget;
+                          image.style.display = "none";
+                          image.parentElement?.classList.add("case-library-art-fallback");
+                        }}
+                      />
+                    </span>
                     <span className="case-library-card-top">
                       <strong>{item.title}</strong>
                       <small>{item.target_minutes} MIN</small>
