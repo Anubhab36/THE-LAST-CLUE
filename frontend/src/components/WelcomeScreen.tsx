@@ -1,5 +1,17 @@
 import type { CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
+import lockedStudy from "../assets/case-covers/The_Locked_Study_Room.webp";
+import lastTrain from "../assets/case-covers/The_Last_Train.webp";
+import deathRoom12 from "../assets/case-covers/Death_at_Room_12.webp";
+import galleryMidnight from "../assets/case-covers/The_Gallery_After_Midnight.webp";
+import midnightBroadcast from "../assets/case-covers/The_Midnight_Broadcast.webp";
+import missingBlueprint from "../assets/case-covers/The_Missing_Blueprint.webp";
+import vanishingHour from "../assets/case-covers/The_Vanishing_Hour.webp";
+import blackoutProtocol from "../assets/case-covers/The_Blackout_Protocol.webp";
+import researchVessel from "../assets/case-covers/Murder_on_the_Research_Vessel.webp";
+import silentArchive from "../assets/case-covers/The_Silent_Archive.webp";
+import glasshouseParadox from "../assets/case-covers/The_Glasshouse_Paradox.webp";
+import seventhWitness from "../assets/case-covers/The_Seventh_Witness.webp";
 
 interface CaseProgressRecord {
   attempts: number;
@@ -8,18 +20,25 @@ interface CaseProgressRecord {
   solved: boolean;
 }
 
-const caseArtwork = (title: string): string => {
-  const normalized = title.toLowerCase();
-  if (normalized.includes("study") || normalized.includes("room")) return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("gallery") || normalized.includes("glass")) return "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("train") || normalized.includes("vanishing")) return "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("broadcast") || normalized.includes("archive")) return "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("blueprint") || normalized.includes("protocol")) return "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("vessel") || normalized.includes("ship")) return "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("witness") || normalized.includes("paradox")) return "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=85";
-  return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=900&q=85";
+const caseArtworkByTitle: Record<string, string> = {
+  "the locked study": lockedStudy,
+  "the locked study room": lockedStudy,
+  "the last train": lastTrain,
+  "death at room 12": deathRoom12,
+  "the gallery after midnight": galleryMidnight,
+  "the midnight broadcast": midnightBroadcast,
+  "the missing blueprint": missingBlueprint,
+  "the vanishing hour": vanishingHour,
+  "the blackout protocol": blackoutProtocol,
+  "murder on the research vessel": researchVessel,
+  "the silent archive": silentArchive,
+  "the glasshouse paradox": glasshouseParadox,
+  "the seventh witness": seventhWitness,
 };
 
+const caseArtwork = (title: string): string => {
+  return caseArtworkByTitle[title.trim().toLowerCase()] ?? lockedStudy;
+};
 const levels: {
   id: Difficulty;
   title: string;
