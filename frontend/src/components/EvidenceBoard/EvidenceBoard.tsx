@@ -135,13 +135,7 @@ export default function EvidenceBoard({
         <div className="suspect-dossier-list">
           {suspects.map((suspect, index) => (
             <div className="suspect-dossier" key={suspect.id}>
-              <img
-                className="suspect-dossier-portrait"
-                src={portraitFor(index)}
-                alt=""
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
+              <span className="suspect-dossier-monogram" aria-hidden="true">{suspectInitials(suspect.name)}</span>
               <div className="suspect-dossier-details">
                 <span className="suspect-dossier-id">SUBJECT {String(index + 1).padStart(2, "0")}</span>
                 <strong>{suspect.name}</strong>
