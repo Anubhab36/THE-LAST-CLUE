@@ -33,7 +33,21 @@ export default function Interrogation({
   const [transcript, setTranscript] = useState<InterviewEntry[]>(previousTranscript);
   const [busy, setBusy] = useState(false);
   const [asked, setAsked] = useState<string[]>(previouslyAsked);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);\n  const unlockedCount = profile?.questions.filter((question) =>\n    (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&\n    (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),\n  ).length ?? 0;\n  const portraitIds = [\n    "photo-1500648767791-00dcc994a43e",\n    "photo-1534528741775-53994a69daeb",\n    "photo-1506794778202-cad84cf45f1d",\n    "photo-1531123897727-8f129e1688ce",\n    "photo-1507003211169-0a1dd7228f2d",\n    "photo-1544005313-94ddf0286df2",\n  ];\n  const portraitIndex = Math.abs([...suspect.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % portraitIds.length;\n  const portraitUrl = `https://images.unsplash.com/${portraitIds[portraitIndex]}?auto=format&fit=crop&w=180&h=180&q=80`;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const unlockedCount = profile?.questions.filter((question) =>
+    (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
+    (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
+  ).length ?? 0;
+  const portraitIds = [
+    "photo-1500648767791-00dcc994a43e",
+    "photo-1534528741775-53994a69daeb",
+    "photo-1506794778202-cad84cf45f1d",
+    "photo-1531123897727-8f129e1688ce",
+    "photo-1507003211169-0a1dd7228f2d",
+    "photo-1544005313-94ddf0286df2",
+  ];
+  const portraitIndex = Math.abs([...suspect.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % portraitIds.length;
+  const portraitUrl = `https://images.unsplash.com/${portraitIds[portraitIndex]}?auto=format&fit=crop&w=180&h=180&q=80`;
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
