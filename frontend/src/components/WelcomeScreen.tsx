@@ -8,16 +8,25 @@ interface CaseProgressRecord {
   solved: boolean;
 }
 
-const caseArtwork = (title: string): string => {
-  const normalized = title.toLowerCase();
-  if (normalized.includes("study") || normalized.includes("room")) return "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("gallery") || normalized.includes("glass")) return "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("train") || normalized.includes("vanishing")) return "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("broadcast") || normalized.includes("archive")) return "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("blueprint") || normalized.includes("protocol")) return "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("vessel") || normalized.includes("ship")) return "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=900&q=85";
-  if (normalized.includes("witness") || normalized.includes("paradox")) return "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=85";
-  return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=900&q=85";
+const caseArtworks = [
+  "photo-1518709268805-4e9042af9f23",
+  "photo-1600210492486-724fe5c67fb0",
+  "photo-1577083552431-6e5fd01aa342",
+  "photo-1474487548417-781cb71495f3",
+  "photo-1590602847861-f357a9332bbc",
+  "photo-1503387762-592deb58ef4e",
+  "photo-1544551763-46a013bb70d5",
+  "photo-1519608487953-e999c86e7455",
+  "photo-1518837695005-2083093ee35b",
+  "photo-1497366754035-f200968a6e72",
+  "photo-1511818966892-d7d671e672a2",
+];
+
+const caseArtwork = (caseId: string, index: number): string => {
+  // Stable case-id hash spreads the catalog across the artwork pool, avoiding
+  // the same fallback image appearing on adjacent cards.
+  const image = caseArtworks[index % caseArtworks.length];
+  return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=900&q=85`;
 };
 
 const levels: {
@@ -110,7 +119,7 @@ export default function WelcomeScreen({
                   >
                     <span
                       className="case-library-art"
-                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,8,9,.04) 0%, rgba(8,8,9,.82) 100%), url("${caseArtwork(item.title)}")` }}
+                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,8,9,.04) 0%, rgba(8,8,9,.82) 100%), url("${caseArtwork(item.case_id, cases.findIndex((entry) => entry.case_id === item.case_id))}")` }}
                       aria-hidden="true"
                     />
                     <span className="case-library-card-top">

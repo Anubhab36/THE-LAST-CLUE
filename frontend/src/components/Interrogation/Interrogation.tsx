@@ -34,6 +34,20 @@ export default function Interrogation({
   const [busy, setBusy] = useState(false);
   const [asked, setAsked] = useState<string[]>(previouslyAsked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const unlockedCount = profile?.questions.filter((question) =>
+    (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
+    (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
+  ).length ?? 0;
+  const portraitIds = [
+    "photo-1500648767791-00dcc994a43e",
+    "photo-1534528741775-53994a69daeb",
+    "photo-1506794778202-cad84cf45f1d",
+    "photo-1531123897727-8f129e1688ce",
+    "photo-1507003211169-0a1dd7228f2d",
+    "photo-1544005313-94ddf0286df2",
+  ];
+  const portraitIndex = Math.abs([...suspect.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % portraitIds.length;
+  const portraitUrl = `https://images.unsplash.com/${portraitIds[portraitIndex]}?auto=format&fit=crop&w=180&h=180&q=80`;
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
@@ -71,12 +85,27 @@ export default function Interrogation({
     <div className="overlay">
       <div className="modal">
         <button className="close" onClick={onClose} aria-label="Close interrogation">×</button>
-        <span className="eyebrow">INTERROGATION</span>
-        <h2>{suspect.name}</h2>
-        <p className="muted">{suspect.occupation} · {suspect.relationship_to_victim}</p>
+        <div className="interrogation-profile">
+          <img src={portraitUrl} alt="" className="interrogation-portrait" />
+          <div className="interrogation-profile-copy">
+            <span className="eyebrow">INTERROGATION / PERSON OF INTEREST</span>
+            <h2>{suspect.name}</h2>
+            <p className="muted">{suspect.occupation} · {suspect.relationship_to_victim}</p>
+            <span className="interrogation-subject-id">SUBJECT FILE · {suspect.id.replace("suspect_", "").padStart(2, "0")}</span>
+          </div>
+        </div>
+        <div className="interrogation-progress" aria-live="polite">
+          <span>QUESTIONS ANSWERED <strong>{asked.length}</strong></span>
+          <span>AVAILABLE NOW <strong>{unlockedCount}</strong></span>
+          <span>RECORDED EXCHANGES <strong>{transcript.length}</strong></span>
+        </div>
         {errorMessage && <p className="welcome-error" role="alert">{errorMessage}</p>}
+        <div className="interrogation-question-heading">
+          <span className="toolbar-kicker">QUESTION SELECTOR</span>
+          <span className="toolbar-count">SELECT A LINE OF INQUIRY</span>
+        </div>
         <div className="questions">
-          {profile?.questions.map((question) => {
+          {profile?.questions.map((question, questionIndex) => {
             const unlocked = (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
               (question.requires_action_ids ?? []).every((id) => completedActions.includes(id));
             return (
@@ -86,8 +115,13 @@ export default function Interrogation({
                 onClick={() => ask(question.id)}
                 title={!unlocked ? (question.unlock_hint ?? "Find the required evidence to unlock this question.") : undefined}
               >
-                {asked.includes(question.id) ? "✓ " : !unlocked ? "🔒 " : ""}{question.text}
-                {!unlocked && <small className="question-lock-hint">{question.unlock_hint ?? "Requires more evidence"}</small>}
+                <span className="question-number">{String(questionIndex + 1).padStart(2, "0")}</span>
+                <span className="question-copy">
+                  <span>{question.text}</span>
+                  <small className="question-state">{asked.includes(question.id) ? "RECORDED IN TRANSCRIPT" : !unlocked ? "LOCKED · INVESTIGATE FURTHER" : "ASK THIS QUESTION"}</small>
+                  {!unlocked && <small className="question-lock-hint">{question.unlock_hint ?? "Requires more evidence"}</small>}
+                </span>
+                <span className="question-action">{asked.includes(question.id) ? "✓" : !unlocked ? "⌑" : "↗"}</span>
               </button>
             );
           })}
