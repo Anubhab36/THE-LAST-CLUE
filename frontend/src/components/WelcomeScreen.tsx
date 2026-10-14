@@ -1,5 +1,17 @@
 import type { CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
+import lockedStudy from "../assets/case-covers/The_Locked_Study_Room.webp";
+import lastTrain from "../assets/case-covers/The_Last_Train.webp";
+import deathRoom12 from "../assets/case-covers/Death_at_Room_12.webp";
+import galleryMidnight from "../assets/case-covers/The_Gallery_After_Midnight.webp";
+import midnightBroadcast from "../assets/case-covers/The_Midnight_Broadcast.webp";
+import missingBlueprint from "../assets/case-covers/The_Missing_Blueprint.webp";
+import vanishingHour from "../assets/case-covers/The_Vanishing_Hour.webp";
+import blackoutProtocol from "../assets/case-covers/The_Blackout_Protocol.webp";
+import researchVessel from "../assets/case-covers/Murder_on_the_Research_Vessel.webp";
+import silentArchive from "../assets/case-covers/The_Silent_Archive.webp";
+import glasshouseParadox from "../assets/case-covers/The_Glasshouse_Paradox.webp";
+import seventhWitness from "../assets/case-covers/The_Seventh_Witness.webp";
 
 interface CaseProgressRecord {
   attempts: number;
@@ -8,71 +20,25 @@ interface CaseProgressRecord {
   solved: boolean;
 }
 
-const fallbackArtwork = "photo-1518709268805-4e9042af9f23";
-
 const caseArtworkByTitle: Record<string, string> = {
-  "the locked study": "photo-1511818966892-d7d671e672a2",
-  "the last train": "photo-1474487548417-781cb71495f3",
-  "death at room 12": "photo-1600210492486-724fe5c67fb0",
-  "the gallery after midnight": "photo-1577083552431-6e5fd01aa342",
-  "the midnight broadcast": "photo-1590602847861-f357a9332bbc",
-  "the missing blueprint": "photo-1503387762-592deb58ef4e",
-  "the vanishing hour": "photo-1519608487953-e999c86e7455",
-  "the blackout protocol": "photo-1518005020951-eccf5c9c4e1f",
-  "murder on the research vessel": "photo-1544551763-46a013bb70d5",
-  "the silent archive": "photo-1497366754035-f200968a6e72",
-  "the glasshouse paradox": "photo-1511497584788-876760111969",
-  "the seventh witness": "photo-1501785888041-af3ef285b470",
+  "the locked study": lockedStudy,
+  "the locked study room": lockedStudy,
+  "the last train": lastTrain,
+  "death at room 12": deathRoom12,
+  "the gallery after midnight": galleryMidnight,
+  "the midnight broadcast": midnightBroadcast,
+  "the missing blueprint": missingBlueprint,
+  "the vanishing hour": vanishingHour,
+  "the blackout protocol": blackoutProtocol,
+  "murder on the research vessel": researchVessel,
+  "the silent archive": silentArchive,
+  "the glasshouse paradox": glasshouseParadox,
+  "the seventh witness": seventhWitness,
 };
 
-const caseArtworks = [
-  "photo-1518709268805-4e9042af9f23",
-  "photo-1600210492486-724fe5c67fb0",
-  "photo-1577083552431-6e5fd01aa342",
-  "photo-1474487548417-781cb71495f3",
-  "photo-1590602847861-f357a9332bbc",
-  "photo-1503387762-592deb58ef4e",
-  "photo-1544551763-46a013bb70d5",
-  "photo-1519608487953-e999c86e7455",
-  "photo-1518837695005-2083093ee35b",
-  "photo-1497366754035-f200968a6e72",
-  "photo-1511818966892-d7d671e672a2",
-  "photo-1480714378408-67cf0d13bc1b",
-  "photo-1500530855697-b586d89ba3ee",
-  "photo-1511497584788-876760111969",
-  "photo-1518005020951-eccf5c9c4e1f",
-  "photo-1500534623283-312aadec485b",
-  "photo-1501785888041-af3ef285b470",
-  "photo-1470770841072-f978cf4d019e",
-];
-
-const caseArtwork = (caseTitle: string, allTitles: string[]): string => {
-  const normalizedTitle = caseTitle.trim().toLowerCase();
-  const specificArtwork = caseArtworkByTitle[normalizedTitle];
-  if (specificArtwork) {
-    return `https://images.unsplash.com/${specificArtwork}?auto=format&fit=crop&w=900&q=85`;
-  }
-
-  // Stable, collision-free assignment for generated/new titles.
-  const titles = [...new Set(allTitles.map((title) => title.trim().toLowerCase()))]
-    .sort((a, b) => a.localeCompare(b));
-  const used = new Set<string>(Object.values(caseArtworkByTitle));
-  const available = caseArtworks.filter((image) => !used.has(image));
-  const allocated = new Map<string, string>();
-  for (const title of titles) {
-    if (caseArtworkByTitle[title]) continue;
-    let hash = 0;
-    for (const char of title) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-    let index = hash % Math.max(available.length, 1);
-    while (available[index] && used.has(available[index])) index = (index + 1) % available.length;
-    const image = available[index] ?? fallbackArtwork;
-    allocated.set(title, image);
-    used.add(image);
-  }
-  const image = allocated.get(normalizedTitle) ?? fallbackArtwork;
-  return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=900&q=85`;
+const caseArtwork = (title: string): string => {
+  return caseArtworkByTitle[title.trim().toLowerCase()] ?? lockedStudy;
 };
-
 const levels: {
   id: Difficulty;
   title: string;
@@ -163,7 +129,7 @@ export default function WelcomeScreen({
                   >
                     <span className="case-library-art" aria-hidden="true">
                       <img
-                        src={caseArtwork(item.title, cases.map((entry) => entry.title))}
+                        src={caseArtwork(item.title)}
                         alt=""
                         loading="lazy"
                         onError={(event) => {
