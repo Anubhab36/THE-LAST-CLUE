@@ -31,10 +31,7 @@ export default function EvidenceBoard({
   const visibleEvidence = useMemo(
     () =>
       discoveredEvidence.filter((item) => {
-        const connected = connections.some(
-          ([evidenceId]) => evidenceId === item.id,
-        );
-
+        const connected = connections.some(([evidenceId]) => evidenceId === item.id);
         if (filter === "connected") return connected;
         if (filter === "unconnected") return !connected;
         return true;
@@ -44,7 +41,6 @@ export default function EvidenceBoard({
 
   const getEvidenceName = (id: string) =>
     evidence.find((item) => item.id === id)?.name ?? "Unknown evidence";
-
   const getSuspectName = (id: string) =>
     suspects.find((item) => item.id === id)?.name ?? "Unknown suspect";
 
@@ -53,54 +49,68 @@ export default function EvidenceBoard({
       ([existingEvidence, existingSuspect]) =>
         existingEvidence === evidenceId && existingSuspect === suspectId,
     );
-
     if (exists) return;
-
     onConnect(evidenceId, suspectId);
-    setFeedback(
-      `Linked "${getEvidenceName(evidenceId)}" to ${getSuspectName(suspectId)}.`,
-    );
+    setFeedback(`Link recorded: “${getEvidenceName(evidenceId)}” ↔ ${getSuspectName(suspectId)}.`);
   };
 
   const handleDisconnect = (evidenceId: string, suspectId: string) => {
     onDisconnect(evidenceId, suspectId);
-    setFeedback(
-      `Removed the link between "${getEvidenceName(evidenceId)}" and ${getSuspectName(suspectId)}.`,
-    );
+    setFeedback(`Link removed: “${getEvidenceName(evidenceId)}” ↔ ${getSuspectName(suspectId)}.`);
   };
 
+  const criticalCount = discoveredEvidence.filter((item) => item.importance === "critical").length;
+  const linkedEvidenceCount = discoveredEvidence.filter((item) =>
+    connections.some(([evidenceId]) => evidenceId === item.id),
+  ).length;
+
   return (
-    <section className="board" aria-labelledby="evidence-board-title">
-      <div className="section-head evidence-board-heading">
+    <section className="board evidence-command" aria-labelledby="evidence-board-title">
+      <div className="evidence-command-top">
         <div>
-          <h2 id="evidence-board-title">Evidence Board</h2>
-          <p className="muted evidence-board-subtitle">
-            Build and review your own investigative theories.
-          </p>
+          <span className="eyebrow">INVESTIGATIVE ANALYSIS / 04</span>
+          <h2 id="evidence-board-title">The Evidence Wall</h2>
+          <p>Connect discovered clues to persons of interest. Build a theory, test it, and keep track of what remains unexplained.</p>
         </div>
-        <span>PLAYER HYPOTHESES</span>
-      </div>
-
-      <div className="evidence-board-stats" aria-live="polite">
-        <div>
-          <strong>{discoveredEvidence.length}</strong>
-          <span>CLUES DISCOVERED</span>
-        </div>
-        <div>
-          <strong>{connections.length}</strong>
-          <span>LINKS RECORDED</span>
+        <div className="evidence-wall-stamp" aria-hidden="true">
+          <span>CASE</span><strong>ACTIVE</strong><span>FIELD NOTES · CLASSIFIED</span>
         </div>
       </div>
 
-      <div className="evidence-board-toolbar">
+      <div className="evidence-wall-metrics" aria-live="polite">
+        <div className="evidence-wall-metric">
+          <span className="metric-label">CLUES COLLECTED</span>
+          <strong>{String(discoveredEvidence.length).padStart(2, "0")}<small> / {String(evidence.length).padStart(2, "0")}</small></strong>
+          <span className="metric-foot">Evidence recovered</span>
+        </div>
+        <div className="evidence-wall-metric">
+          <span className="metric-label">LINKS ESTABLISHED</span>
+          <strong>{String(connections.length).padStart(2, "0")}</strong>
+          <span className="metric-foot">Working hypotheses</span>
+        </div>
+        <div className="evidence-wall-metric">
+          <span className="metric-label">CRITICAL CLUES</span>
+          <strong>{String(criticalCount).padStart(2, "0")}</strong>
+          <span className="metric-foot">High-priority findings</span>
+        </div>
+        <div className="evidence-wall-metric">
+          <span className="metric-label">STILL UNLINKED</span>
+          <strong>{String(Math.max(0, discoveredEvidence.length - linkedEvidenceCount)).padStart(2, "0")}</strong>
+          <span className="metric-foot">Need further analysis</span>
+        </div>
+      </div>
+
+      <div className="evidence-wall-toolbar">
+        <div>
+          <span className="toolbar-kicker">EVIDENCE REGISTER</span>
+          <span className="toolbar-count">{visibleEvidence.length} RECORD{visibleEvidence.length === 1 ? "" : "S"}</span>
+        </div>
         <div className="evidence-board-filters" aria-label="Filter evidence">
-          {(
-            [
-              ["all", "All clues"],
-              ["connected", "Linked"],
-              ["unconnected", "Unlinked"],
-            ] as const
-          ).map(([value, label]) => (
+          {([
+            ["all", "All clues"],
+            ["connected", "Linked"],
+            ["unconnected", "Unlinked"],
+          ] as const).map(([value, label]) => (
             <button
               key={value}
               type="button"
@@ -115,90 +125,79 @@ export default function EvidenceBoard({
       </div>
 
       {feedback && (
-        <p className="evidence-board-feedback" role="status" aria-live="polite">
-          {feedback}
-        </p>
+        <div className="evidence-board-feedback" role="status" aria-live="polite">
+          <span className="feedback-indicator" />{feedback}
+          <button type="button" onClick={() => setFeedback("")} aria-label="Dismiss update">×</button>
+        </div>
       )}
 
       {discoveredEvidence.length === 0 ? (
         <div className="evidence-board-empty">
-          <strong>No evidence discovered yet.</strong>
-          <p>Investigate the crime scene to collect clues for your board.</p>
+          <span className="empty-file-mark">+</span>
+          <strong>Evidence register is empty</strong>
+          <p>Inspect the crime scene and complete investigative actions to recover clues. Every discovery will appear here.</p>
         </div>
       ) : visibleEvidence.length === 0 ? (
         <div className="evidence-board-empty">
-          <strong>
-            {filter === "connected"
-              ? "No linked clues yet."
-              : "All discovered clues are linked."}
-          </strong>
-          <p>Choose another filter to review your evidence.</p>
+          <span className="empty-file-mark">—</span>
+          <strong>{filter === "connected" ? "No links recorded yet" : "Every discovered clue has a link"}</strong>
+          <p>Change the filter to review another part of the evidence register.</p>
         </div>
       ) : (
-        <div className="board-grid">
-          {visibleEvidence.map((item) => {
-            const itemConnections = connections.filter(
-              ([evidenceId]) => evidenceId === item.id,
-            );
-
+        <div className="evidence-wall-grid">
+          {visibleEvidence.map((item, index) => {
+            const itemConnections = connections.filter(([evidenceId]) => evidenceId === item.id);
+            const importanceLabel = item.importance.replace(/_/g, " ");
             return (
-              <article className="e-card" key={item.id}>
-                <div className="evidence-card-top">
-                  <span className="evidence-importance">
-                    {item.importance.replace(/_/g, " ")}
-                  </span>
-                  <span className="evidence-link-count">
-                    {itemConnections.length}{" "}
-                    {itemConnections.length === 1 ? "LINK" : "LINKS"}
-                  </span>
+              <article className="evidence-file" key={item.id}>
+                <div className="evidence-file-topline">
+                  <span className="evidence-file-index">EXHIBIT {String(index + 1).padStart(2, "0")}</span>
+                  <span className={`evidence-priority priority-${item.importance}`}>{importanceLabel}</span>
                 </div>
-
+                <div className="evidence-file-symbol" aria-hidden="true">
+                  {item.importance === "critical" ? "✳" : item.importance === "red_herring" ? "?" : "◇"}
+                </div>
                 <h3>{item.name}</h3>
-                <p>{item.description}</p>
+                <p className="evidence-file-description">{item.description}</p>
 
-                <div className="evidence-card-connections">
-                  <h4>Recorded connections</h4>
+                <div className="evidence-file-links">
+                  <div className="evidence-file-section-heading">
+                    <span>ASSOCIATED PERSONS</span><strong>{String(itemConnections.length).padStart(2, "0")}</strong>
+                  </div>
                   {itemConnections.length === 0 ? (
-                    <p className="evidence-no-links">No suspect linked yet.</p>
+                    <p className="evidence-no-links">No association recorded.</p>
                   ) : (
                     <ul>
                       {itemConnections.map(([, suspectId]) => (
                         <li key={`${item.id}-${suspectId}`}>
-                          <span>{getSuspectName(suspectId)}</span>
+                          <span className="connection-node" />
+                          <span className="connection-name">{getSuspectName(suspectId)}</span>
                           <button
                             type="button"
                             className="evidence-remove-link"
-                            onClick={() =>
-                              handleDisconnect(item.id, suspectId)
-                            }
+                            onClick={() => handleDisconnect(item.id, suspectId)}
                             aria-label={`Remove link from ${item.name} to ${getSuspectName(suspectId)}`}
-                          >
-                            Remove
-                          </button>
+                          >REMOVE</button>
                         </li>
                       ))}
                     </ul>
                   )}
                 </div>
 
-                <div className="evidence-card-link-actions">
-                  <h4>Link this clue to a suspect</h4>
-                  <div className="chips">
+                <div className="evidence-file-link-actions">
+                  <span className="link-action-label">ESTABLISH A LINK</span>
+                  <div className="evidence-suspect-options">
                     {suspects.map((suspect) => {
-                      const active = itemConnections.some(
-                        ([, suspectId]) => suspectId === suspect.id,
-                      );
-
+                      const active = itemConnections.some(([, suspectId]) => suspectId === suspect.id);
                       return (
                         <button
                           key={suspect.id}
                           type="button"
                           disabled={active}
-                          className={`chip ${active ? "active" : ""}`}
+                          className={`evidence-suspect-chip ${active ? "active" : ""}`}
                           onClick={() => handleConnect(item.id, suspect.id)}
                         >
-                          {active ? "✓ " : "+ "}
-                          {suspect.name}
+                          <span>{active ? "✓" : "+"}</span>{suspect.name}
                         </button>
                       );
                     })}
@@ -210,10 +209,11 @@ export default function EvidenceBoard({
         </div>
       )}
 
-      <p className="evidence-board-note">
-        Connections are your hypotheses, not confirmed proof of guilt. Review
-        the full evidence before making an accusation.
-      </p>
+      <div className="evidence-wall-footer">
+        <span className="footer-seal">LC / IU</span>
+        <p><strong>Analyst's note</strong> — Connections represent your working hypotheses, not confirmed proof of guilt. Reassess them as new evidence emerges.</p>
+        <span className="footer-classification">CONFIDENTIAL</span>
+      </div>
     </section>
   );
 }
