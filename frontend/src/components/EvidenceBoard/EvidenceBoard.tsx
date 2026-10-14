@@ -59,16 +59,8 @@ export default function EvidenceBoard({
     setFeedback(`Link removed: “${getEvidenceName(evidenceId)}” ↔ ${getSuspectName(suspectId)}.`);
   };
 
-  const portraitReferences = [
-    "photo-1500648767791-00dcc994a43e",
-    "photo-1534528741775-53994a69daeb",
-    "photo-1506794778202-cad84cf45f1d",
-    "photo-1531123897727-8f129e1688ce",
-    "photo-1507003211169-0a1dd7228f2d",
-    "photo-1544005313-94ddf0286df2",
-  ];
-  const portraitFor = (index: number) =>
-    `https://images.unsplash.com/${portraitReferences[index % portraitReferences.length]}?auto=format&fit=crop&w=120&h=120&q=75`;
+  const suspectInitials = (name: string) =>
+    name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("");
 
   const criticalCount = discoveredEvidence.filter((item) => item.importance === "critical").length;
   const linkedEvidenceCount = discoveredEvidence.filter((item) =>
@@ -143,13 +135,7 @@ export default function EvidenceBoard({
         <div className="suspect-dossier-list">
           {suspects.map((suspect, index) => (
             <div className="suspect-dossier" key={suspect.id}>
-              <img
-                className="suspect-dossier-portrait"
-                src={portraitFor(index)}
-                alt=""
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
+              <span className="suspect-dossier-monogram" aria-hidden="true">{suspectInitials(suspect.name)}</span>
               <div className="suspect-dossier-details">
                 <span className="suspect-dossier-id">SUBJECT {String(index + 1).padStart(2, "0")}</span>
                 <strong>{suspect.name}</strong>
@@ -235,7 +221,7 @@ export default function EvidenceBoard({
                           className={`evidence-suspect-chip ${active ? "active" : ""}`}
                           onClick={() => handleConnect(item.id, suspect.id)}
                         >
-                          <img className="suspect-chip-portrait" src={portraitFor(suspects.findIndex((person) => person.id === suspect.id))} alt="" loading="lazy" />
+                          <span className="suspect-chip-monogram" aria-hidden="true">{suspectInitials(suspect.name)}</span>
                           <span className="suspect-chip-symbol">{active ? "✓" : "+"}</span>{suspect.name}
                         </button>
                       );

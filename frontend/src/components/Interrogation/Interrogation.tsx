@@ -38,16 +38,7 @@ export default function Interrogation({
     (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
     (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
   ).length ?? 0;
-  const portraitIds = [
-    "photo-1500648767791-00dcc994a43e",
-    "photo-1534528741775-53994a69daeb",
-    "photo-1506794778202-cad84cf45f1d",
-    "photo-1531123897727-8f129e1688ce",
-    "photo-1507003211169-0a1dd7228f2d",
-    "photo-1544005313-94ddf0286df2",
-  ];
-  const portraitIndex = Math.abs([...suspect.id].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % portraitIds.length;
-  const portraitUrl = `https://images.unsplash.com/${portraitIds[portraitIndex]}?auto=format&fit=crop&w=180&h=180&q=80`;
+  const suspectMonogram = suspect.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("");
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
@@ -86,7 +77,7 @@ export default function Interrogation({
       <div className="modal">
         <button className="close" onClick={onClose} aria-label="Close interrogation">×</button>
         <div className="interrogation-profile">
-          <img src={portraitUrl} alt="" className="interrogation-portrait" />
+          <div className="interrogation-monogram" aria-hidden="true">{suspectMonogram}</div>
           <div className="interrogation-profile-copy">
             <span className="eyebrow">INTERROGATION / PERSON OF INTEREST</span>
             <h2>{suspect.name}</h2>
