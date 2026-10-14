@@ -20,13 +20,46 @@ const caseArtworks = [
   "photo-1518837695005-2083093ee35b",
   "photo-1497366754035-f200968a6e72",
   "photo-1511818966892-d7d671e672a2",
+  "photo-1480714378408-67cf0d13bc1b",
+  "photo-1519608487953-e999c86e7455",
+  "photo-1518709268805-4e9042af9f23",
+  "photo-1500530855697-b586d89ba3ee",
+  "photo-1511497584788-876760111969",
+  "photo-1518005020951-eccf5c9c4e1f",
+  "photo-1500534623283-312aadec485b",
+  "photo-1501785888041-af3ef285b470",
+  "photo-1519608487953-e999c86e7455",
+  "photo-1518837695005-2083093ee35b",
+  "photo-1470770841072-f978cf4d019e",
+  "photo-1511818966892-d7d671e672a2",
+  "photo-1497366754035-f200968a6e72",
 ];
 
-const caseArtwork = (caseId: string, index: number): string => {
-  // Stable case-id hash spreads the catalog across the artwork pool, avoiding
-  // the same fallback image appearing on adjacent cards.
-  const image = caseArtworks[index % caseArtworks.length];
-  return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=900&q=85`;
+const caseArtwork = (caseTitle: string, allTitles: string[]): string => {
+  // Allocate artwork by normalized case title, not by card position. Sorting
+  // makes the allocation stable; collision probing guarantees no repeats
+  // within the current case catalog as long as the pool has enough images.
+  const titles = [...new Set(allTitles)].sort((a, b) =>
+    a.localeCompare(b, undefined, { sensitivity: "base" }),
+  );
+  const allocated = new Map<string, number>();
+  const used = new Set<number>();
+
+  for (const title of titles) {
+    const normalized = title.trim().toLowerCase();
+    let hash = 0;
+    for (const char of normalized) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+    let index = hash % caseArtworks.length;
+    for (let attempt = 0; used.has(index) && attempt < caseArtworks.length; attempt++) {
+      index = (index + 1) % caseArtworks.length;
+    }
+    allocated.set(normalized, index);
+    used.add(index);
+  }
+
+  const normalizedTitle = caseTitle.trim().toLowerCase();
+  const imageIndex = allocated.get(normalizedTitle) ?? 0;
+  return `https://images.unsplash.com/${caseArtworks[imageIndex]}?auto=format&fit=crop&w=900&q=85`;
 };
 
 const levels: {
@@ -119,7 +152,7 @@ export default function WelcomeScreen({
                   >
                     <span
                       className="case-library-art"
-                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,8,9,.04) 0%, rgba(8,8,9,.82) 100%), url("${caseArtwork(item.case_id, cases.findIndex((entry) => entry.case_id === item.case_id))}")` }}
+                      style={{ backgroundImage: `linear-gradient(180deg, rgba(8,8,9,.04) 0%, rgba(8,8,9,.82) 100%), url("${caseArtwork(item.title, cases.map((entry) => entry.title))}")` }}
                       aria-hidden="true"
                     />
                     <span className="case-library-card-top">
