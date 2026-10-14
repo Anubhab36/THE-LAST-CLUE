@@ -59,6 +59,17 @@ export default function EvidenceBoard({
     setFeedback(`Link removed: “${getEvidenceName(evidenceId)}” ↔ ${getSuspectName(suspectId)}.`);
   };
 
+  const portraitReferences = [
+    "photo-1500648767791-00dcc994a43e",
+    "photo-1534528741775-53994a69daeb",
+    "photo-1506794778202-cad84cf45f1d",
+    "photo-1531123897727-8f129e1688ce",
+    "photo-1507003211169-0a1dd7228f2d",
+    "photo-1544005313-94ddf0286df2",
+  ];
+  const portraitFor = (index: number) =>
+    `https://images.unsplash.com/${portraitReferences[index % portraitReferences.length]}?auto=format&fit=crop&w=120&h=120&q=75`;
+
   const criticalCount = discoveredEvidence.filter((item) => item.importance === "critical").length;
   const linkedEvidenceCount = discoveredEvidence.filter((item) =>
     connections.some(([evidenceId]) => evidenceId === item.id),
@@ -122,6 +133,33 @@ export default function EvidenceBoard({
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="suspect-dossier-strip" aria-label="Persons of interest">
+        <div className="suspect-dossier-heading">
+          <span className="toolbar-kicker">PERSONS OF INTEREST</span>
+          <span className="toolbar-count">{suspects.length} DOSSIERS</span>
+        </div>
+        <div className="suspect-dossier-list">
+          {suspects.map((suspect, index) => (
+            <div className="suspect-dossier" key={suspect.id}>
+              <img
+                className="suspect-dossier-portrait"
+                src={portraitFor(index)}
+                alt=""
+                loading="lazy"
+                referrerPolicy="no-referrer"
+              />
+              <div className="suspect-dossier-details">
+                <span className="suspect-dossier-id">SUBJECT {String(index + 1).padStart(2, "0")}</span>
+                <strong>{suspect.name}</strong>
+                <span>{suspect.relationship_to_victim || suspect.occupation}</span>
+              </div>
+              <span className="suspect-dossier-corner" aria-hidden="true">↗</span>
+            </div>
+          ))}
+        </div>
+        <p className="suspect-dossier-disclaimer">Illustrative reference portraits · not verified identities</p>
       </div>
 
       {feedback && (
@@ -197,7 +235,8 @@ export default function EvidenceBoard({
                           className={`evidence-suspect-chip ${active ? "active" : ""}`}
                           onClick={() => handleConnect(item.id, suspect.id)}
                         >
-                          <span>{active ? "✓" : "+"}</span>{suspect.name}
+                          <img className="suspect-chip-portrait" src={portraitFor(suspects.findIndex((person) => person.id === suspect.id))} alt="" loading="lazy" />
+                          <span className="suspect-chip-symbol">{active ? "✓" : "+"}</span>{suspect.name}
                         </button>
                       );
                     })}
