@@ -35,7 +35,6 @@ const caseArtworkByTitle: Record<string, string> = {
   "the glasshouse paradox": glasshouseParadox,
   "the seventh witness": seventhWitness,
 };
-};
 
 const caseArtwork = (title: string): string => {
   return caseArtworkByTitle[title.trim().toLowerCase()] ?? lockedStudy;
@@ -130,7 +129,7 @@ export default function WelcomeScreen({
                   >
                     <span className="case-library-art" aria-hidden="true">
                       <img
-                        src={caseArtwork(item.title, cases.map((entry) => entry.title))}
+                        src={caseArtwork(item.title)}
                         alt=""
                         loading="lazy"
                         onError={(event) => {
