@@ -132,6 +132,16 @@ function getDisplayError(
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("welcome");
+
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    });
+  }, [screen]);
+
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [caseCatalog, setCaseCatalog] = useState<CaseCatalogItem[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState("case_001");
@@ -1081,4 +1091,3 @@ export default function App() {
     </div>
   );
 }
-
