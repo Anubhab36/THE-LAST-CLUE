@@ -18,18 +18,18 @@ const caseArtworks = [
   "photo-1544551763-46a013bb70d5",
   "photo-1519608487953-e999c86e7455",
   "photo-1518837695005-2083093ee35b",
-  "photo-1519608487953-e999c86e7455",
-  "photo-1518709268805-4e9042af9f23",
+  "photo-1497366754035-f200968a6e72",
   "photo-1497366754035-f200968a6e72",
   "photo-1511818966892-d7d671e672a2",
   "photo-1518837695005-2083093ee35b",
+  "photo-1497366754035-f200968a6e72",
+  "photo-1511818966892-d7d671e672a2",
 ];
 
 const caseArtwork = (caseId: string, index: number): string => {
   // Stable case-id hash spreads the catalog across the artwork pool, avoiding
   // the same fallback image appearing on adjacent cards.
-  const hash = [...caseId].reduce((value, char) => value + char.charCodeAt(0), 0);
-  const image = caseArtworks[(hash + index * 7) % caseArtworks.length];
+  const image = caseArtworks[index % caseArtworks.length];
   return `https://images.unsplash.com/${image}?auto=format&fit=crop&w=900&q=85`;
 };
 
