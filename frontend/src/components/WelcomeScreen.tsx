@@ -117,59 +117,85 @@ export default function WelcomeScreen({
                 <h3 id={`case-level-${level.id}`}>{level.title}</h3>
                 <span>{level.minutes} · {levelCases.length} CASES</span>
               </div>
-              <div className="case-library-grid">
+              <div className="case-library-grid case-library-grid-with-play">
                 {levelCases.map((item) => (
-                  <button
-                    key={item.case_id}
-                    type="button"
-                    className={`case-library-card ${selectedCaseId === item.case_id ? "selected" : ""}`}
-                    onClick={() => onSelectCase(item.case_id)}
-                    aria-pressed={selectedCaseId === item.case_id}
-                    disabled={busy}
-                  >
-                    <span className="case-library-art" aria-hidden="true">
-                      <img
-                        src={caseArtwork(item.title)}
-                        alt=""
-                        loading="lazy"
-                        onError={(event) => {
-                          const image = event.currentTarget;
-                          image.style.display = "none";
-                          image.parentElement?.classList.add("case-library-art-fallback");
-                        }}
-                      />
-                    </span>
-                    <span className="case-library-card-top">
-                      <strong>{item.title}</strong>
-                      <small>{item.target_minutes} MIN</small>
-                    </span>
-                    <span className="case-library-description">{item.description}</span>
-                    <span className="case-progress-summary">
-                      {caseProgress[item.case_id] ? (
-                        <>
-                          <span className="case-progress-status">
-                            {caseProgress[item.case_id].solved ? "COMPLETED" : "ATTEMPTED"}
-                          </span>
-                          <span>
-                            {caseProgress[item.case_id].attempts} completed attempt
-                            {caseProgress[item.case_id].attempts === 1 ? "" : "s"}
-                          </span>
-                          <span>
-                            Best: {caseProgress[item.case_id].bestScore}/100
-                            {caseProgress[item.case_id].bestGrade
-                              ? ` · Grade ${caseProgress[item.case_id].bestGrade}`
-                              : ""}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="case-progress-status">NEW CASE</span>
-                      )}
-                    </span>
-                    <span className="difficulty-radio">
-                      {selectedCaseId === item.case_id ? "● SELECTED" : "○ SELECT CASE"}
-                    </span>
-                  </button>
-                ))}
+  <div className="case-library-item" key={item.case_id}>
+    <button
+      type="button"
+      className={`case-library-card ${selectedCaseId === item.case_id ? "selected" : ""}`}
+      onClick={() => onSelectCase(item.case_id)}
+      aria-pressed={selectedCaseId === item.case_id}
+      disabled={busy}
+    >
+      <span className="case-library-art" aria-hidden="true">
+        <img
+          src={caseArtwork(item.title)}
+          alt=""
+          loading="lazy"
+          onError={(event) => {
+            const image = event.currentTarget;
+            image.style.display = "none";
+            image.parentElement?.classList.add("case-library-art-fallback");
+          }}
+        />
+      </span>
+
+      <span className="case-library-card-top">
+        <strong>{item.title}</strong>
+        <small>{item.target_minutes} MIN</small>
+      </span>
+
+      <span className="case-library-description">{item.description}</span>
+
+      <span className="case-progress-summary">
+        {caseProgress[item.case_id] ? (
+          <>
+            <span className="case-progress-status">
+              {caseProgress[item.case_id].solved ? "COMPLETED" : "ATTEMPTED"}
+            </span>
+            <span>
+              {caseProgress[item.case_id].attempts} completed attempt
+              {caseProgress[item.case_id].attempts === 1 ? "" : "s"}
+            </span>
+            <span>
+              Best: {caseProgress[item.case_id].bestScore}/100
+              {caseProgress[item.case_id].bestGrade
+                ? ` · Grade ${caseProgress[item.case_id].bestGrade}`
+                : ""}
+            </span>
+          </>
+        ) : (
+          <span className="case-progress-status">NEW CASE</span>
+        )}
+      </span>
+
+      <span className="difficulty-radio">
+        {selectedCaseId === item.case_id ? "● SELECTED" : "○ SELECT CASE"}
+      </span>
+    </button>
+
+    {selectedCaseId === item.case_id && (
+      <button
+        className="primary start-investigation case-play-button"
+        type="button"
+        onClick={onStart}
+        disabled={
+          busy ||
+          catalogLoading ||
+          !!catalogError ||
+          !cases.length ||
+          !selectedCaseId
+        }
+      >
+        {busy
+          ? "PREPARING CASE…"
+          : catalogLoading
+            ? "LOADING CASE FILES…"
+            : "PLAY SELECTED CASE →"}
+      </button>
+    )}
+  </div>
+))}
                 {levelCases.length === 0 && catalogLoading && (
                   <p className="muted">Loading case files…</p>
                 )}
@@ -194,14 +220,7 @@ export default function WelcomeScreen({
 
         {error && <p className="welcome-error" role="alert" aria-live="polite">{error}</p>}
 
-        <button
-          className="primary start-investigation"
-          type="button"
-          onClick={onStart}
-          disabled={busy || catalogLoading || !!catalogError || !cases.length || !selectedCaseId}
-        >
-          {busy ? "PREPARING CASE…" : catalogLoading ? "LOADING CASE FILES…" : "PLAY SELECTED CASE →"}
-        </button>
+        
       </section>
 
       <section className="difficulty-panel ai-case-panel">
