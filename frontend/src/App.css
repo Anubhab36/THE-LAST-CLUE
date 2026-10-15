@@ -2215,3 +2215,235 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
     height: auto;
   }
 }
+
+/* Task 2 — cinematic investigation surfaces */
+.app .scene {
+  isolation: isolate;
+  border: 1px solid rgba(191, 164, 103, .28);
+  background:
+    radial-gradient(ellipse at 72% 18%, rgba(174, 137, 68, .15), transparent 34%),
+    radial-gradient(ellipse at 15% 85%, rgba(36, 67, 64, .18), transparent 42%),
+    linear-gradient(135deg, rgba(12, 17, 17, .72), rgba(7, 10, 11, .96)),
+    #0b0f10;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, .48), 0 18px 48px rgba(0, 0, 0, .2);
+}
+.app .scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .35;
+  background-image:
+    linear-gradient(rgba(193, 169, 112, .07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(193, 169, 112, .07) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(135deg, black, transparent 78%);
+}
+.app .v2-evidence-object {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(183, 163, 117, .24) !important;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.045), transparent 55%),
+    linear-gradient(145deg, rgba(27, 34, 33, .94), rgba(12, 17, 17, .94)) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 8px 22px rgba(0,0,0,.12);
+}
+.app .v2-evidence-object::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12px;
+  width: 38px;
+  height: 2px;
+  background: #b89a5b;
+  opacity: .72;
+}
+.app .v2-evidence-object:not(:disabled):hover {
+  background: linear-gradient(145deg, rgba(58, 54, 40, .88), rgba(15, 19, 18, .98)) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,.24), inset 0 0 0 1px rgba(184,154,91,.08);
+}
+.app .overlay {
+  overflow-y: auto;
+  align-items: center;
+  padding: clamp(12px, 3vw, 32px);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(109, 91, 53, .18), transparent 55%),
+    rgba(3, 5, 6, .82);
+  backdrop-filter: blur(9px);
+}
+.app .modal {
+  width: min(780px, 100%);
+  max-height: min(90dvh, 920px);
+  overflow-y: auto;
+  border-color: rgba(190, 161, 97, .42);
+  background:
+    linear-gradient(135deg, rgba(27, 32, 30, .97), rgba(10, 13, 14, .98) 62%),
+    #101313;
+  box-shadow: 0 28px 100px rgba(0,0,0,.62), inset 0 1px rgba(255,255,255,.035);
+  scrollbar-color: #655332 #101313;
+}
+.app .interrogation-profile {
+  margin-top: 10px;
+  padding: 0 0 22px;
+  border-bottom-color: rgba(184,154,91,.24);
+}
+.app .interrogation-monogram {
+  background:
+    radial-gradient(circle at 50% 25%, rgba(184,154,91,.19), transparent 65%),
+    linear-gradient(145deg, #202522, #101313);
+  box-shadow: inset 0 0 0 3px #111412, inset 0 0 0 4px rgba(184,154,91,.18), 0 8px 26px rgba(0,0,0,.24);
+}
+.app .interrogation-progress {
+  border-color: rgba(184,154,91,.2);
+  background: rgba(0,0,0,.18);
+}
+.app .questions button {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  border-color: rgba(255,255,255,.085);
+  background: linear-gradient(110deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  line-height: 1.6;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.app .questions button:not(:disabled):hover {
+  transform: translateX(2px);
+  border-color: rgba(184,154,91,.62);
+  background: linear-gradient(110deg, rgba(184,154,91,.11), rgba(255,255,255,.015));
+}
+.app .questions button:disabled {
+  opacity: .66;
+}
+.app .question-number {
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  min-height: 28px;
+  border: 1px solid rgba(184,154,91,.28);
+  color: #b89a5b;
+  font: 10px "DM Mono", monospace;
+}
+.app .question-copy {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 5px;
+}
+.app .interrogation-transcript {
+  border-color: rgba(184,154,91,.24);
+  background: rgba(5,8,8,.48);
+}
+.app .transcript-entry {
+  margin: 0;
+  padding: 17px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  border-left: 2px solid rgba(184,154,91,.7);
+  background: linear-gradient(90deg, rgba(184,154,91,.07), transparent 72%);
+}
+.app .evidence-command {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 95% 0%, rgba(184,154,91,.11), transparent 36%),
+    linear-gradient(145deg, rgba(21,26,24,.98), rgba(10,13,13,.98));
+  box-shadow: 0 24px 80px rgba(0,0,0,.22), inset 0 1px rgba(255,255,255,.025);
+}
+.app .evidence-command-top {
+  background: linear-gradient(100deg, rgba(184,154,91,.045), transparent 65%);
+}
+.app .evidence-file {
+  position: relative;
+  border-radius: 2px;
+  border-color: rgba(191,169,121,.24);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.045), transparent 48%),
+    linear-gradient(155deg, rgba(29,34,31,.97), rgba(15,18,17,.98));
+  box-shadow: 0 10px 26px rgba(0,0,0,.16);
+}
+.app .evidence-file::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 18px;
+  width: 48px;
+  height: 3px;
+  background: #b89a5b;
+  opacity: .8;
+}
+.app .evidence-file h3 {
+  color: #f0eadb;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+.app .evidence-file-description {
+  color: #b0b5b0;
+  line-height: 1.75;
+}
+.app .evidence-file-links,
+.app .evidence-file-link-actions {
+  border-color: rgba(255,255,255,.075);
+  background: rgba(0,0,0,.14);
+}
+.app .suspect-dossier {
+  border-color: rgba(184,154,91,.2);
+  background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(0,0,0,.14));
+}
+.app .suspect-dossier:hover {
+  border-color: rgba(184,154,91,.55);
+  background: rgba(184,154,91,.055);
+}
+.app .evidence-board-feedback {
+  border-color: rgba(184,154,91,.34);
+  background: rgba(184,154,91,.07);
+  color: #e0d5b7;
+}
+.app .evidence-board-empty {
+  border: 1px dashed rgba(184,154,91,.28);
+  background: radial-gradient(ellipse at 50% 0%, rgba(184,154,91,.06), transparent 68%);
+}
+.app .board,
+.app .timeline-panel {
+  border-color: rgba(184,154,91,.24);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(184,154,91,.055), transparent 35%),
+    linear-gradient(145deg, #141817, #0d1010);
+  box-shadow: 0 18px 50px rgba(0,0,0,.14);
+}
+.app .event-button {
+  border-color: rgba(255,255,255,.085);
+  background: linear-gradient(100deg, rgba(255,255,255,.035), rgba(255,255,255,.01));
+  transition: border-color .18s ease, background .18s ease;
+}
+.app .event-button:hover {
+  border-color: rgba(184,154,91,.5);
+  background: rgba(184,154,91,.055);
+}
+@media (max-width: 700px) {
+  .app .overlay { align-items: start; }
+  .app .modal {
+    max-height: calc(100dvh - 24px);
+    padding: 24px 18px;
+  }
+  .app .evidence-command-top { padding: 24px 18px 20px; }
+  .app .evidence-wall-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app .evidence-wall-metric:nth-child(2) { border-right: 0; }
+  .app .evidence-wall-metric:nth-child(-n+2) { border-bottom: 1px solid #2b2e29; }
+  .app .suspect-dossier-list { grid-template-columns: minmax(0, 1fr); }
+  .app .evidence-wall-grid { grid-template-columns: minmax(0, 1fr); }
+  .app .v2-scene-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .app .v2-evidence-object { min-height: 118px; padding: 13px !important; }
+}
+@media (max-width: 420px) {
+  .app .v2-scene-grid { grid-template-columns: minmax(0, 1fr); }
+  .app .interrogation-profile-copy h2 { font-size: 26px; }
+  .app .evidence-wall-metric { padding: 16px 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app .questions button,
+  .app .event-button,
+  .app .v2-evidence-object { transition: none; }
+  .app .questions button:not(:disabled):hover,
+  .app .v2-evidence-object:not(:disabled):hover { transform: none; }
+}
