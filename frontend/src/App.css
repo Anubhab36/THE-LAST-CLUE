@@ -2185,3 +2185,33 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
   .case-library-card:hover .case-library-art > img,
   .case-library-card.selected .case-library-art > img { transform: none; }
 }
+
+/* Keep each case card and its play button together. */
+.case-library-grid-with-play {
+  align-items: start;
+}
+
+.case-library-item {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.case-library-item .case-library-card {
+  width: 100%;
+  height: 100%;
+}
+
+.case-play-button {
+  width: 100%;
+  padding: 14px 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .case-library-item .case-library-card {
+    height: auto;
+  }
+}
