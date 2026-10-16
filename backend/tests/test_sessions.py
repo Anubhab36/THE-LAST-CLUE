@@ -130,3 +130,39 @@ def test_repeated_interrogation_question_is_allowed():
                 if session is not None:
                     db.delete(session)
                     db.commit()
+
+
+def test_score_refinement_returns_cached_result_without_rescoring(monkeypatch):
+    from app.api import sessions as sessions_api
+
+    expected = object()
+    calls = {"count": 0}
+
+    monkeypatch.setattr(sessions_api, "get_session", lambda session_id: {
+        "status": "completed",
+        "case_id": "unused",
+        "progress": {"refined_score_result": {"cached": True}},
+    })
+
+    def should_not_refine(*args, **kwargs):
+        calls["count"] += 1
+        raise AssertionError("Cached score should not be recalculated")
+
+    monkeypatch.setattr(
+        sessions_api.AccusationResult,
+        "model_validate",
+        lambda value: expected,
+    )
+    monkeypatch.setattr(
+        sessions_api,
+        "refine_semantic_answers",
+        should_not_refine,
+    )
+
+    result = sessions_api.refine_score(
+        "test-session",
+        sessions_api.ScoreRefinementRequest(motive="anything", method="anything"),
+    )
+
+    assert result is expected
+    assert calls["count"] == 0
