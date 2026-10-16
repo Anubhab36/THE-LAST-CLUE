@@ -1,5 +1,6 @@
 """Game session endpoints."""
 from datetime import datetime, timezone
+import logging
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -20,6 +21,8 @@ from app.services.session_service import (
 from app.services.session_service import mark_question_asked
 from app.services.scoring_engine import score_case, refine_semantic_answers
 from app.schemas.case import AccusationResult
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
@@ -162,7 +165,9 @@ def refine_score(session_id: str, request: ScoreRefinementRequest):
     progress = session_data["progress"]
     cached_result = progress.get("refined_score_result")
     if cached_result:
-        return AccusationResult.model_validate(cached_result)
+        cached = AccusationResult.model_validate(cached_result)
+        logger.info("Score refinement cache hit session=%s motive_points=%s method_points=%s", session_id, cached.score.motive, cached.score.method)
+        return cached
 
     stored_result = progress.get("initial_score_result")
     stored_answers = progress.get("accusation_answers")
@@ -174,6 +179,7 @@ def refine_score(session_id: str, request: ScoreRefinementRequest):
 
     case = get_case_data(session_data["case_id"])
     initial = AccusationResult.model_validate(stored_result)
+    logger.info("Score refinement started session=%s motive_initial_correct=%s method_initial_correct=%s motive_chars=%s method_chars=%s", session_id, initial.correct_motive, initial.correct_method, len(stored_answers.get("motive", "")), len(stored_answers.get("method", "")))
     # Use the answers saved when the accusation was submitted, not values
     # supplied by a later client request.
     trusted_request = AccusationRequest(
@@ -182,6 +188,7 @@ def refine_score(session_id: str, request: ScoreRefinementRequest):
         method=stored_answers["method"],
     )
     refined = refine_semantic_answers(case, trusted_request, initial)
+    logger.info("Score refinement completed session=%s motive_points=%s method_points=%s total=%s", session_id, refined.score.motive, refined.score.method, refined.score.total)
     result_data = refined.model_dump(mode="json")
     save_refined_score(session_id, result_data)
     return refined
