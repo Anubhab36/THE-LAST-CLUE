@@ -1,5 +1,6 @@
 
 """Server-side scoring with immediate deterministic scoring and optional AI refinement."""
+import logging
 import os
 import re
 from difflib import SequenceMatcher
@@ -7,6 +8,9 @@ from difflib import SequenceMatcher
 from pydantic import BaseModel, Field
 
 from app.schemas.case import Case, AccusationRequest, AccusationResult, ScoreBreakdown
+
+
+logger = logging.getLogger(__name__)
 
 
 class SemanticJudgment(BaseModel):
@@ -50,9 +54,10 @@ def _semantic_judgment(submitted: str, expected: str) -> SemanticJudgment | None
 
         client = _client()
         model = (
-            os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
-            or "gemini-2.5-flash"
+            os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
+            or "gemini-3.8-flash"
         )
+        logger.info("Scoring semantic answer with Gemini model %s", model)
         response = client.models.generate_content(
             model=model,
             contents=f"""
@@ -92,6 +97,8 @@ Set equivalent=true only when the answer deserves the full 15 points. Keep confi
             return judgment.model_copy(update={"points": 15})
         return judgment.model_copy(update={"points": min(14, judgment.points)})
     except Exception:
+        # Log the exception so production failures are diagnosable without exposing secrets.
+        logger.exception("Gemini semantic scoring failed")
         # AI failure never prevents the initial score or awards extra credit.
         return None
 
