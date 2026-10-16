@@ -225,20 +225,16 @@ export async function accuseSession(
 
 
 
-export interface ScoreRefinement {
-  motive_upgrade: boolean;
-  method_upgrade: boolean;
-}
-
-
 export async function refineSessionScore(
   sessionId: string,
   payload: {
     motive: string;
     method: string;
   },
-): Promise<ScoreRefinement> {
-  return request<ScoreRefinement>(
+): Promise<AccusationResult> {
+  // The backend uses the answers saved at accusation time and returns the
+  // complete authoritative result, including total and grade.
+  return request<AccusationResult>(
     `/api/sessions/${sessionId}/score-refinement`,
     post(payload),
   );

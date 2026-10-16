@@ -14,10 +14,12 @@ from app.services.session_service import (
     complete_action,
     record_analysis,
     close_session,
+    save_refined_score,
     get_case_data,
 )
 from app.services.session_service import mark_question_asked
 from app.services.scoring_engine import score_case, refine_semantic_answers
+from app.schemas.case import AccusationResult
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
@@ -132,14 +134,23 @@ def accuse(session_id: str, request: FinalAccusationRequest):
         interrogation_hits=progress["interrogation_hits"],
     )
     result = score_case(case, trusted_request)
-    close_session(session_id)
+    close_session(
+        session_id,
+        initial_score_result=result.model_dump(mode="json"),
+        accusation_answers={
+            "killer_id": request.killer_id,
+            "motive": request.motive,
+            "method": request.method,
+        },
+    )
     return result
 
 
 
 
-@router.post("/{session_id}/score-refinement")
+@router.post("/{session_id}/score-refinement", response_model=AccusationResult)
 def refine_score(session_id: str, request: ScoreRefinementRequest):
+    """Return the complete authoritative result; never accept client-calculated points."""
     session_data = get_session(session_id)
 
     if session_data["status"] != "completed":
@@ -148,26 +159,29 @@ def refine_score(session_id: str, request: ScoreRefinementRequest):
             detail="The game must be scored before its score can be refined.",
         )
 
+    progress = session_data["progress"]
+    cached_result = progress.get("refined_score_result")
+    if cached_result:
+        return AccusationResult.model_validate(cached_result)
+
+    stored_result = progress.get("initial_score_result")
+    stored_answers = progress.get("accusation_answers")
+    if not stored_result or not stored_answers:
+        raise HTTPException(
+            status_code=409,
+            detail="The initial score is unavailable for refinement.",
+        )
+
     case = get_case_data(session_data["case_id"])
-
-    from app.services.scoring_engine import _keyword_match, _semantic_match
-
-    # Report only answers that failed keyword matching but passed
-    # semantic evaluation. These are the only possible score upgrades.
-    motive_upgrade = False
-    method_upgrade = False
-
-    if not _keyword_match(request.motive, case.solution.motive):
-        motive_upgrade = _semantic_match(
-            request.motive, case.solution.motive
-        )
-
-    if not _keyword_match(request.method, case.solution.method):
-        method_upgrade = _semantic_match(
-            request.method, case.solution.method
-        )
-
-    return {
-        "motive_upgrade": motive_upgrade,
-        "method_upgrade": method_upgrade,
-    }
+    initial = AccusationResult.model_validate(stored_result)
+    # Use the answers saved when the accusation was submitted, not values
+    # supplied by a later client request.
+    trusted_request = AccusationRequest(
+        killer_id=stored_answers["killer_id"],
+        motive=stored_answers["motive"],
+        method=stored_answers["method"],
+    )
+    refined = refine_semantic_answers(case, trusted_request, initial)
+    result_data = refined.model_dump(mode="json")
+    save_refined_score(session_id, result_data)
+    return refined

@@ -152,3 +152,64 @@ def test_developer_social_links_are_configured():
     assert "https://www.linkedin.com/in/anubhab-chakraborty-4h28s" in source
     assert "https://github.com/Anubhab36" in source
     assert "replace_with_username" not in source
+
+
+
+def test_semantic_refinement_awards_partial_credit_without_marking_answer_correct(monkeypatch):
+    from app.services.scoring_engine import (
+        SemanticJudgment,
+        refine_semantic_answers,
+    )
+
+    case = get_case("easy")
+    request = AccusationRequest(
+        killer_id=case.solution.killer_id,
+        motive="a partly relevant but incomplete explanation",
+        method="an unrelated method",
+        elapsed_seconds=case.target_minutes * 60,
+    )
+    initial = score_case(case, request)
+    assert initial.score.motive == 0
+    assert initial.score.method == 0
+
+    monkeypatch.setattr(
+        "app.services.scoring_engine._semantic_judgment",
+        lambda submitted, expected: SemanticJudgment(
+            equivalent=False,
+            confidence=90,
+            points=8,
+            rationale="Captures part of the central idea.",
+        ),
+    )
+
+    refined = refine_semantic_answers(case, request, initial)
+
+    assert refined.score.motive == 8
+    assert refined.score.method == 8
+    assert refined.score.total == min(100, initial.score.total + 16)
+    assert refined.correct_motive is False
+    assert refined.correct_method is False
+    assert refined.correct is False
+
+
+def test_semantic_judgment_failure_awards_no_extra_credit(monkeypatch):
+    from app.services.scoring_engine import refine_semantic_answers
+
+    case = get_case("easy")
+    request = AccusationRequest(
+        killer_id=case.solution.killer_id,
+        motive="unrelated answer",
+        method="another unrelated answer",
+        elapsed_seconds=case.target_minutes * 60,
+    )
+    initial = score_case(case, request)
+    monkeypatch.setattr(
+        "app.services.scoring_engine._semantic_judgment",
+        lambda submitted, expected: None,
+    )
+
+    refined = refine_semantic_answers(case, request, initial)
+
+    assert refined.score.total == initial.score.total
+    assert refined.score.motive == initial.score.motive
+    assert refined.score.method == initial.score.method

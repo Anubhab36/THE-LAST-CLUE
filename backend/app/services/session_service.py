@@ -214,9 +214,41 @@ def record_analysis(
     return _update_progress(session_id, apply)
 
 
-def close_session(session_id: str) -> None:
+def close_session(
+    session_id: str,
+    initial_score_result: dict,
+    accusation_answers: dict,
+) -> None:
+    """Close a session and persist the server-calculated initial result."""
     with SessionLocal() as db:
         session = _session_or_404(db, session_id)
+        progress = dict(session.progress or {})
+        progress["initial_score_result"] = initial_score_result
+        progress["accusation_answers"] = accusation_answers
+        session.progress = progress
+        flag_modified(session, "progress")
         session.status = "completed"
         session.updated_at = datetime.now(timezone.utc)
+        db.commit()
+
+
+def save_refined_score(session_id: str, result: dict) -> None:
+    """Persist the final refined score so repeat requests cannot add points."""
+    with SessionLocal() as db:
+        session = db.get(GameSession, session_id)
+        if session is None:
+            raise HTTPException(status_code=404, detail="Game session not found.")
+        if session.status != "completed":
+            raise HTTPException(
+                status_code=409,
+                detail="The game must be scored before its score can be refined.",
+            )
+        progress = dict(session.progress or {})
+        # Preserve the first refined result if concurrent requests race.
+        if progress.get("refined_score_result") is not None:
+            return
+        progress["refined_score_result"] = result
+        session.progress = progress
+        session.updated_at = datetime.now(timezone.utc)
+        flag_modified(session, "progress")
         db.commit()
