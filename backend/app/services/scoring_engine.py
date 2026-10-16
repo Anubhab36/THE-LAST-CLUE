@@ -87,15 +87,20 @@ Set equivalent=true only when the answer deserves the full 15 points. Keep confi
             ),
         )
         if not response.text:
+            logger.warning("Gemini semantic scoring returned an empty text response")
             return None
 
         judgment = SemanticJudgment.model_validate_json(response.text)
         # Do not use low-confidence model output to change the score.
         if judgment.confidence < 60:
+            logger.info("Gemini semantic judgment rejected for low confidence=%s", judgment.confidence)
             return None
         if judgment.equivalent:
+            logger.info("Gemini semantic judgment accepted equivalent=true confidence=%s points=15", judgment.confidence)
             return judgment.model_copy(update={"points": 15})
-        return judgment.model_copy(update={"points": min(14, judgment.points)})
+        points = min(14, judgment.points)
+        logger.info("Gemini semantic judgment accepted equivalent=false confidence=%s points=%s", judgment.confidence, points)
+        return judgment.model_copy(update={"points": points})
     except Exception:
         # Log the exception so production failures are diagnosable without exposing secrets.
         logger.exception("Gemini semantic scoring failed")
