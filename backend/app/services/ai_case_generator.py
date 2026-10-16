@@ -60,7 +60,7 @@ Rules:
 def generate_case(difficulty: Difficulty, theme: str | None = None) -> Case:
     client = _client()
     from google.genai import types
-    model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip() or "gemini-2.5-flash"
+    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip() or "gemini-3.8-flash"
     response = client.models.generate_content(
         model=model,
         contents=_prompt(difficulty, theme),
