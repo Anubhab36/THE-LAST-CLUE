@@ -140,9 +140,43 @@ export default function Results({
           </div>
         </section>
 
-        <section className="results-section results-solution">
+        <section className="results-section results-answer-feedback">
           <div className="results-section-heading">
             <span className="panel-number">03</span>
+            <h2>Why you received this score</h2>
+          </div>
+          <p className="results-section-description">
+            These explanations accompany the final awarded points. If semantic review was unavailable, the explanation says so rather than guessing why an answer was wrong.
+          </p>
+          <div className="results-feedback-grid">
+            {([
+              { label: "Motive", feedback: result.motive_feedback, expected: result.solution.motive, points: result.score.motive },
+              { label: "Method", feedback: result.method_feedback, expected: result.solution.method, points: result.score.method },
+            ]).map((item) => (
+              <article className="results-feedback-card" key={item.label}>
+                <div className="results-feedback-heading">
+                  <h3>{item.label}</h3>
+                  <strong>{item.points}/15</strong>
+                </div>
+                <div className="results-feedback-answer">
+                  <span>YOUR ANSWER</span>
+                  <p>{item.feedback?.submitted_answer?.trim() || "No answer submitted"}</p>
+                </div>
+                <div className="results-feedback-answer">
+                  <span>CASE SOLUTION</span>
+                  <p>{item.expected}</p>
+                </div>
+                <p className="results-feedback-explanation">
+                  {item.feedback?.explanation || "A detailed explanation was not available for this score. The points shown are the authoritative score returned by the scoring engine."}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="results-section results-solution">
+          <div className="results-section-heading">
+            <span className="panel-number">04</span>
             <h2>Official case solution</h2>
           </div>
           <div className="results-solution-grid">
@@ -172,7 +206,7 @@ export default function Results({
 
         <section className="results-section results-review">
           <div className="results-section-heading">
-            <span className="panel-number">04</span>
+            <span className="panel-number">05</span>
             <h2>Investigation review</h2>
           </div>
           <p className="results-section-description">
