@@ -213,3 +213,39 @@ def test_semantic_judgment_failure_awards_no_extra_credit(monkeypatch):
     assert refined.score.total == initial.score.total
     assert refined.score.motive == initial.score.motive
     assert refined.score.method == initial.score.method
+
+
+
+def test_score_result_includes_motive_and_method_feedback(monkeypatch):
+    from app.services.scoring_engine import SemanticJudgment, refine_semantic_answers
+
+    case = get_case("easy")
+    request = AccusationRequest(
+        killer_id=case.solution.killer_id,
+        motive="a partly relevant but incomplete explanation",
+        method="an unrelated method",
+        elapsed_seconds=case.target_minutes * 60,
+    )
+    initial = score_case(case, request)
+    assert initial.motive_feedback is not None
+    assert initial.motive_feedback.submitted_answer == request.motive
+    assert initial.motive_feedback.points == initial.score.motive
+    assert initial.method_feedback is not None
+    assert initial.method_feedback.submitted_answer == request.method
+
+    monkeypatch.setattr(
+        "app.services.scoring_engine._semantic_judgment",
+        lambda submitted, expected: SemanticJudgment(
+            equivalent=False,
+            confidence=90,
+            points=8,
+            rationale="Your answer captures part of the relevant idea but omits a key detail.",
+        ),
+    )
+    refined = refine_semantic_answers(case, request, initial)
+    assert refined.score.motive == 8
+    assert refined.motive_feedback is not None
+    assert refined.motive_feedback.points == refined.score.motive
+    assert refined.motive_feedback.explanation == "Your answer captures part of the relevant idea but omits a key detail."
+    assert refined.method_feedback is not None
+    assert refined.method_feedback.points == refined.score.method
