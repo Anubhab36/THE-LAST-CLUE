@@ -147,6 +147,12 @@ class ScoreBreakdown(BaseModel):
     total: int
     grade: str
 
+class ScoreFeedback(BaseModel):
+    submitted_answer: str
+    points: int = Field(ge=0, le=15)
+    max_points: int = 15
+    explanation: str
+
 class AccusationResult(BaseModel):
     correct: bool
     correct_killer: bool
@@ -154,6 +160,8 @@ class AccusationResult(BaseModel):
     correct_method: bool
     solution: Solution
     score: ScoreBreakdown
+    motive_feedback: ScoreFeedback | None = None
+    method_feedback: ScoreFeedback | None = None
 
 
 def to_public_case(case: Case) -> PublicCase:
