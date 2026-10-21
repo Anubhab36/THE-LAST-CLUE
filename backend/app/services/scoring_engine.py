@@ -7,7 +7,7 @@ from difflib import SequenceMatcher
 
 from pydantic import BaseModel, Field
 
-from app.schemas.case import Case, AccusationRequest, AccusationResult, ScoreBreakdown
+from app.schemas.case import Case, AccusationRequest, AccusationResult, ScoreBreakdown, ScoreFeedback
 
 
 logger = logging.getLogger(__name__)
@@ -119,6 +119,23 @@ def _semantic_match(submitted: str, expected: str) -> bool:
     return bool(judgment and judgment.equivalent and judgment.points == 15)
 
 
+def _fallback_feedback(submitted: str, expected: str, points: int) -> ScoreFeedback:
+    """Explain the deterministic result without inventing semantic details."""
+    if points >= 15:
+        explanation = "Your answer matched the established solution closely enough for full credit."
+    else:
+        explanation = (
+            "Your answer did not match the established solution closely enough for points "
+            "under the initial rule-based check. If it expresses the same idea in different "
+            "words, the optional semantic review may award partial credit."
+        )
+    return ScoreFeedback(
+        submitted_answer=submitted,
+        points=points,
+        explanation=explanation,
+    )
+
+
 def _grade(total: int) -> str:
     return (
         "S" if total >= 90 else
@@ -201,6 +218,8 @@ def score_case(case: Case, req: AccusationRequest) -> AccusationResult:
         correct_method=method_correct,
         solution=case.solution,
         score=breakdown,
+        motive_feedback=_fallback_feedback(req.motive, case.solution.motive, earned["motive"]),
+        method_feedback=_fallback_feedback(req.method, case.solution.method, earned["method"]),
     )
 
 
@@ -209,24 +228,60 @@ def refine_semantic_answers(
     req: AccusationRequest,
     initial: AccusationResult,
 ) -> AccusationResult:
-    """Refine motive/method points with AI, preserving every other component.
+    """Refine motive/method points and return explanations from the same judgment.
 
-    The initial deterministic score is retained if the AI is unavailable.
+    AI explanations never determine points independently; they are displayed alongside
+    the score returned by that exact semantic judgment. If AI is unavailable, the
+    deterministic score and its conservative fallback explanation are retained.
     """
+    motive_judgment = (
+        SemanticJudgment(
+            equivalent=True,
+            confidence=100,
+            points=15,
+            rationale="Your answer communicates the same core meaning as the case solution.",
+        )
+        if initial.correct_motive
+        else _semantic_judgment(req.motive, case.solution.motive)
+    )
+    method_judgment = (
+        SemanticJudgment(
+            equivalent=True,
+            confidence=100,
+            points=15,
+            rationale="Your answer communicates the same core meaning as the case solution.",
+        )
+        if initial.correct_method
+        else _semantic_judgment(req.method, case.solution.method)
+    )
+
     motive_points = (
         15 if initial.correct_motive
-        else _semantic_score(req.motive, case.solution.motive)
+        else motive_judgment.points if motive_judgment is not None
+        else initial.score.motive
     )
     method_points = (
         15 if initial.correct_method
-        else _semantic_score(req.method, case.solution.method)
+        else method_judgment.points if method_judgment is not None
+        else initial.score.method
     )
+
+    def make_feedback(submitted: str, expected: str, points: int, judgment: SemanticJudgment | None) -> ScoreFeedback:
+        if judgment is not None:
+            explanation = judgment.rationale.strip() or _fallback_feedback(submitted, expected, points).explanation
+        else:
+            explanation = _fallback_feedback(submitted, expected, points).explanation
+        return ScoreFeedback(
+            submitted_answer=submitted,
+            points=points,
+            explanation=explanation,
+        )
+
+    motive_feedback = make_feedback(req.motive, case.solution.motive, motive_points, motive_judgment)
+    method_feedback = make_feedback(req.method, case.solution.method, method_points, method_judgment)
 
     old_motive = initial.score.motive
     old_method = initial.score.method
-    if motive_points == old_motive and method_points == old_method:
-        return initial
-
     score_data = initial.score.model_dump()
     score_data["motive"] = motive_points
     score_data["method"] = method_points
@@ -245,4 +300,6 @@ def refine_semantic_answers(
         correct_method=correct_method,
         solution=initial.solution,
         score=ScoreBreakdown(**score_data),
+        motive_feedback=motive_feedback,
+        method_feedback=method_feedback,
     )
