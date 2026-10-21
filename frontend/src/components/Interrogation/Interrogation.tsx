@@ -74,7 +74,7 @@ export default function Interrogation({
 
   return (
     <div className="overlay">
-      <div className="modal">
+      <div className="modal interrogation-modal">
         <button className="close" onClick={onClose} aria-label="Close interrogation">×</button>
         <div className="interrogation-profile">
           <div className="interrogation-monogram" aria-hidden="true">{suspectMonogram}</div>
