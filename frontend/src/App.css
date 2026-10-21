@@ -2215,3 +2215,20 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
     height: auto;
   }
 }
+
+/* Keep long interrogation dialogs within the viewport and allow the answer transcript to scroll. */
+.interrogation-modal {
+  max-height: calc(100vh - 40px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #5b4c30 #101312;
+}
+
+@media (max-width: 600px) {
+  .interrogation-modal {
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 28px 18px;
+  }
+}
