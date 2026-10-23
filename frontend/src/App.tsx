@@ -627,6 +627,7 @@ export default function App() {
           caseProgress={caseProgress}
           archiveCases={caseCatalog}
           archiveProgress={caseProgress}
+          onResetCaseProgress={() => setCaseProgress({})}
           catalogLoading={catalogLoading}
           catalogError={catalogError}
           onRetryCatalog={() => void loadCatalog()}
