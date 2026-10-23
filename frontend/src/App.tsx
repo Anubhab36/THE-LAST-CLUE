@@ -863,6 +863,9 @@ export default function App() {
           notes={notes}
           onChange={setNotes}
           discoveredCount={found.length}
+          evidence={gameCase.evidence}
+          discoveredEvidenceIds={found}
+          suspects={gameCase.suspects}
         />
 
         <section className="action-bar">
