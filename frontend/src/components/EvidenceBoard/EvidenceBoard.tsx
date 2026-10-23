@@ -22,6 +22,8 @@ export default function EvidenceBoard({
 }: EvidenceBoardProps) {
   const [filter, setFilter] = useState<BoardFilter>("all");
   const [feedback, setFeedback] = useState("");
+  const [selectedEvidenceId, setSelectedEvidenceId] = useState("");
+  const [selectedSuspectId, setSelectedSuspectId] = useState("");
 
   const discoveredEvidence = useMemo(
     () => evidence.filter((item) => found.includes(item.id)),
@@ -126,6 +128,79 @@ export default function EvidenceBoard({
           ))}
         </div>
       </div>
+
+      <section className="deduction-workbench" aria-labelledby="deduction-workbench-title">
+        <div className="deduction-workbench-heading">
+          <div>
+            <span className="toolbar-kicker">FIELD ANALYSIS</span>
+            <h3 id="deduction-workbench-title">Build a connection</h3>
+            <p>Select a recovered clue and a person of interest to record a working theory.</p>
+          </div>
+          <span className="deduction-workbench-seal" aria-hidden="true">LC / 02</span>
+        </div>
+        {discoveredEvidence.length === 0 ? (
+          <div className="deduction-workbench-empty">
+            Recover evidence from the crime scene to start connecting clues to suspects.
+          </div>
+        ) : suspects.length === 0 ? (
+          <div className="deduction-workbench-empty">No suspect dossiers are available for this case.</div>
+        ) : (
+          <>
+            <div className="deduction-workbench-controls">
+              <label>
+                <span>01 / SELECT EVIDENCE</span>
+                <select
+                  value={discoveredEvidence.some((item) => item.id === selectedEvidenceId) ? selectedEvidenceId : discoveredEvidence[0].id}
+                  onChange={(event) => setSelectedEvidenceId(event.target.value)}
+                >
+                  {discoveredEvidence.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
+                </select>
+              </label>
+              <span className="deduction-link-symbol" aria-hidden="true">↔</span>
+              <label>
+                <span>02 / SELECT PERSON</span>
+                <select
+                  value={suspects.some((item) => item.id === selectedSuspectId) ? selectedSuspectId : suspects[0].id}
+                  onChange={(event) => setSelectedSuspectId(event.target.value)}
+                >
+                  {suspects.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                className="deduction-connect-button"
+                disabled={connections.some(([evidenceId, suspectId]) =>
+                  evidenceId === (discoveredEvidence.some((item) => item.id === selectedEvidenceId) ? selectedEvidenceId : discoveredEvidence[0].id)
+                  && suspectId === (suspects.some((item) => item.id === selectedSuspectId) ? selectedSuspectId : suspects[0].id)
+                )}
+                onClick={() => {
+                  const evidenceId = discoveredEvidence.some((item) => item.id === selectedEvidenceId) ? selectedEvidenceId : discoveredEvidence[0].id;
+                  const suspectId = suspects.some((item) => item.id === selectedSuspectId) ? selectedSuspectId : suspects[0].id;
+                  handleConnect(evidenceId, suspectId);
+                }}
+              >
+                + Record theory
+              </button>
+            </div>
+            <div className="deduction-preview" aria-live="polite">
+              <div className="deduction-preview-node">
+                <span>EXHIBIT</span>
+                <strong>{discoveredEvidence.find((item) => item.id === selectedEvidenceId)?.name ?? discoveredEvidence[0].name}</strong>
+              </div>
+              <span className="deduction-preview-line" aria-hidden="true"><i /></span>
+              <div className="deduction-preview-node person">
+                <span>PERSON OF INTEREST</span>
+                <strong>{suspects.find((item) => item.id === selectedSuspectId)?.name ?? suspects[0].name}</strong>
+              </div>
+              <span className="deduction-preview-note">HYPOTHESIS · NOT PROOF</span>
+            </div>
+          </>
+        )}
+      </section>
 
       <div className="suspect-dossier-strip" aria-label="Persons of interest">
         <div className="suspect-dossier-heading">
