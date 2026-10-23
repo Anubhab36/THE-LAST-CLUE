@@ -2579,3 +2579,18 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 .archive-empty,.archive-footnote { color:#727b77; font-size:10px; line-height:1.6; }
 .archive-footnote { margin:18px 0 0; }
 @media(max-width:650px) { .archive-achievements { padding:16px; } .archive-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .achievement-grid { grid-template-columns:1fr; } .archive-case-row { flex-direction:column; align-items:stretch; } .archive-case-record { align-items:flex-start; } .archive-heading { flex-direction:column; } }
+
+
+/* Confirmed reset for local case progress */
+.archive-reset { margin-top:18px; padding-top:16px; border-top:1px solid #292e2f; }
+.archive-reset-trigger { padding:10px 13px; border:1px solid #624343; background:transparent; color:#c58d85; font:9px "DM Mono",monospace; letter-spacing:.06em; cursor:pointer; }
+.archive-reset-trigger:hover,.archive-reset-confirm-button:hover { background:rgba(160,75,65,.12); }
+.archive-reset-confirm { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:15px; border:1px solid #694541; background:rgba(120,54,48,.08); }
+.archive-reset-confirm>div:first-child { min-width:0; }
+.archive-reset-confirm strong { color:#e0c2bc; font-size:12px; }
+.archive-reset-confirm p { margin:6px 0 0; color:#a18a86; font-size:10px; line-height:1.6; }
+.archive-reset-actions { display:flex; flex:0 0 auto; flex-wrap:wrap; gap:8px; }
+.archive-reset-actions button { padding:9px 11px; font:8px "DM Mono",monospace; cursor:pointer; }
+.archive-reset-cancel { border:1px solid #3b4240; background:transparent; color:#a9afaa; }
+.archive-reset-confirm-button { border:1px solid #7c4c45; background:#2a1716; color:#e3aaa0; }
+@media(max-width:650px) { .archive-reset-confirm { flex-direction:column; align-items:stretch; } .archive-reset-actions { justify-content:flex-end; } }
