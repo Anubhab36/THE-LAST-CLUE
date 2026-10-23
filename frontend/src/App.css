@@ -2287,3 +2287,173 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Interactive deduction workbench */
+.deduction-workbench {
+  margin: 22px 0;
+  padding: 20px;
+  border: 1px solid rgba(184, 154, 91, .28);
+  border-radius: 10px;
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(184, 154, 91, .08), transparent 48%),
+    linear-gradient(145deg, #151918, #101313);
+}
+.deduction-workbench-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+.deduction-workbench-heading h3 {
+  margin: 7px 0 5px;
+  color: #e8e5dc;
+  font: 400 25px Georgia, serif;
+}
+.deduction-workbench-heading p {
+  margin: 0;
+  color: #8e9694;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.deduction-workbench-seal {
+  flex: 0 0 auto;
+  padding: 8px;
+  border: 1px solid rgba(184, 154, 91, .3);
+  color: #b89a5b;
+  font: 10px "DM Mono", monospace;
+  letter-spacing: .08em;
+}
+.deduction-workbench-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-top: 20px;
+}
+.deduction-workbench-controls label {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.deduction-workbench-controls label > span,
+.deduction-preview-node > span {
+  color: #777f7d;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .09em;
+}
+.deduction-workbench-controls select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px;
+  border: 1px solid #343b39;
+  border-radius: 5px;
+  background: #0d1010;
+  color: #e4e0d6;
+  font-size: 12px;
+}
+.deduction-link-symbol {
+  padding-bottom: 11px;
+  color: #b89a5b;
+  font-size: 18px;
+}
+.deduction-connect-button {
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 1px solid #8b7546;
+  border-radius: 5px;
+  background: rgba(184, 154, 91, .1);
+  color: #ddc58d;
+  font: 10px "DM Mono", monospace;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.deduction-connect-button:hover:not(:disabled) {
+  background: rgba(184, 154, 91, .2);
+}
+.deduction-connect-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+.deduction-preview {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 15px 15px 30px;
+  border: 1px dashed #303735;
+  border-radius: 6px;
+  background-image: radial-gradient(rgba(184, 154, 91, .11) .7px, transparent .7px);
+  background-size: 12px 12px;
+}
+.deduction-preview-node {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  min-height: 65px;
+  align-content: center;
+  padding: 12px;
+  border-left: 2px solid #b89a5b;
+  background: #191d1c;
+}
+.deduction-preview-node.person {
+  border-left-color: #8c9b91;
+}
+.deduction-preview-node strong {
+  color: #e7e3d9;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.deduction-preview-line {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, #b89a5b, #8c9b91);
+}
+.deduction-preview-line i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #b89a5b;
+  border-radius: 50%;
+  background: #141817;
+  transform: translate(-50%, -50%);
+}
+.deduction-preview-note {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  color: #626b68;
+  font: 8px "DM Mono", monospace;
+  letter-spacing: .08em;
+}
+.deduction-workbench-empty {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed #343b39;
+  color: #8e9694;
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 760px) {
+  .deduction-workbench-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .deduction-link-symbol { display: none; }
+  .deduction-preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .deduction-preview-line {
+    width: 1px;
+    height: 24px;
+    justify-self: center;
+    background: linear-gradient(#b89a5b, #8c9b91);
+  }
+  .deduction-preview-note { position: static; text-align: right; }
+  .deduction-connect-button { width: 100%; }
+}
