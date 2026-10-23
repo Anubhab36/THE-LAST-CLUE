@@ -26,6 +26,7 @@ import Timer from "./components/Timer/Timer";
 import CrimeScene from "./components/CrimeScene/CrimeScene";
 import EvidenceBoard from "./components/EvidenceBoard/EvidenceBoard";
 import Timeline from "./components/Timeline/Timeline";
+import TimelineReconstruction from "./components/TimelineReconstruction/TimelineReconstruction";
 import Interrogation, { type InterviewEntry } from "./components/Interrogation/Interrogation";
 import Accusation from "./components/Accusation/Accusation";
 import Results from "./components/Results/Results";
@@ -855,6 +856,8 @@ export default function App() {
             )
           }
         />
+
+        <TimelineReconstruction events={gameCase.timeline} suspects={gameCase.suspects} />
 
         <Notebook
           notes={notes}
