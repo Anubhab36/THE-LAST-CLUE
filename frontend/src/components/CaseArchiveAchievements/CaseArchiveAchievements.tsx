@@ -12,12 +12,14 @@ type Props = {
   progress: Record<string, CaseProgressRecord>;
 };
 
-const achievements = [
-  { id: "first-case", title: "First Steps", description: "Complete your first investigation.", icon: "01", unlocked: (solved: number, totalAttempts: number, best: number) => totalAttempts > 0 },
-  { id: "case-closed", title: "Case Closed", description: "Solve at least one case.", icon: "02", unlocked: (solved: number) => solved > 0 },
-  { id: "sharp-eye", title: "Sharp Eye", description: "Collect a score of 80 or higher.", icon: "03", unlocked: (_solved: number, _attempts: number, best: number) => best >= 80 },
-  { id: "full-portfolio", title: "Full Portfolio", description: "Attempt every case in the archive.", icon: "04", unlocked: (_solved: number, attempts: number, _best: number, caseCount: number, attempted: number) => caseCount > 0 && attempted >= caseCount },
-  { id: "master-detective", title: "Master Detective", description: "Solve three different cases.", icon: "05", unlocked: (solved: number) => solved >= 3 },
+type Achievement = { id: string; title: string; description: string; icon: string; unlocked: (solved: number, totalAttempts: number, bestScore: number, caseCount: number, attempted: number) => boolean };
+
+const achievements: Achievement[] = [
+  { id: "first-case", title: "First Steps", description: "Complete your first investigation.", icon: "01", unlocked: (_solved, totalAttempts) => totalAttempts > 0 },
+  { id: "case-closed", title: "Case Closed", description: "Solve at least one case.", icon: "02", unlocked: (solved) => solved > 0 },
+  { id: "sharp-eye", title: "Sharp Eye", description: "Collect a score of 80 or higher.", icon: "03", unlocked: (_solved, _attempts, best) => best >= 80 },
+  { id: "full-portfolio", title: "Full Portfolio", description: "Attempt every case in the archive.", icon: "04", unlocked: (_solved, _attempts, _best, caseCount, attempted) => caseCount > 0 && attempted >= caseCount },
+  { id: "master-detective", title: "Master Detective", description: "Solve three different cases.", icon: "05", unlocked: (solved) => solved >= 3 },
 ];
 
 export default function CaseArchiveAchievements({ cases, progress }: Props) {
