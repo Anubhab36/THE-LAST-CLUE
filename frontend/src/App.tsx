@@ -33,6 +33,7 @@ import Notebook, { type NotebookNotes } from "./components/Notebook/Notebook";
 import InvestigationActions from "./components/InvestigationActions/InvestigationActions";
 import WelcomeScreen from "./components/WelcomeScreen";
 import DeveloperFooter from "./components/DeveloperFooter";
+import HintSystem from "./components/HintSystem/HintSystem";
 
 type Screen = "welcome" | "loading" | "game" | "results";
 
@@ -855,6 +856,8 @@ export default function App() {
             )
           }
         />
+
+        <HintSystem gameCase={gameCase} found={found} completedActions={completedActions} />
 
         <Notebook
           notes={notes}
