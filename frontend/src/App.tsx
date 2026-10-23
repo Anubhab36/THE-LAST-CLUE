@@ -34,6 +34,7 @@ import InvestigationActions from "./components/InvestigationActions/Investigatio
 import WelcomeScreen from "./components/WelcomeScreen";
 import DeveloperFooter from "./components/DeveloperFooter";
 import HintSystem from "./components/HintSystem/HintSystem";
+import SuspectDossiers from "./components/SuspectDossiers/SuspectDossiers";
 
 type Screen = "welcome" | "loading" | "game" | "results";
 
@@ -858,6 +859,8 @@ export default function App() {
         />
 
         <HintSystem gameCase={gameCase} found={found} completedActions={completedActions} />
+
+        <SuspectDossiers suspects={gameCase.suspects} evidence={gameCase.evidence} found={found} connections={connections} timeline={gameCase.timeline} interrogation={gameCase.interrogation} />
 
         <Notebook
           notes={notes}
