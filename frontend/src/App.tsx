@@ -625,6 +625,8 @@ export default function App() {
           onDifficulty={setDifficulty}
           cases={caseCatalog}
           caseProgress={caseProgress}
+          archiveCases={caseCatalog}
+          archiveProgress={caseProgress}
           catalogLoading={catalogLoading}
           catalogError={catalogError}
           onRetryCatalog={() => void loadCatalog()}

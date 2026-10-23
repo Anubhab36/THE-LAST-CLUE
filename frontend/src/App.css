@@ -2537,3 +2537,45 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 .dossier-muted { color:#747d79; font-size:11px; line-height:1.7; }
 .dossier-caution { margin:0; padding-top:12px; border-top:1px solid #292e2f; color:#6f7774; font-size:9px; line-height:1.6; }
 @media(max-width:760px) { .dossiers-grid { grid-template-columns:1fr; } .dossiers-body { padding:15px; } .dossier-card-identity strong { font-size:18px; } }
+
+
+/* Case archive and achievements */
+.archive-achievements { width:min(1100px,90%); margin:36px auto 50px; padding:26px; border:1px solid #292e2f; background:#111415; }
+.archive-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; padding-bottom:22px; border-bottom:1px solid #292e2f; }
+.archive-kicker { color:#b89a5b; font:9px "DM Mono",monospace; letter-spacing:.12em; }
+.archive-heading h2 { margin:10px 0; font:400 clamp(25px,4vw,36px) Georgia,serif; }
+.archive-heading p { margin:0; color:#8b9290; font-size:12px; line-height:1.6; }
+.archive-completion { display:flex; flex-direction:column; gap:5px; padding:13px; border:1px solid #3c3525; color:#d8c38d; text-align:right; }
+.archive-completion strong { font:18px "DM Mono",monospace; }
+.archive-completion span { color:#777e7a; font:8px "DM Mono",monospace; letter-spacing:.08em; }
+.archive-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin:18px 0 26px; }
+.archive-stats>div { display:flex; flex-direction:column; gap:6px; padding:15px; border:1px solid #292e2f; background:#0d1011; }
+.archive-stats strong { color:#d8c38d; font:20px "DM Mono",monospace; }
+.archive-stats span { color:#737b79; font:8px "DM Mono",monospace; letter-spacing:.05em; }
+.archive-section-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:22px 0 12px; }
+.archive-section-head h3 { margin:0; color:#d5d2c8; font:20px Georgia,serif; }
+.archive-section-head>span { color:#777f7c; font:8px "DM Mono",monospace; }
+.achievement-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.achievement-card { display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; gap:12px; padding:13px; border:1px solid #303635; background:#0d1011; }
+.achievement-card.unlocked { border-color:#655638; background:linear-gradient(120deg,rgba(184,154,91,.08),transparent); }
+.achievement-icon { display:grid; place-items:center; width:36px; height:36px; border:1px solid #414644; color:#858d89; font:12px "DM Mono",monospace; }
+.achievement-card.unlocked .achievement-icon { border-color:#806c43; color:#dfc98f; }
+.achievement-card>div strong { color:#d5d3ca; font-size:11px; }
+.achievement-card>div p { margin:5px 0 0; color:#7f8783; font-size:10px; line-height:1.5; }
+.achievement-card>small { color:#737b78; font:7px "DM Mono",monospace; }
+.achievement-card.unlocked>small { color:#c3a967; }
+.archive-case-list { display:grid; gap:8px; }
+.archive-case-row { display:flex; justify-content:space-between; align-items:center; gap:18px; padding:14px; border:1px solid #2b302f; background:#0d1011; }
+.archive-case-main { display:flex; align-items:flex-start; gap:12px; min-width:0; }
+.archive-case-code { padding:5px 7px; border:1px solid #4a4230; color:#c4aa6b; font:8px "DM Mono",monospace; }
+.archive-case-main>div { min-width:0; }
+.archive-case-main strong { color:#d8d6cd; font:16px Georgia,serif; }
+.archive-case-main p { margin:5px 0 0; color:#7e8782; font-size:10px; line-height:1.5; }
+.archive-case-record { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex:0 0 auto; color:#858d89; font:8px "DM Mono",monospace; }
+.archive-status { letter-spacing:.05em; }
+.archive-status.solved { color:#a5c4a9; }
+.archive-status.attempted { color:#d4b978; }
+.archive-status.new { color:#6d7672; }
+.archive-empty,.archive-footnote { color:#727b77; font-size:10px; line-height:1.6; }
+.archive-footnote { margin:18px 0 0; }
+@media(max-width:650px) { .archive-achievements { padding:16px; } .archive-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } .achievement-grid { grid-template-columns:1fr; } .archive-case-row { flex-direction:column; align-items:stretch; } .archive-case-record { align-items:flex-start; } .archive-heading { flex-direction:column; } }

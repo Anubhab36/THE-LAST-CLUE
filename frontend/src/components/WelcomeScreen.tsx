@@ -1,5 +1,6 @@
 import type { CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
+import CaseArchiveAchievements from "./CaseArchiveAchievements/CaseArchiveAchievements";
 import lockedStudy from "../assets/case-covers/The_Locked_Study_Room.webp";
 import lastTrain from "../assets/case-covers/The_Last_Train.webp";
 import deathRoom12 from "../assets/case-covers/Death_at_Room_12.webp";
@@ -56,6 +57,8 @@ interface WelcomeScreenProps {
   onDifficulty: (difficulty: Difficulty) => void;
   cases: CaseCatalogItem[];
   caseProgress: Record<string, CaseProgressRecord>;
+  archiveCases: CaseCatalogItem[];
+  archiveProgress: Record<string, CaseProgressRecord>;
   catalogLoading: boolean;
   catalogError: string | null;
   onRetryCatalog: () => void;
@@ -68,7 +71,7 @@ interface WelcomeScreenProps {
 }
 
 export default function WelcomeScreen({
-  difficulty, onDifficulty, cases, caseProgress, catalogLoading, catalogError,
+  difficulty, onDifficulty, cases, caseProgress, archiveCases, archiveProgress, catalogLoading, catalogError,
   onRetryCatalog, selectedCaseId, onSelectCase,
   onStart, onGenerate, busy, error,
 }: WelcomeScreenProps) {
@@ -263,6 +266,8 @@ export default function WelcomeScreen({
       <div className="welcome-disclaimer">
         Your active investigation progress is saved so you can resume after refreshing the page.
       </div>
+
+      <CaseArchiveAchievements cases={archiveCases} progress={archiveProgress} />
     </main>
   );
 }
