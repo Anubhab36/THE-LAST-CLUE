@@ -59,6 +59,7 @@ interface WelcomeScreenProps {
   caseProgress: Record<string, CaseProgressRecord>;
   archiveCases: CaseCatalogItem[];
   archiveProgress: Record<string, CaseProgressRecord>;
+  onResetCaseProgress: () => void;
   catalogLoading: boolean;
   catalogError: string | null;
   onRetryCatalog: () => void;
@@ -71,7 +72,7 @@ interface WelcomeScreenProps {
 }
 
 export default function WelcomeScreen({
-  difficulty, onDifficulty, cases, caseProgress, archiveCases, archiveProgress, catalogLoading, catalogError,
+  difficulty, onDifficulty, cases, caseProgress, archiveCases, archiveProgress, onResetCaseProgress, catalogLoading, catalogError,
   onRetryCatalog, selectedCaseId, onSelectCase,
   onStart, onGenerate, busy, error,
 }: WelcomeScreenProps) {
@@ -267,7 +268,7 @@ export default function WelcomeScreen({
         Your active investigation progress is saved so you can resume after refreshing the page.
       </div>
 
-      <CaseArchiveAchievements cases={archiveCases} progress={archiveProgress} />
+      <CaseArchiveAchievements cases={archiveCases} progress={archiveProgress} onResetProgress={onResetCaseProgress} />
     </main>
   );
 }

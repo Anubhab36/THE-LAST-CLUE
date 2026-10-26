@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { CaseCatalogItem } from "../../services/api";
 
 export interface CaseProgressRecord {
@@ -10,6 +11,7 @@ export interface CaseProgressRecord {
 type Props = {
   cases: CaseCatalogItem[];
   progress: Record<string, CaseProgressRecord>;
+  onResetProgress: () => void;
 };
 
 type Achievement = { id: string; title: string; description: string; icon: string; unlocked: (solved: number, totalAttempts: number, bestScore: number, caseCount: number, attempted: number) => boolean };
@@ -22,7 +24,8 @@ const achievements: Achievement[] = [
   { id: "master-detective", title: "Master Detective", description: "Solve three different cases.", icon: "05", unlocked: (solved) => solved >= 3 },
 ];
 
-export default function CaseArchiveAchievements({ cases, progress }: Props) {
+export default function CaseArchiveAchievements({ cases, progress, onResetProgress }: Props) {
+  const [confirmReset, setConfirmReset] = useState(false);
   const attempted = cases.filter((item) => (progress[item.case_id]?.attempts ?? 0) > 0);
   const solved = cases.filter((item) => progress[item.case_id]?.solved);
   const totalAttempts = Object.values(progress).reduce((sum, item) => sum + item.attempts, 0);
@@ -70,6 +73,22 @@ export default function CaseArchiveAchievements({ cases, progress }: Props) {
           })}
         </div>
       )}
+      <div className="archive-reset">
+        {confirmReset ? (
+          <div className="archive-reset-confirm" role="alert">
+            <div>
+              <strong>Reset all saved case progress?</strong>
+              <p>This clears case attempts, best scores, solved status, and achievement unlocks saved in this browser. It does not delete browser history or active investigation notes.</p>
+            </div>
+            <div className="archive-reset-actions">
+              <button type="button" className="archive-reset-cancel" onClick={() => setConfirmReset(false)}>CANCEL</button>
+              <button type="button" className="archive-reset-confirm-button" onClick={() => { onResetProgress(); setConfirmReset(false); }}>CONFIRM RESET</button>
+            </div>
+          </div>
+        ) : (
+          <button type="button" className="archive-reset-trigger" onClick={() => setConfirmReset(true)}>RESET SAVED CASE PROGRESS</button>
+        )}
+      </div>
       <p className="archive-footnote">Achievements are calculated from saved case progress. Clearing this browser's site data may reset this record.</p>
     </section>
   );
