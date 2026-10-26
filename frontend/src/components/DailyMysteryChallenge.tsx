@@ -55,7 +55,6 @@ export default function DailyMysteryChallenge({ cases, busy, onStart }: Props) {
   const attemptedToday = (() => {
     try { return localStorage.getItem(`the-last-clue-daily-attempt:${today}`) === "1"; } catch { return false; }
   })();
-  const recent = history.filter((item) => item.correct).length;
   const streak = useMemo(() => {
     const dates = new Set(history.filter((item) => item.correct).map((item) => item.date));
     let cursor = new Date();
@@ -88,8 +87,10 @@ export default function DailyMysteryChallenge({ cases, busy, onStart }: Props) {
         <div className="daily-mystery-status" role="status"><strong>Today's attempt has been used.</strong><span>Return tomorrow for a new assignment.</span></div>
       ) : (
         <button className="daily-mystery-start" type="button" disabled={busy || !challenge} onClick={() => {
-          if (!challenge) return;
-          try { localStorage.setItem(`the-last-clue-daily-attempt:${today}`, "1"); } catch { /* attempt guard is best-effort */ }
+          if (!challenge || busy) return;
+          try {
+            if (localStorage.getItem(`the-last-clue-daily-attempt:${today}`) === "1") return;
+            localStorage.setItem(`the-last-clue-daily-attempt:${today}`, "1"); } catch { /* attempt guard is best-effort */ }
           onStart(challenge.case_id);
         }}>ACCEPT TODAY'S CASE <span>→</span></button>
       )}
