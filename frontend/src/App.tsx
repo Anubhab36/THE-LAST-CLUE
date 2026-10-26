@@ -23,7 +23,7 @@ import {
   type CaseCatalogItem,
 } from "./services/api";
 import Timer from "./components/Timer/Timer";
-import CrimeScene from "./components/CrimeScene/CrimeScene";
+import ImmersiveCrimeScene from "./components/CrimeScene/ImmersiveCrimeScene";
 import EvidenceBoard from "./components/EvidenceBoard/EvidenceBoard";
 import Timeline from "./components/Timeline/Timeline";
 import Interrogation, { type InterviewEntry } from "./components/Interrogation/Interrogation";
@@ -769,16 +769,13 @@ export default function App() {
             </div>
 
             <div className="scene v2-scene">
-              <CrimeScene
+              <ImmersiveCrimeScene
                 evidence={gameCase.evidence}
                 found={found}
                 completedActions={completedActions}
                 onInspect={inspect}
+                locationName={gameCase.locations[0]?.name ?? "Unknown location"}
               />
-              <div className="scene-caption">
-                <span>ACTIVE LOCATION</span>
-                <strong>{gameCase.locations[0]?.name}</strong>
-              </div>
             </div>
           </div>
 
