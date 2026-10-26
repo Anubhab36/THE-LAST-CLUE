@@ -26,6 +26,9 @@ if frontend_origin:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
+    # Permit this project's Vercel preview deployments while keeping the
+    # production origin controlled by FRONTEND_ORIGIN.
+    allow_origin_regex=r"https://the-last-clue-[a-z0-9-]+-anubhab9\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
