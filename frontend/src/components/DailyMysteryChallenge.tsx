@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { generateCase, getCaseById, type CaseCatalogItem } from "../services/api";
+import { generateCase, type CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
 
 interface DailyRecord {
