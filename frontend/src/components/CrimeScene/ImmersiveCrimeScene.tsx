@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Evidence } from "../../types/case";
 import CrimeScene from "./CrimeScene";
-import "./ImmersiveCrimeScene.css";
 
 interface Props {
   evidence: Evidence[];
