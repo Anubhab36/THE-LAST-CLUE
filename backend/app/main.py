@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
+from app.api.auth import router as auth_router
 from app.api.cases import router as cases_router
 from app.api.interrogation import router as interrogation_router
 from app.api.sessions import router as sessions_router
@@ -34,6 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router)
 app.include_router(cases_router)
 app.include_router(interrogation_router)
 app.include_router(sessions_router)
