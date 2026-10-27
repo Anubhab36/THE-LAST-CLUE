@@ -1,6 +1,8 @@
 import logging
 import re
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
+from sqlalchemy import text
 
 from app.schemas.case import (
     Difficulty,
@@ -14,6 +16,8 @@ from app.services.case_generator import get_case, get_case_by_id, get_case_catal
 from app.services.ai_case_generator import generate_case
 from app.services.scoring_engine import score_case
 from app.services.case_registry import save_case, find_case
+from app.db import SessionLocal
+from app.models.game import GeneratedCase
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +100,50 @@ def generate(request: GenerateCaseRequest):
         ) from exc
 
     return to_public_case(generated)
+
+
+@router.get("/daily", tags=["daily challenge"])
+def daily_case():
+    """Return one canonical AI-generated mystery shared by every player each UTC day.
+
+    A PostgreSQL transaction-scoped advisory lock prevents concurrent requests
+    from generating different canonical cases for the same date.
+    """
+    daily_date = datetime.now(timezone.utc).date()
+    case_id = f"daily_{daily_date:%Y%m%d}"
+    lock_key = f"the-last-clue-daily:{daily_date.isoformat()}"
+
+    try:
+        with SessionLocal() as db:
+            with db.begin():
+                db.execute(
+                    text("SELECT pg_advisory_xact_lock(hashtext(:lock_key))"),
+                    {"lock_key": lock_key},
+                )
+                existing = db.get(GeneratedCase, case_id)
+                if existing is not None:
+                    from app.schemas.case import Case
+                    canonical = Case.model_validate(existing.case_data)
+                else:
+                    canonical = generate_case(
+                        "hard",
+                        f"Original shared daily mystery for {daily_date.isoformat()}: unique setting, suspects, clues, timeline, and culprit. Do not reuse existing cases.",
+                    )
+                    canonical.case_id = case_id
+                    data = canonical.model_dump(mode="json")
+                    db.add(GeneratedCase(
+                        case_id=case_id,
+                        difficulty=canonical.difficulty,
+                        title=canonical.title,
+                        case_data=data,
+                    ))
+        return {"daily_date": daily_date.isoformat(), "case": to_public_case(canonical)}
+    except Exception as exc:
+        logger.exception("Unable to load or generate shared daily mystery for %s", daily_date)
+        raise HTTPException(
+            status_code=503,
+            detail="Today's shared mystery is temporarily unavailable. Please retry shortly.",
+        ) from exc
 
 
 @router.get("/catalog")
