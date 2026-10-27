@@ -125,6 +125,7 @@ export default function Interrogation({
           <span className="toolbar-kicker">QUESTION SELECTOR</span>
           <span className="toolbar-count">SELECT A LINE OF INQUIRY</span>
         </div>
+        <form onSubmit={askFreeform} className="freeform-question-form"><label htmlFor="freeform-question">Ask your own question</label><textarea id="freeform-question" value={freeformQuestion} onChange={(event) => setFreeformQuestion(event.target.value.slice(0, 500))} maxLength={500} rows={3} placeholder="Type a question for this suspect" disabled={busy} required /><button type="submit" disabled={busy || !freeformQuestion.trim()}>{busy ? "Responding..." : "Ask suspect"}</button></form>
         <div className="questions">
           {profile?.questions.map((question, questionIndex) => {
             const unlocked = (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
