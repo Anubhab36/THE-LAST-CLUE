@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { generateCase, type CaseCatalogItem } from "../services/api";
+import { getDailyMystery, type CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
 
 interface DailyRecord {
@@ -20,9 +20,9 @@ const STORAGE_KEY = "the-last-clue-daily-mystery-history";
 const DAILY_CASE_KEY = "the-last-clue-daily-generated-case";
 
 function localDateKey(date = new Date()): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 function readHistory(): DailyRecord[] {
@@ -36,9 +36,6 @@ function readCachedCase(date: string): CachedDailyCase | null {
     const value = JSON.parse(localStorage.getItem(DAILY_CASE_KEY) || "null") as CachedDailyCase | null;
     return value?.date === date && value.caseId ? value : null;
   } catch { return null; }
-}
-function isBuiltInFallback(caseId: string): boolean {
-  return /^case_00[1-9]$/.test(caseId) || /^case_0\d+$/.test(caseId);
 }
 
 interface Props {
@@ -67,9 +64,9 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
   const streak = useMemo(() => {
     const dates = new Set(history.filter((item) => item.correct).map((item) => item.date));
     const cursor = new Date();
-    if (!dates.has(localDateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+    if (!dates.has(localDateKey(cursor))) cursor.setUTCDate(cursor.getUTCDate() - 1);
     let count = 0;
-    while (dates.has(localDateKey(cursor))) { count += 1; cursor.setDate(cursor.getDate() - 1); }
+    while (dates.has(localDateKey(cursor))) { count += 1; cursor.setUTCDate(cursor.getUTCDate() - 1); }
     return count;
   }, [history]);
 
@@ -83,14 +80,11 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
     }
     setGenerating(true);
     setGenerationError(null);
-    const theme = `Original daily case for ${today}: unique setting, suspects, clues, timeline, culprit. Do not reuse existing cases.`;
-    void generateCase("hard", theme).then((generated) => {
+    void getDailyMystery().then((response) => {
       if (cancelled) return;
-      if (isBuiltInFallback(generated.case_id)) {
-        throw new Error("The AI service returned a built-in case instead of generating a new daily mystery. Please retry shortly.");
-      }
+      const generated = response.case;
       const next: CachedDailyCase = {
-        date: today,
+        date: response.daily_date,
         caseId: generated.case_id,
         title: generated.title,
         difficulty: generated.difficulty,
