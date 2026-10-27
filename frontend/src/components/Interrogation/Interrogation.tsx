@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 
 export interface InterviewEntry {
   question: string;
@@ -74,7 +74,7 @@ export default function Interrogation({
     }
   }
 
-  async function askFreeform(event: React.FormEvent<HTMLFormElement>) {
+  async function askFreeform(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const question = freeformQuestion.trim();
     if (busy || !question) return;
