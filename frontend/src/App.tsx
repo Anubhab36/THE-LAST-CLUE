@@ -35,6 +35,7 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import DeveloperFooter from "./components/DeveloperFooter";
 import HintSystem from "./components/HintSystem/HintSystem";
 import SuspectDossiers from "./components/SuspectDossiers/SuspectDossiers";
+import { recordDailyMysteryResult } from "./components/DailyMysteryChallenge";
 
 type Screen = "welcome" | "loading" | "game" | "results";
 
@@ -157,6 +158,7 @@ export default function App() {
     }
   });
   const recordedCompletionSessionRef = useRef<string | null>(null);
+  const dailyChallengeDateRef = useRef<string | null>(null);
 
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState<string | null>(null);
@@ -250,6 +252,18 @@ export default function App() {
       };
     });
   }, [screen, result, gameCase, sessionId]);
+
+  useEffect(() => {
+    if (screen !== "results" || !result || !gameCase || !dailyChallengeDateRef.current) return;
+    recordDailyMysteryResult({
+      date: dailyChallengeDateRef.current,
+      caseId: gameCase.case_id,
+      score: result.score.total,
+      grade: result.score.grade,
+      correct: result.correct,
+    });
+    dailyChallengeDateRef.current = null;
+  }, [screen, result, gameCase]);
 
   // Keep the interval callback current without restarting its timer on every tick.
   const progressRef = useRef({
@@ -434,6 +448,7 @@ export default function App() {
   };
 
   const load = useCallback(async () => {
+    dailyChallengeDateRef.current = null;
     setScreen("loading");
     resetGameState();
 
@@ -456,7 +471,29 @@ export default function App() {
     }
   }, [selectedCaseId]);
 
+  const loadDailyChallenge = useCallback(async (caseId: string) => {
+    const now = new Date();
+    dailyChallengeDateRef.current = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    setScreen("loading");
+    resetGameState();
+    try {
+      const nextCase = await getCaseById(caseId);
+      const session = await createSession(nextCase.case_id);
+      setSelectedCaseId(caseId);
+      setDifficulty(nextCase.difficulty);
+      setSessionId(session.session_id);
+      window.localStorage.setItem(ACTIVE_SESSION_KEY, session.session_id);
+      setGameCase(nextCase);
+      setScreen("game");
+    } catch (caught) {
+      dailyChallengeDateRef.current = null;
+      setError(getDisplayError(caught, "Unable to load today's mystery. Please try again."));
+      setScreen("welcome");
+    }
+  }, []);
+
   const loadGenerated = useCallback(async () => {
+    dailyChallengeDateRef.current = null;
     setScreen("loading");
     resetGameState();
 
@@ -639,6 +676,7 @@ export default function App() {
             setError(null);
           }}
           onStart={load}
+          onStartDaily={loadDailyChallenge}
           onGenerate={loadGenerated}
           busy={false}
           error={error}

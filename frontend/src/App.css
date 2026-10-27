@@ -2653,3 +2653,34 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 @keyframes immersive-pulse{0%,100%{opacity:.65}50%{opacity:1;box-shadow:0 0 0 5px rgba(194,140,83,.08)}}
 @media(max-width:700px){.immersive-scene-toolbar{align-items:flex-start;flex-direction:column}.immersive-scene-controls{width:100%}.immersive-scene-controls button{flex:1}.immersive-room{height:410px}.immersive-hotspot-ring{width:27px;height:27px}.immersive-hotspot-label{max-width:92px;font-size:6px}.immersive-room-footer{left:7px;right:7px;bottom:7px;gap:6px;padding:7px}.immersive-room-footer>div:first-child{min-width:82px}.immersive-room-footer>div:first-child strong{font-size:6px}.immersive-tip-count{display:none}.immersive-evidence-list .scene-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.immersive-live-dot{animation:none}.immersive-hotspot-ring,.immersive-hotspot-label,.immersive-progress span{transition:none}}
+
+
+/* Daily Mystery Challenge */
+.daily-mystery-panel{position:relative;overflow:hidden;margin:0 auto 34px;width:90%;max-width:1380px;padding:25px 28px;border:1px solid #51452e;background:linear-gradient(115deg,rgba(64,49,27,.38),rgba(17,20,21,.96) 55%),#111415}
+.daily-mystery-panel:before{content:"";position:absolute;top:-85px;right:8%;width:230px;height:230px;border:1px solid rgba(184,154,91,.12);border-radius:50%;box-shadow:0 0 0 24px rgba(184,154,91,.025),0 0 0 48px rgba(184,154,91,.02);pointer-events:none}
+.daily-mystery-topline{display:flex;align-items:center;justify-content:space-between;gap:15px;padding-bottom:18px;border-bottom:1px solid #302d25}
+.daily-date{color:#77776d;font:9px "DM Mono",monospace;letter-spacing:.1em}
+.daily-mystery-layout{position:relative;display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:22px;align-items:center;padding:22px 0}
+.daily-mystery-emblem{width:68px;height:78px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #74603a;background:rgba(10,12,12,.6);color:#c9ad6c;position:relative}
+.daily-mystery-emblem span{font:500 20px "DM Mono",monospace;letter-spacing:.1em}
+.daily-mystery-emblem i{position:absolute;right:5px;bottom:4px;color:#77705e;font:normal 7px "DM Mono",monospace}
+.daily-mystery-copy h2{margin:0 0 8px;color:#e8e2d3;font:400 clamp(25px,3vw,35px) Georgia,serif}
+.daily-mystery-copy>p{max-width:650px;margin:0;color:#858a87;font-size:12px;line-height:1.7}
+.daily-case-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 15px;margin-top:14px}
+.daily-case-meta span{color:#8a7b59;font:8px "DM Mono",monospace;letter-spacing:.08em}
+.daily-case-meta strong{color:#d8c69a;font-size:11px;font-weight:600}
+.daily-mystery-stats{display:flex;gap:20px}
+.daily-mystery-stats>div{display:flex;min-width:65px;flex-direction:column;gap:6px;text-align:center}
+.daily-mystery-stats strong{color:#d3bc82;font:400 25px Georgia,serif}
+.daily-mystery-stats span{color:#74766d;font:7px "DM Mono",monospace;letter-spacing:.07em;white-space:nowrap}
+.daily-mystery-start{display:flex;align-items:center;justify-content:space-between;gap:35px;width:100%;padding:15px 18px;border:1px solid #806a3d;background:#c1a568;color:#121310;font:600 10px "DM Mono",monospace;letter-spacing:.07em;text-align:left;cursor:pointer;transition:background .18s,border-color .18s}
+.daily-mystery-start span{font-size:17px}
+.daily-mystery-start:hover:not(:disabled){background:#d7bd7e;border-color:#d7bd7e}
+.daily-mystery-start:disabled{opacity:.5;cursor:not-allowed}
+.daily-mystery-status{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:14px 16px;border:1px solid #49422f;background:#171813}
+.daily-mystery-status strong{color:#d2bd85;font-size:11px}
+.daily-mystery-status span{color:#8c9086;font-size:10px}
+.daily-mystery-footnote{margin:13px 0 0;color:#606866;font-size:9px;line-height:1.6}
+@media(max-width:700px){.daily-mystery-panel{padding:19px 16px}.daily-mystery-layout{grid-template-columns:52px minmax(0,1fr);gap:13px;padding:18px 0}.daily-mystery-emblem{width:50px;height:60px}.daily-mystery-emblem span{font-size:16px}.daily-mystery-stats{grid-column:1/-1;justify-content:flex-start;padding-top:4px}.daily-mystery-stats>div{min-width:75px}.daily-mystery-topline{align-items:flex-start}.daily-date{font-size:7px}}
+
+.daily-mystery-error{max-width:650px;margin:12px 0 0;color:#d18f7c;font-size:11px;line-height:1.6}

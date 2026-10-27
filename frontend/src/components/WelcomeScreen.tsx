@@ -1,6 +1,7 @@
 import type { CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
 import CaseArchiveAchievements from "./CaseArchiveAchievements/CaseArchiveAchievements";
+import DailyMysteryChallenge from "./DailyMysteryChallenge";
 import lockedStudy from "../assets/case-covers/The_Locked_Study_Room.webp";
 import lastTrain from "../assets/case-covers/The_Last_Train.webp";
 import deathRoom12 from "../assets/case-covers/Death_at_Room_12.webp";
@@ -66,6 +67,7 @@ interface WelcomeScreenProps {
   selectedCaseId: string;
   onSelectCase: (caseId: string) => void;
   onStart: () => void;
+  onStartDaily: (caseId: string) => void;
   onGenerate: () => void;
   busy: boolean;
   error: string | null;
@@ -74,7 +76,7 @@ interface WelcomeScreenProps {
 export default function WelcomeScreen({
   difficulty, onDifficulty, cases, caseProgress, archiveCases, archiveProgress, onResetCaseProgress, catalogLoading, catalogError,
   onRetryCatalog, selectedCaseId, onSelectCase,
-  onStart, onGenerate, busy, error,
+  onStart, onStartDaily, onGenerate, busy, error,
 }: WelcomeScreenProps) {
   return (
     <main className="welcome-screen">
@@ -103,6 +105,8 @@ export default function WelcomeScreen({
           <div className="hero-visual-caption"><span>THE DETAILS NEVER LIE</span><span>EST. 2026</span></div>
         </div>
       </section>
+
+      <DailyMysteryChallenge cases={cases} busy={busy || catalogLoading} onStart={onStartDaily} />
 
       <section className="difficulty-panel case-library-panel">
         <div className="section-head">
