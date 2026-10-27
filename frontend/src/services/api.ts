@@ -24,6 +24,15 @@ export interface CaseCatalogItem {
   target_minutes: number;
 }
 
+export interface DailyMysteryResponse {
+  daily_date: string;
+  case: Case;
+}
+
+export async function getDailyMystery(): Promise<DailyMysteryResponse> {
+  return request<DailyMysteryResponse>("/api/cases/daily");
+}
+
 export async function getCaseCatalog(): Promise<CaseCatalogItem[]> {
   return request<CaseCatalogItem[]>("/api/cases/catalog");
 }
