@@ -17,7 +17,7 @@ class LoginRequest(BaseModel):
 
 @router.post("/register")
 def register(request: RegisterRequest):
-    if not re.search(r"[A-Za-z]", request.password) or not re.search(r"\\d", request.password):
+    if not re.search(r"[A-Za-z]", request.password) or not re.search(r"\d", request.password):
         raise HTTPException(status_code=422, detail="Password must contain at least one letter and one number.")
     return register_account(str(request.email), request.display_name, request.password)
 
