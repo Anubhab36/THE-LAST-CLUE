@@ -17,6 +17,7 @@ from app.services.session_service import (
     close_session,
     save_refined_score,
     get_case_data,
+    ask_freeform_question,
 )
 from app.services.session_service import mark_question_asked
 from app.services.scoring_engine import score_case, refine_semantic_answers
@@ -54,6 +55,12 @@ class ActionRequest(BaseModel):
 class InterrogationRequest(BaseModel):
     suspect_id: str
     question_id: str
+
+
+class FreeformInterrogationRequest(BaseModel):
+    suspect_id: str
+    question: str = Field(min_length=1, max_length=500)
+    presented_evidence_ids: list[str] = Field(default_factory=list, max_length=10)
 
 
 class AnalysisRequest(BaseModel):
@@ -97,6 +104,16 @@ def action(session_id: str, request: ActionRequest):
 def interrogation(session_id: str, request: InterrogationRequest):
     _, answer = mark_question_asked(session_id, request.suspect_id, request.question_id)
     return answer
+
+
+@router.post("/{session_id}/interrogation/freeform")
+def freeform_interrogation(session_id: str, request: FreeformInterrogationRequest):
+    return ask_freeform_question(
+        session_id,
+        request.suspect_id,
+        request.question,
+        request.presented_evidence_ids,
+    )
 
 
 @router.post("/{session_id}/analysis")
