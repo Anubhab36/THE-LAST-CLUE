@@ -2684,3 +2684,69 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 @media(max-width:700px){.daily-mystery-panel{padding:19px 16px}.daily-mystery-layout{grid-template-columns:52px minmax(0,1fr);gap:13px;padding:18px 0}.daily-mystery-emblem{width:50px;height:60px}.daily-mystery-emblem span{font-size:16px}.daily-mystery-stats{grid-column:1/-1;justify-content:flex-start;padding-top:4px}.daily-mystery-stats>div{min-width:75px}.daily-mystery-topline{align-items:flex-start}.daily-date{font-size:7px}}
 
 .daily-mystery-error{max-width:650px;margin:12px 0 0;color:#d18f7c;font-size:11px;line-height:1.6}
+
+
+/* Free-form suspect interrogation */
+.freeform-question-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 12px;
+  align-items: end;
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid #292e2f;
+  background: linear-gradient(135deg, rgba(184,154,91,.045), rgba(13,16,17,.75));
+}
+.freeform-question-form label {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #b89a5b;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.freeform-question-form textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  resize: vertical;
+  padding: 12px 13px;
+  border: 1px solid #343a3a;
+  border-radius: 0;
+  outline: none;
+  background: #0d1011;
+  color: #e8e5dc;
+  font: 12px/1.6 Inter, sans-serif;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.freeform-question-form textarea::placeholder { color: #5f6667; }
+.freeform-question-form textarea:focus {
+  border-color: #b89a5b;
+  box-shadow: 0 0 0 1px rgba(184,154,91,.12);
+}
+.freeform-question-form button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #806c43;
+  border-radius: 0;
+  background: #201d16;
+  color: #d4bc82;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease, opacity .18s ease;
+}
+.freeform-question-form button:not(:disabled):hover {
+  border-color: #b89a5b;
+  background: #2a261b;
+}
+.freeform-question-form button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+@media (max-width: 520px) {
+  .freeform-question-form { grid-template-columns: 1fr; }
+  .freeform-question-form button { width: 100%; }
+}
