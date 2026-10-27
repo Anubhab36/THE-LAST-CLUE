@@ -83,7 +83,7 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
     }
     setGenerating(true);
     setGenerationError(null);
-    const theme = `Daily Mystery Challenge for ${today}. Create a completely original, self-contained detective murder mystery that is not based on any existing case in the game's case library. Use a distinctive setting and title, at least four plausible suspects, a fair evidence trail, meaningful red herrings, a coherent timeline, and one logically provable culprit. This is the date's unique featured mystery; do not reuse The Last Train or The Locked Study.`;
+    const theme = `Original daily mystery for ${today}; unique setting, suspects, clues, timeline, and culprit. Do not reuse existing cases.`;
     void generateCase("hard", theme).then((generated) => {
       if (cancelled) return;
       if (isBuiltInFallback(generated.case_id)) {
