@@ -83,7 +83,7 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
     }
     setGenerating(true);
     setGenerationError(null);
-    const theme = `Original daily mystery for ${today}; unique setting, suspects, clues, timeline, and culprit. Do not reuse existing cases.`;
+    const theme = `Original daily case for ${today}: unique setting, suspects, clues, timeline, culprit. Do not reuse existing cases.`;
     void generateCase("hard", theme).then((generated) => {
       if (cancelled) return;
       if (isBuiltInFallback(generated.case_id)) {
