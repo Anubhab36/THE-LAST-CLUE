@@ -9,6 +9,7 @@ from sqlalchemy.engine import make_url
 
 from app.db import Base
 from app.models.game import GeneratedCase, GameSession
+from app.models.user import UserAccount
 
 config = context.config
 

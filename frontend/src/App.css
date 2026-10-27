@@ -2684,3 +2684,23 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 @media(max-width:700px){.daily-mystery-panel{padding:19px 16px}.daily-mystery-layout{grid-template-columns:52px minmax(0,1fr);gap:13px;padding:18px 0}.daily-mystery-emblem{width:50px;height:60px}.daily-mystery-emblem span{font-size:16px}.daily-mystery-stats{grid-column:1/-1;justify-content:flex-start;padding-top:4px}.daily-mystery-stats>div{min-width:75px}.daily-mystery-topline{align-items:flex-start}.daily-date{font-size:7px}}
 
 .daily-mystery-error{max-width:650px;margin:12px 0 0;color:#d18f7c;font-size:11px;line-height:1.6}
+
+.account-access{margin:22px 0 30px;max-width:100%;border-color:#34302a}
+.account-access .panel-heading>div{display:flex;align-items:center;gap:12px}
+.account-form{padding:18px 20px 20px;display:grid;gap:14px}
+.account-intro{margin:0 0 2px;font-size:12px}
+.account-tabs{display:flex;gap:8px;border-bottom:1px solid #292e2f;padding-bottom:10px}
+.account-tabs button{border:1px solid #343a3a;background:#0d1011;color:#7b8283;padding:9px 13px;font:9px "DM Mono",monospace;letter-spacing:.08em;cursor:pointer}
+.account-tabs button.selected{border-color:#806c43;background:#201d16;color:#d4bc82}
+.account-form label{display:grid;gap:7px;color:#b89a5b;font:9px "DM Mono",monospace;letter-spacing:.08em}
+.account-form input{width:100%;min-width:0;padding:12px;border:1px solid #343a3a;border-radius:0;background:#0b0d0e;color:#e8e6df;font:12px Inter,sans-serif;letter-spacing:normal}
+.account-form input:focus{outline:1px solid #b89a5b;border-color:#b89a5b}
+.account-form label small{color:#737a7b;font:10px Inter,sans-serif;letter-spacing:normal}
+.account-submit{justify-self:start;min-height:40px;padding:0 16px;font:9px "DM Mono",monospace;letter-spacing:.08em}
+.account-signed-in{padding:20px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.account-signed-in>div{display:grid;gap:6px;min-width:0}
+.account-label{color:#b89a5b;font:9px "DM Mono",monospace;letter-spacing:.08em}
+.account-signed-in strong{font:24px Georgia,serif;font-weight:400}
+.account-signed-in small{color:#8c9293;font-size:12px;overflow-wrap:anywhere}
+.account-notice{margin:0;padding:0 20px 18px;color:#b89a5b;font-size:12px}
+@media(max-width:560px){.account-signed-in{align-items:flex-start;flex-direction:column}.account-form{padding:15px}}

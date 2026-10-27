@@ -248,3 +248,23 @@ export async function refineSessionScore(
     post(payload),
   );
 }
+
+export interface AuthUser {
+  user_id: string;
+  email: string;
+  display_name: string;
+}
+export interface AuthResponse {
+  access_token: string;
+  token_type: "bearer";
+  user: AuthUser;
+}
+export async function registerAccount(email: string, displayName: string, password: string): Promise<AuthResponse> {
+  return request<AuthResponse>("/api/auth/register", post({ email, display_name: displayName, password }));
+}
+export async function loginAccount(email: string, password: string): Promise<AuthResponse> {
+  return request<AuthResponse>("/api/auth/login", post({ email, password }));
+}
+export async function getMyAccount(token: string): Promise<AuthUser> {
+  return request<AuthUser>("/api/auth/me", { headers: { Authorization: "Bearer " + token } });
+}

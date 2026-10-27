@@ -2,6 +2,7 @@ import type { CaseCatalogItem } from "../services/api";
 import type { Difficulty } from "../types/case";
 import CaseArchiveAchievements from "./CaseArchiveAchievements/CaseArchiveAchievements";
 import DailyMysteryChallenge from "./DailyMysteryChallenge";
+import AccountAccess from "./AccountAccess";
 import lockedStudy from "../assets/case-covers/The_Locked_Study_Room.webp";
 import lastTrain from "../assets/case-covers/The_Last_Train.webp";
 import deathRoom12 from "../assets/case-covers/Death_at_Room_12.webp";
@@ -87,6 +88,8 @@ export default function WelcomeScreen({
           <span className="welcome-brand-subtitle">DIGITAL INVESTIGATION UNIT · CASE SYSTEM V3</span>
         </div>
       </header>
+
+      <AccountAccess />
 
       <section className="welcome-hero">
         <div className="welcome-hero-copy">
