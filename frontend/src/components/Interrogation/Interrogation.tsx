@@ -6,7 +6,7 @@ export interface InterviewEntry {
   hasInconsistency: boolean;
 }
 import type { Case, Suspect } from "../../types/case";
-import { interrogateSession } from "../../services/api";
+import { askSuspectFreeform, interrogateSession } from "../../services/api";
 
 interface InterrogationProps {
   gameCase: Case;
@@ -34,6 +34,8 @@ export default function Interrogation({
   const [busy, setBusy] = useState(false);
   const [asked, setAsked] = useState<string[]>(previouslyAsked);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [freeformQuestion, setFreeformQuestion] = useState("");
+  const [presentedEvidenceIds, setPresentedEvidenceIds] = useState<string[]>([]);
   const unlockedCount = profile?.questions.filter((question) =>
     (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
     (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
@@ -67,6 +69,34 @@ export default function Interrogation({
       if (result.hit) onHit();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "The interview could not be completed.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function askFreeform(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const question = freeformQuestion.trim();
+    if (busy || !question) return;
+    setBusy(true);
+    try {
+      const result = await askSuspectFreeform(sessionId, suspect.id, question, presentedEvidenceIds);
+      const evidenceNames = presentedEvidenceIds.map((id) => gameCase.evidence.find((item) => item.id === id)?.name ?? id);
+      const entry: InterviewEntry = {
+        question: evidenceNames.length ? question + " [Presented evidence: " + evidenceNames.join(", ") + "]" : question,
+        answer: result.answer,
+        hasInconsistency: false,
+      };
+      setTranscript((current) => {
+        const next = [...current, entry];
+        onTranscriptChange(suspect.id, next);
+        return next;
+      });
+      setFreeformQuestion("");
+      setPresentedEvidenceIds([]);
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "The suspect could not answer right now.");
     } finally {
       setBusy(false);
     }
