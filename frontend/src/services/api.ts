@@ -202,6 +202,30 @@ export async function interrogateSession(
   );
 }
 
+export interface FreeformInterrogationResponse {
+  suspect_id: string;
+  question: string;
+  answer: string;
+  presented_evidence_ids: string[];
+  created_at: string;
+}
+
+export async function askSuspectFreeform(
+  sessionId: string,
+  suspectId: string,
+  question: string,
+  presentedEvidenceIds: string[] = [],
+): Promise<FreeformInterrogationResponse> {
+  return request<FreeformInterrogationResponse>(
+    `/api/sessions/${sessionId}/interrogation/freeform`,
+    post({
+      suspect_id: suspectId,
+      question,
+      presented_evidence_ids: presentedEvidenceIds,
+    }),
+  );
+}
+
 export async function recordAnalysis(
   sessionId: string,
   evidenceConnections: [string, string][],
