@@ -2755,3 +2755,189 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 .statement-assessment{display:grid;gap:8px;margin-top:12px;color:#b89a5b;font:10px "DM Mono",monospace;letter-spacing:.07em}
 .statement-assessment select{width:100%;background:#0c0f0f;color:#d6d6cf;border:1px solid #3a3a31;padding:11px;font:12px Inter,sans-serif;letter-spacing:normal}
 @media(max-width:560px){.statement-evidence-options{grid-template-columns:1fr}.statement-evidence-review{padding:10px}}
+
+
+/* Light-mode contrast and surface coverage refinements */
+/* Softer royal ivory: reduce glare while retaining the gold accent system. */
+html[data-theme="light"] {
+  color-scheme: light;
+  background: #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] body {
+  background: radial-gradient(circle at 18% 8%, rgba(184,154,91,.08), transparent 32%), #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .app,
+html[data-theme="light"] .welcome-screen,
+html[data-theme="light"] .loading-screen,
+html[data-theme="light"] .results {
+  background-color: #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .developer-footer,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .board,
+html[data-theme="light"] .timeline-panel,
+html[data-theme="light"] .victim,
+html[data-theme="light"] .daily-mystery-panel,
+html[data-theme="light"] .account-access,
+html[data-theme="light"] .evidence-lab,
+html[data-theme="light"] .interrogation-review-entry,
+html[data-theme="light"] .notebook-panel,
+html[data-theme="light"] .investigation-actions,
+html[data-theme="light"] .action-bar,
+html[data-theme="light"] .results-card,
+html[data-theme="light"] .welcome-panel,
+html[data-theme="light"] .welcome-section,
+html[data-theme="light"] .case-list-section,
+html[data-theme="light"] .case-selection,
+html[data-theme="light"] .daily-mystery,
+html[data-theme="light"] .welcome-archive,
+html[data-theme="light"] .suspect-dossiers,
+html[data-theme="light"] .evidence-board,
+html[data-theme="light"] .investigation-board,
+html[data-theme="light"] .detective-board,
+html[data-theme="light"] .timeline,
+html[data-theme="light"] .hint-system,
+html[data-theme="light"] .hint-panel,
+html[data-theme="light"] .case-card,
+html[data-theme="light"] .archive-card,
+html[data-theme="light"] .suspect-card,
+html[data-theme="light"] .e-card,
+html[data-theme="light"] .evidence-card,
+html[data-theme="light"] .dossier-card,
+html[data-theme="light"] .interrogation-panel,
+html[data-theme="light"] .notebook,
+html[data-theme="light"] .evidence-lab-item,
+html[data-theme="light"] .evidence-lab-detail,
+html[data-theme="light"] .statement-evidence-review {
+  background-color: #f5f0e4 !important;
+  color: #302b21 !important;
+  border-color: #d1c19a !important;
+}
+html[data-theme="light"] .case-header,
+html[data-theme="light"] .case-header-meta,
+html[data-theme="light"] .welcome-hero,
+html[data-theme="light"] .welcome-header,
+html[data-theme="light"] .welcome-brand,
+html[data-theme="light"] .welcome-content,
+html[data-theme="light"] .welcome-main,
+html[data-theme="light"] .case-grid,
+html[data-theme="light"] .case-card-grid,
+html[data-theme="light"] .welcome-features,
+html[data-theme="light"] .daily-mystery-copy,
+html[data-theme="light"] .victim-details,
+html[data-theme="light"] .suspect-card-main,
+html[data-theme="light"] .evidence-lab-list,
+html[data-theme="light"] .evidence-lab-toolbar,
+html[data-theme="light"] .interrogation-transcript,
+html[data-theme="light"] .timeline-list,
+html[data-theme="light"] .event-detail,
+html[data-theme="light"] .event-button,
+html[data-theme="light"] .scene-object,
+html[data-theme="light"] .scene-object-label,
+html[data-theme="light"] .case-card-content,
+html[data-theme="light"] .case-card-body,
+html[data-theme="light"] .case-info,
+html[data-theme="light"] .case-meta {
+  color: #302b21 !important;
+}
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] h4,
+html[data-theme="light"] .brand-title,
+html[data-theme="light"] .welcome-brand-name,
+html[data-theme="light"] .welcome-title,
+html[data-theme="light"] .case-header h1,
+html[data-theme="light"] .victim-name h3,
+html[data-theme="light"] .daily-mystery-copy h2,
+html[data-theme="light"] .panel-heading h2,
+html[data-theme="light"] .section-head h2,
+html[data-theme="light"] .case-card h3,
+html[data-theme="light"] .case-card-title,
+html[data-theme="light"] .suspect-card strong,
+html[data-theme="light"] .results-card h1,
+html[data-theme="light"] .results-card h2 {
+  color: #3b3120 !important;
+}
+html[data-theme="light"] p,
+html[data-theme="light"] li,
+html[data-theme="light"] label,
+html[data-theme="light"] .case-description,
+html[data-theme="light"] .welcome-hero > p,
+html[data-theme="light"] .case-card p,
+html[data-theme="light"] .suspect-card p,
+html[data-theme="light"] .muted,
+html[data-theme="light"] .developer-credit,
+html[data-theme="light"] .welcome-note,
+html[data-theme="light"] .welcome-disclaimer,
+html[data-theme="light"] .evidence-lab-detail > p,
+html[data-theme="light"] .daily-mystery-copy > p {
+  color: #655b49;
+}
+html[data-theme="light"] .scene,
+html[data-theme="light"] .v2-evidence-object,
+html[data-theme="light"] .difficulty-card,
+html[data-theme="light"] .event-button,
+html[data-theme="light"] .event-detail,
+html[data-theme="light"] .notebook-textarea,
+html[data-theme="light"] .account-form input,
+html[data-theme="light"] .account-tabs button,
+html[data-theme="light"] .evidence-lab-search input,
+html[data-theme="light"] .evidence-lab-notes textarea,
+html[data-theme="light"] .statement-evidence-option,
+html[data-theme="light"] .statement-assessment select,
+html[data-theme="light"] .questions button,
+html[data-theme="light"] .answer,
+html[data-theme="light"] .modal,
+html[data-theme="light"] .modal input,
+html[data-theme="light"] .modal select,
+html[data-theme="light"] .difficulty-select,
+html[data-theme="light"] .daily-mystery-status,
+html[data-theme="light"] .daily-mystery-emblem {
+  background: #e7dfcd !important;
+  color: #302b21 !important;
+  border-color: #d1c19a !important;
+}
+html[data-theme="light"] .scene-object,
+html[data-theme="light"] .quiet-button,
+html[data-theme="light"] .notebook-tab,
+html[data-theme="light"] .evidence-lab-filters button,
+html[data-theme="light"] .primary,
+html[data-theme="light"] .secondary,
+html[data-theme="light"] .daily-mystery-start {
+  color: #3b301b !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .daily-mystery-start,
+html[data-theme="light"] .primary {
+  background: #c5a45e !important;
+  color: #282316 !important;
+}
+html[data-theme="light"] .overlay { background: rgba(53,43,25,.42) !important; }
+html[data-theme="light"] .theme-toggle {
+  background: #e7dfcd !important;
+  color: #5b471e !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .breakdown b,
+html[data-theme="light"] .results-card strong,
+html[data-theme="light"] .meta-item strong {
+  color: #3b3120 !important;
+}
+html[data-theme="light"] .welcome-hero,
+html[data-theme="light"] .welcome-hero * {
+  --light-surface: #f5f0e4;
+}
+html[data-theme="light"] .welcome-hero {
+  background: linear-gradient(120deg, #e7dfcd, #f5f0e4) !important;
+  border-color: #d1c19a !important;
+}
+html[data-theme="light"] .welcome-hero h1,
+html[data-theme="light"] .welcome-hero h2,
+html[data-theme="light"] .welcome-hero .welcome-title {
+  color: #3b3120 !important;
+}
