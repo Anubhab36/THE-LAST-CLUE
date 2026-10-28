@@ -69,6 +69,7 @@ interface WelcomeScreenProps {
   onSelectCase: (caseId: string) => void;
   onStart: () => void;
   onStartDaily: (caseId: string) => void;
+  onResumeDaily: () => void;
   onGenerate: () => void;
   busy: boolean;
   error: string | null;
@@ -77,7 +78,7 @@ interface WelcomeScreenProps {
 export default function WelcomeScreen({
   difficulty, onDifficulty, cases, caseProgress, archiveCases, archiveProgress, onResetCaseProgress, catalogLoading, catalogError,
   onRetryCatalog, selectedCaseId, onSelectCase,
-  onStart, onStartDaily, onGenerate, busy, error,
+  onStart, onStartDaily, onResumeDaily, onGenerate, busy, error,
 }: WelcomeScreenProps) {
   return (
     <main className="welcome-screen">
@@ -109,7 +110,7 @@ export default function WelcomeScreen({
         </div>
       </section>
 
-      <DailyMysteryChallenge cases={cases} busy={busy || catalogLoading} onStart={onStartDaily} />
+      <DailyMysteryChallenge cases={cases} busy={busy || catalogLoading} onStart={onStartDaily} onResume={onResumeDaily} />
 
       <section className="difficulty-panel case-library-panel">
         <div className="section-head">
