@@ -2761,8 +2761,8 @@ button:focus-visible { outline-color: var(--noir-gold-bright); outline-offset: 3
 .theme-toggle {
   position: fixed;
   z-index: 120;
-  top: 18px;
   right: 22px;
+  bottom: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2956,6 +2956,5 @@ html[data-theme="light"] .evidence-lab-meta span,
 html[data-theme="light"] .statement-evidence-option small,
 html[data-theme="light"] .evidence-lab-note-footer { color: #766b55; }
 @media (max-width: 600px) {
-  .theme-toggle { top: 12px; right: 12px; min-height: 34px; padding: 0 9px; font-size: 8px; }
-  .topbar { padding-right: 130px; }
+  .theme-toggle { right: 12px; bottom: 12px; min-height: 34px; padding: 0 9px; font-size: 8px; }
 }
