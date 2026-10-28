@@ -137,7 +137,23 @@ function getDisplayError(
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("welcome");
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    try {
+      return window.localStorage.getItem("the-last-clue-theme") === "light" ? "light" : "dark";
+    } catch {
+      return "dark";
+    }
+  });
 
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      window.localStorage.setItem("the-last-clue-theme", theme);
+    } catch {
+      // Theme preference is optional; the current session still updates.
+    }
+  }, [theme]);
 
   useEffect(() => {
     window.scrollTo({
@@ -681,9 +697,24 @@ export default function App() {
     }
   };
 
+  const themeToggle = (
+    <button
+      type="button"
+      className="theme-toggle"
+      onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={theme === "light"}
+      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      <span aria-hidden="true">{theme === "dark" ? "☼" : "☾"}</span>
+      {theme === "dark" ? "LIGHT MODE" : "DARK MODE"}
+    </button>
+  );
+
   if (screen === "loading") {
     return (
       <>
+        {themeToggle}
         <div className="loading-screen">
           <div className="loading-mark">LC</div>
           <h1>Preparing investigation...</h1>
@@ -700,6 +731,7 @@ export default function App() {
   if (screen === "welcome" || !gameCase) {
     return (
       <>
+        {themeToggle}
         <WelcomeScreen
           difficulty={difficulty}
           onDifficulty={setDifficulty}
@@ -732,18 +764,22 @@ export default function App() {
 
   if (screen === "results" && result) {
     return (
-      <Results
-        result={result}
-        gameCase={gameCase}
-        found={found}
-        timedOut={timedOut}
-        onRestart={leaveToWelcome}
-      />
+      <>
+        {themeToggle}
+        <Results
+          result={result}
+          gameCase={gameCase}
+          found={found}
+          timedOut={timedOut}
+          onRestart={leaveToWelcome}
+        />
+      </>
     );
   }
 
   return (
     <div className="app">
+      {themeToggle}
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark">LC</span>
