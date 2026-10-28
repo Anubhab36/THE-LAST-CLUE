@@ -53,8 +53,8 @@ export function recordDailyMysteryResult(record: DailyRecord): void {
 export default function DailyMysteryChallenge({ busy, onStart }: Props) {
   const today = localDateKey();
   const [history, setHistory] = useState<DailyRecord[]>(readHistory);
-  const [challenge, setChallenge] = useState<CachedDailyCase | null>(() => readCachedCase(today));
-  const [generating, setGenerating] = useState(!readCachedCase(today));
+  const [challenge, setChallenge] = useState<CachedDailyCase | null>(null);
+  const [generating, setGenerating] = useState(true);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
   const completedToday = history.find((item) => item.date === today);
@@ -72,12 +72,8 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    const cached = readCachedCase(today);
-    if (cached) {
-      setChallenge(cached);
-      setGenerating(false);
-      return () => { cancelled = true; };
-    }
+    // Always ask the server for the canonical case. A date-matched browser
+    // cache can outlive a backend repair and keep showing a duplicate mystery.
     setGenerating(true);
     setGenerationError(null);
     void getDailyMystery().then((response) => {
