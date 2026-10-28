@@ -2,7 +2,7 @@ import logging
 import re
 from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import text
+from sqlalchemy import select, text
 
 from app.schemas.case import (
     Difficulty,
@@ -106,8 +106,8 @@ def generate(request: GenerateCaseRequest):
 def daily_case():
     """Return one canonical AI-generated mystery shared by every player each UTC day.
 
-    A PostgreSQL transaction-scoped advisory lock prevents concurrent requests
-    from generating different canonical cases for the same date.
+    The date-scoped advisory lock serializes generation and repairs a stored
+    same-title repeat before returning it to clients.
     """
     daily_date = datetime.now(timezone.utc).date()
     case_id = f"daily_{daily_date:%Y%m%d}"
@@ -120,23 +120,66 @@ def daily_case():
                     text("SELECT pg_advisory_xact_lock(hashtext(:lock_key))"),
                     {"lock_key": lock_key},
                 )
+
+                # Exclude today's row so a previously cached duplicate can be
+                # compared against earlier days and replaced if necessary.
+                recent_cases = db.scalars(
+                    select(GeneratedCase)
+                    .where(
+                        GeneratedCase.case_id.like("daily_%"),
+                        GeneratedCase.case_id != case_id,
+                    )
+                    .order_by(GeneratedCase.created_at.desc())
+                    .limit(7)
+                ).all()
+                recent_titles = {prior.title.strip().casefold() for prior in recent_cases}
+                recent_summaries = []
+                for prior in recent_cases:
+                    prior_data = prior.case_data if isinstance(prior.case_data, dict) else {}
+                    prior_description = str(prior_data.get("description", ""))[:350]
+                    recent_summaries.append(f"- {prior.title}: {prior_description}")
+                exclusions = "\n".join(recent_summaries) or "- No previous daily cases are stored yet."
+
                 existing = db.get(GeneratedCase, case_id)
-                if existing is not None:
+                if existing is not None and existing.title.strip().casefold() not in recent_titles:
                     from app.schemas.case import Case
                     canonical = Case.model_validate(existing.case_data)
                 else:
-                    canonical = generate_case(
-                        "hard",
-                        f"Original shared daily mystery for {daily_date.isoformat()}: unique setting, suspects, clues, timeline, and culprit. Do not reuse existing cases.",
-                    )
+                    # Repair an already-persisted duplicate as well as avoiding
+                    # repeats when generating a brand-new date.
+                    canonical = None
+                    for attempt in range(3):
+                        generated = generate_case(
+                            "hard",
+                            f"Create the original shared daily mystery for {daily_date.isoformat()}. "
+                            "It must be clearly distinct from every recent daily case below: do not reuse "
+                            "their title, setting, victim, culprit, motive, murder method, central twist, "
+                            "or key clue pattern. Choose a different premise and cast. "
+                            f"Generation attempt {attempt + 1} of 3.\n"
+                            f"RECENT DAILY CASES TO AVOID:\n{exclusions}",
+                        )
+                        if generated.title.strip().casefold() not in recent_titles:
+                            canonical = generated
+                            break
+                    if canonical is None:
+                        raise RuntimeError(
+                            "Could not generate a daily mystery with a title distinct from recent cases."
+                        )
+
                     canonical.case_id = case_id
                     data = canonical.model_dump(mode="json")
-                    db.add(GeneratedCase(
-                        case_id=case_id,
-                        difficulty=canonical.difficulty,
-                        title=canonical.title,
-                        case_data=data,
-                    ))
+                    if existing is not None:
+                        existing.title = canonical.title
+                        existing.difficulty = canonical.difficulty
+                        existing.case_data = data
+                    else:
+                        db.add(GeneratedCase(
+                            case_id=case_id,
+                            difficulty=canonical.difficulty,
+                            title=canonical.title,
+                            case_data=data,
+                        ))
+
         return {"daily_date": daily_date.isoformat(), "case": to_public_case(canonical)}
     except Exception as exc:
         logger.exception("Unable to load or generate shared daily mystery for %s", daily_date)
@@ -144,7 +187,6 @@ def daily_case():
             status_code=503,
             detail="Today's shared mystery is temporarily unavailable. Please retry shortly.",
         ) from exc
-
 
 @router.get("/catalog")
 def case_catalog():

@@ -18,6 +18,7 @@ interface CachedDailyCase {
 }
 const STORAGE_KEY = "the-last-clue-daily-mystery-history";
 const DAILY_CASE_KEY = "the-last-clue-daily-generated-case";
+const PAUSED_DAILY_KEY = "the-last-clue-paused-daily";
 
 function localDateKey(date = new Date()): string {
   const year = date.getUTCFullYear();
@@ -31,17 +32,11 @@ function readHistory(): DailyRecord[] {
     return Array.isArray(value) ? value as DailyRecord[] : [];
   } catch { return []; }
 }
-function readCachedCase(date: string): CachedDailyCase | null {
-  try {
-    const value = JSON.parse(localStorage.getItem(DAILY_CASE_KEY) || "null") as CachedDailyCase | null;
-    return value?.date === date && value.caseId ? value : null;
-  } catch { return null; }
-}
-
 interface Props {
   cases: CaseCatalogItem[];
   busy: boolean;
   onStart: (caseId: string) => void;
+  onResume: () => void;
 }
 export function recordDailyMysteryResult(record: DailyRecord): void {
   const history = readHistory().filter((item) => item.date !== record.date);
@@ -50,14 +45,15 @@ export function recordDailyMysteryResult(record: DailyRecord): void {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(-365))); } catch { /* optional progress */ }
 }
 
-export default function DailyMysteryChallenge({ busy, onStart }: Props) {
+export default function DailyMysteryChallenge({ busy, onStart, onResume }: Props) {
   const today = localDateKey();
   const [history, setHistory] = useState<DailyRecord[]>(readHistory);
-  const [challenge, setChallenge] = useState<CachedDailyCase | null>(() => readCachedCase(today));
-  const [generating, setGenerating] = useState(!readCachedCase(today));
+  const [challenge, setChallenge] = useState<CachedDailyCase | null>(null);
+  const [generating, setGenerating] = useState(true);
   const [generationError, setGenerationError] = useState<string | null>(null);
   const [retryKey, setRetryKey] = useState(0);
   const completedToday = history.find((item) => item.date === today);
+  const pausedToday = (() => { try { const saved = JSON.parse(localStorage.getItem(PAUSED_DAILY_KEY) || "null"); return saved?.date === today && Boolean(saved?.sessionId); } catch { return false; } })();
   const attemptedToday = (() => {
     try { return localStorage.getItem(`the-last-clue-daily-attempt:${today}`) === "1"; } catch { return false; }
   })();
@@ -72,12 +68,8 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
 
   useEffect(() => {
     let cancelled = false;
-    const cached = readCachedCase(today);
-    if (cached) {
-      setChallenge(cached);
-      setGenerating(false);
-      return () => { cancelled = true; };
-    }
+    // Always ask the server for the canonical case. A date-matched browser
+    // cache can outlive a backend repair and keep showing a duplicate mystery.
     setGenerating(true);
     setGenerationError(null);
     void getDailyMystery().then((response) => {
@@ -123,6 +115,11 @@ export default function DailyMysteryChallenge({ busy, onStart }: Props) {
       </div>
       {completedToday ? (
         <div className="daily-mystery-status" role="status"><strong>Today's report is filed.</strong><span>{completedToday.score}/100 · Grade {completedToday.grade} · {completedToday.correct ? "Case solved" : "Case unsolved"}</span></div>
+      ) : pausedToday ? (
+        <div className="daily-mystery-resume-wrap">
+          <div className="daily-mystery-status" role="status"><strong>Investigation paused.</strong><span>Your progress is saved. Resume this case to continue; starting over is disabled.</span></div>
+          <button className="daily-mystery-start" type="button" disabled={busy || generating} onClick={onResume}>RESUME TODAY'S CASE <span>→</span></button>
+        </div>
       ) : attemptedToday ? (
         <div className="daily-mystery-status" role="status"><strong>Today's attempt has been used.</strong><span>Return tomorrow for a new assignment.</span></div>
       ) : challenge ? (
