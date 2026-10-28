@@ -3133,3 +3133,70 @@ html[data-theme="light"] .v2-evidence-object {
     min-width: 132px;
   }
 }
+
+
+/* Final light-theme cleanup: target the remaining dark nested widgets. */
+html[data-theme="light"] .notebook-stats > *,
+html[data-theme="light"] .notebook-stat,
+html[data-theme="light"] .notebook-stat-card,
+html[data-theme="light"] .notebook-metric,
+html[data-theme="light"] .notebook-tabs button,
+html[data-theme="light"] .notebook-tab,
+html[data-theme="light"] .notebook-panel button:not(.primary),
+html[data-theme="light"] .notebook-panel input,
+html[data-theme="light"] .notebook-panel textarea,
+html[data-theme="light"] .notebook-panel select,
+html[data-theme="light"] .notebook-panel .stat,
+html[data-theme="light"] .notebook-panel .metric,
+html[data-theme="light"] .notebook-panel .count-card,
+html[data-theme="light"] .notebook-panel .summary-card {
+  background-color: #e7dfcd !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .notebook-stats > *,
+html[data-theme="light"] .notebook-stat,
+html[data-theme="light"] .notebook-stat-card,
+html[data-theme="light"] .notebook-metric {
+  background-color: #e7dfcd !important;
+}
+html[data-theme="light"] .notebook-panel button[aria-selected="true"],
+html[data-theme="light"] .notebook-panel .active,
+html[data-theme="light"] .notebook-tab[aria-selected="true"] {
+  background-color: #d7c69f !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .notebook-panel ::placeholder,
+html[data-theme="light"] .notebook-panel textarea::placeholder,
+html[data-theme="light"] .notebook-panel input::placeholder {
+  color: #766b56 !important;
+  opacity: 1;
+}
+html[data-theme="light"] .case-header-meta *,
+html[data-theme="light"] .victim-details *,
+html[data-theme="light"] .victim-meta *,
+html[data-theme="light"] .case-header .muted,
+html[data-theme="light"] .panel-heading small,
+html[data-theme="light"] .section-head small,
+html[data-theme="light"] .case-count,
+html[data-theme="light"] .evidence-count,
+html[data-theme="light"] .notebook-panel small {
+  color: #6b604d !important;
+}
+html[data-theme="light"] .theme-toggle {
+  box-sizing: border-box !important;
+  height: 42px !important;
+  min-width: 148px !important;
+  border-radius: 3px !important;
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border: 1px solid #b89a5b !important;
+  box-shadow: 0 5px 18px rgba(49,39,20,.15) !important;
+  font: 10px "DM Mono", monospace !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+}
+html[data-theme="light"] .theme-toggle:hover {
+  background: #ddd2b9 !important;
+  box-shadow: 0 7px 20px rgba(49,39,20,.18) !important;
+}
