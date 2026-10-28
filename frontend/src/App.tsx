@@ -701,6 +701,13 @@ export default function App() {
     <button
       type="button"
       className="theme-toggle"
+      style={{
+        fontFamily: '"DM Mono", "Courier New", monospace',
+        fontSize: "10px",
+        fontWeight: 400,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+      }}
       onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={theme === "light"}
