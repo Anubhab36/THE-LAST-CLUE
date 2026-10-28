@@ -2977,3 +2977,159 @@ html[data-theme="light"] .theme-toggle {
     right: 12px;
   }
 }
+
+
+/* Follow-up visual pass: unify every major content surface in light mode. */
+html[data-theme="light"] .theme-toggle {
+  position: fixed !important;
+  top: auto !important;
+  right: 22px !important;
+  bottom: 22px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  display: inline-flex !important;
+  width: auto !important;
+  min-width: 148px;
+  min-height: 42px;
+  padding: 0 16px !important;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid #b89a5b !important;
+  border-radius: 3px !important;
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  box-shadow: 0 5px 18px rgba(49, 39, 20, .15);
+  font: 10px "DM Mono", monospace !important;
+  letter-spacing: .08em;
+}
+html[data-theme="dark"] .theme-toggle,
+html:not([data-theme]) .theme-toggle {
+  position: fixed !important;
+  top: auto !important;
+  right: 22px !important;
+  bottom: 22px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+  width: auto !important;
+  min-width: 148px;
+  min-height: 42px;
+  padding: 0 16px !important;
+  border-radius: 3px !important;
+}
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .board,
+html[data-theme="light"] .timeline-panel,
+html[data-theme="light"] .victim,
+html[data-theme="light"] .suspect-list,
+html[data-theme="light"] .suspect-card,
+html[data-theme="light"] .e-card,
+html[data-theme="light"] .timeline,
+html[data-theme="light"] .notebook-panel,
+html[data-theme="light"] .difficulty-panel,
+html[data-theme="light"] .case-library-panel,
+html[data-theme="light"] .case-level,
+html[data-theme="light"] .case-library-card,
+html[data-theme="light"] .ai-case-panel,
+html[data-theme="light"] .evidence-board,
+html[data-theme="light"] .workspace-panel,
+html[data-theme="light"] .game-panel,
+html[data-theme="light"] .case-card,
+html[data-theme="light"] .evidence-command,
+html[data-theme="light"] .evidence-file,
+html[data-theme="light"] .suspect-dossier-strip,
+html[data-theme="light"] .suspect-dossier,
+html[data-theme="light"] .results-card,
+html[data-theme="light"] .results-card-enhanced,
+html[data-theme="light"] .results-section,
+html[data-theme="light"] .results-solution,
+html[data-theme="light"] .results-score-breakdown,
+html[data-theme="light"] .interrogation-profile,
+html[data-theme="light"] .interrogation-transcript,
+html[data-theme="light"] .daily-mystery-panel,
+html[data-theme="light"] .hint-panel,
+html[data-theme="light"] .case-library-grid {
+  background: #e7dfcd !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .case-library-card,
+html[data-theme="light"] .case-card,
+html[data-theme="light"] .suspect-card,
+html[data-theme="light"] .suspect-dossier,
+html[data-theme="light"] .e-card,
+html[data-theme="light"] .evidence-file {
+  box-shadow: 0 2px 8px rgba(50, 39, 20, .06);
+}
+html[data-theme="light"] .panel-heading,
+html[data-theme="light"] .section-head,
+html[data-theme="light"] .case-level-heading,
+html[data-theme="light"] .evidence-board-heading,
+html[data-theme="light"] .suspect-dossier-heading,
+html[data-theme="light"] .results-section-heading {
+  background: #ddd2b9 !important;
+  color: #3b3120 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .case-library-card *,
+html[data-theme="light"] .case-card *,
+html[data-theme="light"] .suspect-card *,
+html[data-theme="light"] .suspect-dossier *,
+html[data-theme="light"] .e-card *,
+html[data-theme="light"] .evidence-file *,
+html[data-theme="light"] .results-card *,
+html[data-theme="light"] .results-section *,
+html[data-theme="light"] .panel *,
+html[data-theme="light"] .board *,
+html[data-theme="light"] .timeline-panel *,
+html[data-theme="light"] .victim *,
+html[data-theme="light"] .notebook-panel *,
+html[data-theme="light"] .difficulty-panel *,
+html[data-theme="light"] .case-library-panel *,
+html[data-theme="light"] .ai-case-panel *,
+html[data-theme="light"] .evidence-board *,
+html[data-theme="light"] .workspace-panel *,
+html[data-theme="light"] .game-panel *,
+html[data-theme="light"] .interrogation-profile *,
+html[data-theme="light"] .interrogation-transcript * {
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .welcome-hero {
+  background: linear-gradient(120deg, #ddd2b9, #e7dfcd) !important;
+}
+html[data-theme="light"] .welcome-screen .case-library-card,
+html[data-theme="light"] .welcome-screen .case-level,
+html[data-theme="light"] .welcome-screen .difficulty-card {
+  background-color: #e7dfcd !important;
+}
+html[data-theme="light"] .welcome-screen .case-library-card h2,
+html[data-theme="light"] .welcome-screen .case-library-card h3,
+html[data-theme="light"] .welcome-screen .case-library-card p,
+html[data-theme="light"] .welcome-screen .case-level h2,
+html[data-theme="light"] .welcome-screen .case-level h3,
+html[data-theme="light"] .welcome-screen .panel-heading h2,
+html[data-theme="light"] .welcome-screen .section-head h2,
+html[data-theme="light"] .case-header h1,
+html[data-theme="light"] .victim-name h3,
+html[data-theme="light"] .suspect-card-main strong,
+html[data-theme="light"] .results-card h1,
+html[data-theme="light"] .results-card h2 {
+  color: #302b21 !important;
+}
+html[data-theme="light"] .scene,
+html[data-theme="light"] .board-grid,
+html[data-theme="light"] .evidence-object,
+html[data-theme="light"] .v2-evidence-object {
+  /* Preserve the crime-scene illustration's dark, photographic appearance. */
+}
+@media (max-width: 600px) {
+  html[data-theme="light"] .theme-toggle,
+  html[data-theme="dark"] .theme-toggle,
+  html:not([data-theme]) .theme-toggle {
+    right: 12px !important;
+    bottom: 12px !important;
+    min-height: 38px;
+    min-width: 132px;
+  }
+}
