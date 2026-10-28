@@ -31,13 +31,6 @@ function readHistory(): DailyRecord[] {
     return Array.isArray(value) ? value as DailyRecord[] : [];
   } catch { return []; }
 }
-function readCachedCase(date: string): CachedDailyCase | null {
-  try {
-    const value = JSON.parse(localStorage.getItem(DAILY_CASE_KEY) || "null") as CachedDailyCase | null;
-    return value?.date === date && value.caseId ? value : null;
-  } catch { return null; }
-}
-
 interface Props {
   cases: CaseCatalogItem[];
   busy: boolean;
