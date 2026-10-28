@@ -1,8 +1,8 @@
 import logging
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import text
+from sqlalchemy import select, text
 
 from app.schemas.case import (
     Difficulty,
@@ -125,10 +125,36 @@ def daily_case():
                     from app.schemas.case import Case
                     canonical = Case.model_validate(existing.case_data)
                 else:
+                    # Give the generator recent daily cases as explicit exclusions.
+                    # This reduces repeated titles, settings, and story premises across days.
+                    recent_cases = db.scalars(
+                        select(GeneratedCase)
+                        .where(GeneratedCase.case_id.like("daily_%"))
+                        .order_by(GeneratedCase.created_at.desc())
+                        .limit(7)
+                    ).all()
+                    recent_summaries = []
+                    for prior in recent_cases:
+                        prior_data = prior.case_data if isinstance(prior.case_data, dict) else {}
+                        prior_description = str(prior_data.get("description", ""))[:350]
+                        recent_summaries.append(
+                            f"- {prior.title}: {prior_description}"
+                        )
+                    exclusions = "\\n".join(recent_summaries) or "- No previous daily cases are stored yet."
                     canonical = generate_case(
                         "hard",
-                        f"Original shared daily mystery for {daily_date.isoformat()}: unique setting, suspects, clues, timeline, and culprit. Do not reuse existing cases.",
+                        f"Create the original shared daily mystery for {daily_date.isoformat()}. "
+                        "It must be clearly distinct from every recent daily case below: do not reuse "
+                        "their title, setting, victim, culprit, motive, murder method, central twist, "
+                        "or key clue pattern. Choose a different premise and cast.\n"
+                        f"RECENT DAILY CASES TO AVOID:\\n{exclusions}",
                     )
+                    # Do not persist a same-title repeat if the model ignores the exclusion prompt.
+                    recent_titles = {prior.title.strip().casefold() for prior in recent_cases}
+                    if canonical.title.strip().casefold() in recent_titles:
+                        raise RuntimeError(
+                            "Generated daily mystery repeated a recent title; refusing to cache it."
+                        )
                     canonical.case_id = case_id
                     data = canonical.model_dump(mode="json")
                     db.add(GeneratedCase(
