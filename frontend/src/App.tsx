@@ -40,6 +40,7 @@ import { recordDailyMysteryResult } from "./components/DailyMysteryChallenge";
 type Screen = "welcome" | "loading" | "game" | "results";
 
 const ACTIVE_SESSION_KEY = "the-last-clue-active-session";
+const PAUSED_DAILY_KEY = "the-last-clue-paused-daily";
 const SESSION_LOCAL_KEY_PREFIX = "the-last-clue-session-local:";
 
 const CASE_PROGRESS_KEY = "the-last-clue-case-progress";
@@ -296,6 +297,11 @@ export default function App() {
         if (cancelled) return;
 
         const progress = session.progress;
+        const dailyMatch = session.case_id.match(/^daily_(\d{4})(\d{2})(\d{2})$/);
+        if (dailyMatch) {
+          dailyChallengeDateRef.current = `${dailyMatch[1]}-${dailyMatch[2]}-${dailyMatch[3]}`;
+          window.localStorage.removeItem(PAUSED_DAILY_KEY);
+        }
 
         let localState: SessionLocalState | null = null;
         try {
@@ -472,8 +478,10 @@ export default function App() {
   }, [selectedCaseId]);
 
   const loadDailyChallenge = useCallback(async (caseId: string) => {
-    const now = new Date();
-    dailyChallengeDateRef.current = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const dailyDateMatch = caseId.match(/^daily_(\d{4})(\d{2})(\d{2})$/);
+    dailyChallengeDateRef.current = dailyDateMatch
+      ? `${dailyDateMatch[1]}-${dailyDateMatch[2]}-${dailyDateMatch[3]}`
+      : null;
     setScreen("loading");
     resetGameState();
     try {
@@ -574,6 +582,35 @@ export default function App() {
     }
   };
 
+  const pauseDailyToWelcome = () => {
+    if (!sessionId || !gameCase || !dailyChallengeDateRef.current) return;
+    try {
+      window.localStorage.setItem(PAUSED_DAILY_KEY, JSON.stringify({
+        date: dailyChallengeDateRef.current,
+        caseId: gameCase.case_id,
+        sessionId,
+      }));
+    } catch {
+      setError("Could not save the paused challenge in this browser. Please keep this tab open.");
+      return;
+    }
+    // Keep ACTIVE_SESSION_KEY and server session intact so Resume restores the
+    // exact investigation rather than creating a replay or resetting progress.
+    setAskedQuestions([]);
+    setConfirmLeave(false);
+    setGameCase(null);
+    setSessionId(null);
+    setResult(null);
+    setAccusing(false);
+    setError(null);
+    setScreen("welcome");
+  };
+
+  const resumeDailyChallenge = () => {
+    // The existing startup restoration flow rehydrates the saved server session.
+    window.location.reload();
+  };
+
   const leaveToWelcome = () => {
     window.localStorage.removeItem(ACTIVE_SESSION_KEY);
     setAskedQuestions([]);
@@ -619,6 +656,7 @@ export default function App() {
       setResult(response);
       setAccusing(false);
       window.localStorage.removeItem(ACTIVE_SESSION_KEY);
+      window.localStorage.removeItem(PAUSED_DAILY_KEY);
       setScreen("results");
 
       void refineSessionScore(activeSessionId, { motive, method })
@@ -677,6 +715,7 @@ export default function App() {
           }}
           onStart={load}
           onStartDaily={loadDailyChallenge}
+          onResumeDaily={resumeDailyChallenge}
           onGenerate={loadGenerated}
           busy={false}
           error={error}
@@ -1065,12 +1104,12 @@ export default function App() {
             >
               ×
             </button>
-            <span className="eyebrow">ABANDON INVESTIGATION?</span>
-            <h2>Leave this case?</h2>
+            <span className="eyebrow">{dailyChallengeDateRef.current ? "PAUSE DAILY ASSIGNMENT" : "ABANDON INVESTIGATION?"}</span>
+            <h2>{dailyChallengeDateRef.current ? "Pause this case?" : "Leave this case?"}</h2>
             <p>
-              Your current progress and notebook will be cleared if you return
-              to the start screen. The case can be started again, but the timer
-              will reset.
+              {dailyChallengeDateRef.current
+                ? "Your investigation progress will be saved. You can resume this same daily case later today, but you cannot restart it after finishing."
+                : "Your current progress and notebook will be cleared if you return to the start screen. The case can be started again, but the timer will reset."}
             </p>
             <div className="modal-actions leave-actions">
               <button
@@ -1079,8 +1118,8 @@ export default function App() {
               >
                 CONTINUE INVESTIGATING
               </button>
-              <button className="primary" onClick={leaveToWelcome}>
-                LEAVE CASE
+              <button className="primary" onClick={dailyChallengeDateRef.current ? pauseDailyToWelcome : leaveToWelcome}>
+                {dailyChallengeDateRef.current ? "PAUSE & RETURN" : "LEAVE CASE"}
               </button>
             </div>
           </div>
