@@ -2941,3 +2941,39 @@ html[data-theme="light"] .welcome-hero h2,
 html[data-theme="light"] .welcome-hero .welcome-title {
   color: #3b3120 !important;
 }
+
+
+/* Production wiring fix: the root theme attribute is set by App.tsx. */
+html[data-theme="light"] {
+  background-color: #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] body {
+  background-color: #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .app,
+html[data-theme="light"] .welcome-screen,
+html[data-theme="light"] .loading-screen,
+html[data-theme="light"] .results {
+  background-color: #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .welcome-hero,
+html[data-theme="light"] .welcome-hero::before,
+html[data-theme="light"] .welcome-hero::after {
+  background-color: #e7dfcd !important;
+}
+html[data-theme="light"] .theme-toggle {
+  bottom: 20px;
+  top: auto;
+  right: 22px;
+}
+@media (max-width: 600px) {
+  html[data-theme="light"] .theme-toggle,
+  .theme-toggle {
+    bottom: 12px;
+    top: auto;
+    right: 12px;
+  }
+}
