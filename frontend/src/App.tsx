@@ -582,16 +582,20 @@ export default function App() {
     }
   };
 
-  const pauseDailyToWelcome = () => {
+  const pauseDailyToWelcome = async () => {
     if (!sessionId || !gameCase || !dailyChallengeDateRef.current) return;
     try {
+      const elapsedSeconds = timedOut
+        ? gameCase.target_minutes * 60
+        : Math.min(gameCase.target_minutes * 60, elapsed);
+      await recordAnalysis(sessionId, connections, important, elapsedSeconds);
       window.localStorage.setItem(PAUSED_DAILY_KEY, JSON.stringify({
         date: dailyChallengeDateRef.current,
         caseId: gameCase.case_id,
         sessionId,
       }));
     } catch {
-      setError("Could not save the paused challenge in this browser. Please keep this tab open.");
+      setError("Could not save the paused challenge. Check your connection and try again.");
       return;
     }
     // Keep ACTIVE_SESSION_KEY and server session intact so Resume restores the
