@@ -41,6 +41,7 @@ export default function Interrogation({
     (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
   ).length ?? 0;
   const suspectMonogram = suspect.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("");
+  const discoveredEvidence = gameCase.evidence.filter((item) => found.includes(item.id));
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
