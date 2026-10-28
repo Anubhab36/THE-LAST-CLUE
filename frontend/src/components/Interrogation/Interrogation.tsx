@@ -4,6 +4,8 @@ export interface InterviewEntry {
   question: string;
   answer: string;
   hasInconsistency: boolean;
+  linkedEvidenceIds?: string[];
+  assessment?: "unverified" | "supports" | "contradicts";
 }
 import type { Case, Suspect } from "../../types/case";
 import { interrogateSession } from "../../services/api";
@@ -39,6 +41,7 @@ export default function Interrogation({
     (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
   ).length ?? 0;
   const suspectMonogram = suspect.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("");
+  const discoveredEvidence = gameCase.evidence.filter((item) => found.includes(item.id));
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
@@ -58,6 +61,8 @@ export default function Interrogation({
         // Never visually distinguish a suspect based on the case truth. Dialogue is displayed uniformly.
         answer: result.answer,
         hasInconsistency: false,
+        linkedEvidenceIds: [],
+        assessment: "unverified",
       };
       setTranscript((current) => {
         const next = [...current, entry];
@@ -119,9 +124,41 @@ export default function Interrogation({
         </div>
         {transcript.length > 0 && <div className="interrogation-transcript" aria-live="polite">
           <div className="transcript-heading">INTERVIEW RECORD · {transcript.length} EXCHANGE{transcript.length === 1 ? "" : "S"}</div>
-          {transcript.map((entry, index) => <article className="transcript-entry" key={`${index}-${entry.question}`}>
+          {transcript.map((entry, index) => <article className="transcript-entry interrogation-review-entry" key={`${index}-${entry.question}`}>
             <p className="transcript-question">{entry.question}</p>
             <p className="transcript-answer">{entry.answer}</p>
+            <div className="statement-evidence-review">
+              <span className="toolbar-kicker">CROSS-CHECK STATEMENT</span>
+              <p className="statement-review-hint">Link only evidence you've recovered. Your assessment is a detective note, not an automatically verified conclusion.</p>
+              {discoveredEvidence.length === 0 ? <p className="muted">Recover evidence to cross-check this statement.</p> : (
+                <div className="statement-evidence-options">
+                  {discoveredEvidence.map((item) => {
+                    const linked = (entry.linkedEvidenceIds ?? []).includes(item.id);
+                    return <label key={item.id} className="statement-evidence-option">
+                      <input type="checkbox" checked={linked} onChange={(event) => {
+                        const ids = new Set(entry.linkedEvidenceIds ?? []);
+                        if (event.target.checked) ids.add(item.id); else ids.delete(item.id);
+                        const next = transcript.map((row, rowIndex) => rowIndex === index ? { ...row, linkedEvidenceIds: [...ids] } : row);
+                        setTranscript(next);
+                        onTranscriptChange(suspect.id, next);
+                      }} />
+                      <span><strong>{item.name}</strong><small>{item.importance.replace("_", " ").toUpperCase()}</small></span>
+                    </label>;
+                  })}
+                </div>
+              )}
+              <label className="statement-assessment">YOUR ASSESSMENT
+                <select value={entry.assessment ?? "unverified"} onChange={(event) => {
+                  const next = transcript.map((row, rowIndex) => rowIndex === index ? { ...row, assessment: event.target.value as InterviewEntry["assessment"] } : row);
+                  setTranscript(next);
+                  onTranscriptChange(suspect.id, next);
+                }}>
+                  <option value="unverified">Not assessed</option>
+                  <option value="supports">Evidence supports statement</option>
+                  <option value="contradicts">Evidence contradicts statement</option>
+                </select>
+              </label>
+            </div>
           </article>)}
           <p className="transcript-note">Compare statements with independent evidence before drawing conclusions.</p>
         </div>}
