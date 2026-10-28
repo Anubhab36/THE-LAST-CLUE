@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import select, text
 
@@ -140,14 +140,14 @@ def daily_case():
                         recent_summaries.append(
                             f"- {prior.title}: {prior_description}"
                         )
-                    exclusions = "\\n".join(recent_summaries) or "- No previous daily cases are stored yet."
+                    exclusions = "\n".join(recent_summaries) or "- No previous daily cases are stored yet."
                     canonical = generate_case(
                         "hard",
                         f"Create the original shared daily mystery for {daily_date.isoformat()}. "
                         "It must be clearly distinct from every recent daily case below: do not reuse "
                         "their title, setting, victim, culprit, motive, murder method, central twist, "
                         "or key clue pattern. Choose a different premise and cast.\n"
-                        f"RECENT DAILY CASES TO AVOID:\\n{exclusions}",
+                        f"RECENT DAILY CASES TO AVOID:\n{exclusions}",
                     )
                     # Do not persist a same-title repeat if the model ignores the exclusion prompt.
                     recent_titles = {prior.title.strip().casefold() for prior in recent_cases}
