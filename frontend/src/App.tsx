@@ -25,6 +25,7 @@ import {
 import Timer from "./components/Timer/Timer";
 import ImmersiveCrimeScene from "./components/CrimeScene/ImmersiveCrimeScene";
 import EvidenceBoard from "./components/EvidenceBoard/EvidenceBoard";
+import EvidenceLaboratory from "./components/EvidenceLaboratory/EvidenceLaboratory";
 import Timeline from "./components/Timeline/Timeline";
 import Interrogation, { type InterviewEntry } from "./components/Interrogation/Interrogation";
 import Accusation from "./components/Accusation/Accusation";
@@ -902,6 +903,8 @@ export default function App() {
           results={actionResults}
           onRun={runAction}
         />
+
+        <EvidenceLaboratory caseId={gameCase.case_id} evidence={gameCase.evidence} found={found} completedActions={completedActions} />
 
         <EvidenceBoard
           evidence={gameCase.evidence}
