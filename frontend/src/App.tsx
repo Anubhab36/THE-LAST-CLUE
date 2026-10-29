@@ -981,7 +981,7 @@ export default function App() {
           onRemoveEvidenceCrossReference={(id) =>
             setEvidenceCrossReferences((current) => current.filter((item) => item.id !== id))
           }
-          onConnect={(e, s)
+          onConnect={(e, s) =>
             setConnections((current) =>
               current.some(
                 (connection) => connection[0] === e && connection[1] === s,
