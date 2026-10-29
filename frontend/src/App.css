@@ -3439,3 +3439,105 @@ html[data-theme="light"] button[class*="accusation"] {
   color: #211b10 !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Audited light-theme corrections: selectors verified against current React components.
+   Scoped to light mode; dark theme and gameplay remain unchanged. */
+html[data-theme="light"] .hint-system .hint-level-button,
+html[data-theme="light"] .hint-system .hint-reveal-row {
+  background: #e7dfcd;
+  color: #51452f;
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .hint-system .hint-level-button > span,
+html[data-theme="light"] .hint-system .hint-level-button strong,
+html[data-theme="light"] .hint-system .hint-reveal-row p,
+html[data-theme="light"] .hint-system .hint-status,
+html[data-theme="light"] .hint-system .hint-disclaimer {
+  color: #51452f;
+}
+html[data-theme="light"] .hint-system .hint-level-button.active {
+  background: #d7c69f;
+  color: #302b21;
+  border-color: #b89a5b;
+}
+html[data-theme="light"] .hint-system .hint-reveal-button {
+  background: #c5a45d;
+  color: #211b10;
+  border-color: #b89a5b;
+}
+
+html[data-theme="light"] .notebook-summary > div {
+  background: #e7dfcd;
+  color: #302b21;
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .notebook-summary > div strong,
+html[data-theme="light"] .notebook-summary > div span {
+  color: #51452f;
+}
+
+html[data-theme="light"] .evidence-lab-filters button,
+html[data-theme="light"] .dossiers-toolbar .dossiers-filter {
+  background: #e7dfcd;
+  color: #51401e;
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .evidence-lab-filters button.selected,
+html[data-theme="light"] .dossiers-toolbar .dossiers-filter.active {
+  background: #c5a45d;
+  color: #282316;
+  border-color: #b89a5b;
+}
+html[data-theme="light"] .dossier-monogram {
+  background: #ddd2b9;
+  color: #51401e;
+  border-color: #b89a5b;
+}
+
+html[data-theme="light"] .timeline li::before,
+html[data-theme="light"] .timeline-marker,
+html[data-theme="light"] .timeline-node,
+html[data-theme="light"] .timeline-number,
+html[data-theme="light"] .timeline-time-marker,
+html[data-theme="light"] .timeline-event-number {
+  background: #e7dfcd;
+  color: #51401e;
+  border-color: #b89a5b;
+}
+
+html[data-theme="light"] .crime-scene .immersive-room {
+  background: linear-gradient(180deg, #e6dfd0 0%, #d8cfba 57%, #c9bea5 58%, #d8cfba 100%);
+  border-color: #b8a77f;
+}
+html[data-theme="light"] .crime-scene .immersive-room::before {
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.04));
+}
+html[data-theme="light"] .crime-scene .immersive-room-backwall {
+  background: repeating-linear-gradient(90deg, transparent 0 94px, rgba(92,73,38,.08) 95px 96px),
+    linear-gradient(180deg, #eee7d7, #d8cfba);
+  border-bottom-color: #b8a77f;
+}
+html[data-theme="light"] .crime-scene .immersive-room-footer {
+  background: rgba(238, 233, 220, .96);
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .crime-scene .immersive-room-footer > div:first-child span,
+html[data-theme="light"] .crime-scene .immersive-room-footer > div:first-child strong,
+html[data-theme="light"] .crime-scene .immersive-room-footer > strong {
+  color: #51452f;
+}
+
+html[data-theme="light"] .action-bar {
+  background: #e7dfcd;
+  color: #302b21;
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .action-bar > span {
+  color: #51452f;
+}
+html[data-theme="light"] .action-bar > button {
+  background: #c5a45d;
+  color: #211b10;
+  border-color: #b89a5b;
+}
