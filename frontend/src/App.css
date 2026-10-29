@@ -3441,8 +3441,9 @@ html[data-theme="light"] button[class*="accusation"] {
 }
 
 
+
 /* Audited light-theme corrections: selectors verified against current React components.
-   Scoped to light mode !important; dark theme and gameplay remain unchanged. */
+   Scoped to light mode; dark theme and gameplay remain unchanged. */
 html[data-theme="light"] .hint-system .hint-level-button,
 html[data-theme="light"] .hint-system .hint-reveal-row {
   background: #e7dfcd !important;
@@ -3495,7 +3496,7 @@ html[data-theme="light"] .dossier-monogram {
   border-color: #b89a5b !important;
 }
 
-html[data-theme="light"] .timeline li: :before,
+html[data-theme="light"] .timeline li::before,
 html[data-theme="light"] .timeline-marker,
 html[data-theme="light"] .timeline-node,
 html[data-theme="light"] .timeline-number,
@@ -3510,7 +3511,7 @@ html[data-theme="light"] .crime-scene .immersive-room {
   background: linear-gradient(180deg, #e6dfd0 0%, #d8cfba 57%, #c9bea5 58%, #d8cfba 100%) !important;
   border-color: #b8a77f !important;
 }
-html[data-theme="light"] .crime-scene .immersive-room: :before {
+html[data-theme="light"] .crime-scene .immersive-room::before {
   background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.04)) !important;
 }
 html[data-theme="light"] .crime-scene .immersive-room-backwall {
@@ -3522,7 +3523,7 @@ html[data-theme="light"] .crime-scene .immersive-room-footer {
   background: rgba(238, 233, 220, .96) !important;
   border-color: #cdbb91 !important;
 }
-html[data-theme="light"] .crime-scene .immersive-room-footer > div: first-child span,
+html[data-theme="light"] .crime-scene .immersive-room-footer > div:first-child span,
 html[data-theme="light"] .crime-scene .immersive-room-footer > div:first-child strong,
 html[data-theme="light"] .crime-scene .immersive-room-footer > strong {
   color: #51452f !important;
