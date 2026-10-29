@@ -3550,3 +3550,24 @@ html[data-theme="light"] .timeline .marker {
   color: #51401e !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Direct entry from a dossier into the existing interrogation flow. */
+.dossier-interrogate-button {
+  width: 100%;
+  margin-top: 14px;
+}
+
+
+/* Suspect dossier timeline rows must follow the light theme, not the dark game palette. */
+html[data-theme="light"] .suspect-dossiers .dossier-timeline-list li {
+  background: #e7dfcd !important;
+  color: #51452f !important;
+  border-left-color: #b89a5b !important;
+}
+html[data-theme="light"] .suspect-dossiers .dossier-timeline-list time {
+  color: #80652e !important;
+}
+html[data-theme="light"] .suspect-dossiers .dossier-timeline-list li > span {
+  color: #51452f !important;
+}
