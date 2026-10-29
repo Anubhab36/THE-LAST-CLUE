@@ -184,6 +184,7 @@ export default function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [found, setFound] = useState<string[]>([]);
+  const [caseBoardAdded, setCaseBoardAdded] = useState<string[]>([]);
   const [connections, setConnections] = useState<[string, string][]>([]);
   const [important, setImportant] = useState<string[]>([]);
   const [completedActions, setCompletedActions] = useState<string[]>([]);
@@ -1084,9 +1085,14 @@ export default function App() {
             </p>
             <button
               className="primary"
-              onClick={() => setEvidence(null)}
+              disabled={caseBoardAdded.includes(evidence.id)}
+              onClick={() => {
+                setCaseBoardAdded((current) =>
+                  current.includes(evidence.id) ? current : [...current, evidence.id],
+                );
+              }}
             >
-              ADD TO CASE BOARD
+              {caseBoardAdded.includes(evidence.id) ? "EVIDENCE ADDED TO CASE BOARD ✓" : "ADD TO CASE BOARD"}
             </button>
           </div>
         </div>
