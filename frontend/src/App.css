@@ -3439,3 +3439,50 @@ html[data-theme="light"] button[class*="accusation"] {
   color: #211b10 !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Three narrowly scoped light-mode corrections requested by the project owner.
+   Do not broaden this block: all other theme styling remains unchanged. */
+
+/* 1. Crime Scene: lighten only the illustrated scene canvas/background. */
+html[data-theme="light"] .crime-scene .scene-grid,
+html[data-theme="light"] .crime-scene .v2-scene-grid,
+html[data-theme="light"] .crime-scene .immersive-scene-shell,
+html[data-theme="light"] .crime-scene .immersive-scene-art,
+html[data-theme="light"] .crime-scene .scene-illustration,
+html[data-theme="light"] .crime-scene .scene-canvas {
+  background-color: #d8cfba !important;
+}
+
+/* 2. Evidence Laboratory: all four filter buttons use the light palette. */
+html[data-theme="light"] .evidence-lab-filters button {
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .evidence-lab-filters button.selected {
+  background: #c5a45d !important;
+  color: #282316 !important;
+  border-color: #b89a5b !important;
+}
+
+/* 3. Suspect Dossiers: filter buttons and suspect initials/logo tiles. */
+html[data-theme="light"] .suspect-dossier-strip button {
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .suspect-dossier-strip button.active,
+html[data-theme="light"] .suspect-dossier-strip button.selected,
+html[data-theme="light"] .suspect-dossier-strip button[aria-pressed="true"] {
+  background: #c5a45d !important;
+  color: #282316 !important;
+}
+html[data-theme="light"] .suspect-dossier-monogram,
+html[data-theme="light"] .suspect-dossier-portrait,
+html[data-theme="light"] .suspect-dossier .suspect-monogram,
+html[data-theme="light"] .suspect-dossier .suspect-avatar {
+  background: #d8cfba !important;
+  color: #51401e !important;
+  border-color: #b89a5b !important;
+}
