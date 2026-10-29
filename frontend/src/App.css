@@ -3756,3 +3756,19 @@ html[data-theme="light"] .cross-reference-save {
 html[data-theme="light"] .cross-reference-record-topline button {
   color: #51452f !important;
 }
+
+/* Timeline evidence-linking controls; isolated to the timeline feature. */
+.timeline-link-intro{margin:14px 0 0;color:#858b8c;font-size:12px;line-height:1.6}
+.timeline-evidence-tag{border-color:rgba(184,154,91,.35);color:#d4bc82}
+.timeline-evidence-linker{margin-top:18px;padding-top:14px;border-top:1px solid rgba(184,154,91,.2)}
+.timeline-link-label{display:block;margin-bottom:10px;color:#b89a5b;font:9px "DM Mono",monospace;letter-spacing:.08em}
+.timeline-evidence-options{display:flex;flex-wrap:wrap;gap:8px}
+.timeline-evidence-option{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid #343a3a;background:#111415;color:#c1c2bc;font-size:11px;text-align:left;cursor:pointer}
+.timeline-evidence-option>span{color:#b89a5b}
+.timeline-evidence-option.is-linked{border-color:#806c43;background:rgba(184,154,91,.1);color:#e0c98f}
+.timeline-link-empty,.timeline-link-footnote{color:#858b8c;font-size:11px;line-height:1.6}
+.timeline-link-footnote{margin:12px 0 0}
+html[data-theme="light"] .timeline-link-intro,html[data-theme="light"] .timeline-link-empty,html[data-theme="light"] .timeline-link-footnote{color:#51452f!important}
+html[data-theme="light"] .timeline-evidence-option{background:#f0e8d7!important;border-color:#cdbb91!important;color:#51452f!important}
+html[data-theme="light"] .timeline-evidence-option.is-linked{background:#d9c69b!important;border-color:#a88b4d!important;color:#302b21!important}
+html[data-theme="light"] .timeline-evidence-tag{color:#51452f!important;border-color:#cdbb91!important}
