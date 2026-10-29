@@ -3439,3 +3439,76 @@ html[data-theme="light"] button[class*="accusation"] {
   color: #211b10 !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Complete light-theme coverage for the remaining controls and dark-only surfaces. */
+html[data-theme="light"] .evidence-lab-filters button {
+  background: #e7dfcd !important;
+  color: #51452f !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .evidence-lab-filters button.selected {
+  background: #c5a45e !important;
+  color: #282316 !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .timeline .marker {
+  background: #e7dfcd !important;
+  color: #5b471e !important;
+  border-color: #b89a5b !important;
+  box-shadow: 0 0 0 3px #eee9dc;
+}
+html[data-theme="light"] .dossiers-toolbar .dossiers-filter {
+  background: #e7dfcd !important;
+  color: #51452f !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .dossiers-toolbar .dossiers-filter.active {
+  background: #c5a45e !important;
+  color: #282316 !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .dossier-monogram,
+html[data-theme="light"] .suspect-board-monogram {
+  background: #e7dfcd !important;
+  color: #5b471e !important;
+  border: 1px solid #b89a5b !important;
+}
+html[data-theme="light"] .scene.v2-scene,
+html[data-theme="light"] .crime-scene .scene,
+html[data-theme="light"] .scene {
+  background: #e2dac8 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .scene .scene-grid {
+  background: linear-gradient(rgba(184,154,91,.045), rgba(184,154,91,.045)) !important;
+}
+html[data-theme="light"] .scene .scene-object {
+  background: rgba(245,240,228,.58) !important;
+  color: #5b503b !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .scene .scene-object:hover,
+html[data-theme="light"] .scene .scene-object.investigated {
+  background: #d7c69f !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .scene-caption span,
+html[data-theme="light"] .scene-object small {
+  color: #655b49 !important;
+}
+html[data-theme="light"] .loading-screen {
+  background: #eee9dc !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .loading-screen h1 {
+  color: #3b3120 !important;
+}
+html[data-theme="light"] .loading-screen p {
+  color: #655b49 !important;
+}
+html[data-theme="light"] .loading-mark {
+  background: #e7dfcd !important;
+  color: #8c6d2f !important;
+  border-color: #b89a5b !important;
+}
