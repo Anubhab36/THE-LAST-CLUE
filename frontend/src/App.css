@@ -3571,3 +3571,188 @@ html[data-theme="light"] .suspect-dossiers .dossier-timeline-list time {
 html[data-theme="light"] .suspect-dossiers .dossier-timeline-list li > span {
   color: #51452f !important;
 }
+
+
+/* Evidence-to-evidence cross-referencing workbench. Scoped to this feature. */
+.cross-reference-workbench {
+  margin: 18px 0 24px;
+  padding: 22px;
+  border: 1px solid #34302a;
+  background: linear-gradient(145deg, rgba(184,154,91,.055), transparent 58%), #111415;
+}
+.cross-reference-heading,
+.cross-reference-records-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.cross-reference-heading h3 {
+  margin: 7px 0;
+  color: #e8e5dc;
+  font: 400 25px Georgia, serif;
+}
+.cross-reference-heading p,
+.cross-reference-empty,
+.cross-reference-no-records {
+  color: #929898;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.cross-reference-empty {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px dashed #343a3a;
+}
+.cross-reference-form {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #292e2f;
+  background: rgba(0,0,0,.12);
+}
+.cross-reference-selectors {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: end;
+  gap: 12px;
+}
+.cross-reference-selectors label,
+.cross-reference-deduction-label {
+  display: grid;
+  gap: 8px;
+  color: #858b89;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .07em;
+}
+.cross-reference-selectors select,
+.cross-reference-deduction-label textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #343a3a;
+  border-radius: 3px;
+  background: #0d1011;
+  color: #e8e5dc;
+  font: 12px Inter, sans-serif;
+}
+.cross-reference-selectors select:focus,
+.cross-reference-deduction-label textarea:focus {
+  outline: 1px solid #b89a5b;
+  border-color: #b89a5b;
+}
+.cross-reference-symbol {
+  padding-bottom: 10px;
+  color: #b89a5b;
+  font: 18px "DM Mono", monospace;
+}
+.cross-reference-deduction-label {
+  margin-top: 18px;
+}
+.cross-reference-deduction-label textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+.cross-reference-save {
+  margin-top: 14px;
+  padding: 11px 14px;
+  border: 1px solid #806c43;
+  background: transparent;
+  color: #d4bc82;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.cross-reference-save:hover:not(:disabled) { background: #201d16; }
+.cross-reference-save:disabled { opacity: .48; cursor: not-allowed; }
+.cross-reference-records { margin-top: 22px; }
+.cross-reference-records-heading { align-items: center; }
+.cross-reference-no-records { margin-bottom: 0; }
+.cross-reference-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.cross-reference-record {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #343a3a;
+  background: #151919;
+}
+.cross-reference-record-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #b89a5b;
+  font: 9px "DM Mono", monospace;
+  letter-spacing: .07em;
+}
+.cross-reference-record-topline button {
+  border: 0;
+  background: transparent;
+  color: #8c9293;
+  font: inherit;
+  cursor: pointer;
+}
+.cross-reference-record-topline button:hover { color: #d4bc82; }
+.cross-reference-pair {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+  align-items: center;
+  gap: 9px;
+  margin-top: 16px;
+  color: #d4bc82;
+}
+.cross-reference-pair strong {
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.cross-reference-pair > span { color: #b89a5b; }
+.cross-reference-record p {
+  margin: 14px 0;
+  color: #c1c2bc;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.cross-reference-record > small {
+  color: #747c79;
+  font: 8px "DM Mono", monospace;
+  letter-spacing: .06em;
+}
+@media (max-width: 600px) {
+  .cross-reference-workbench { padding: 16px; }
+  .cross-reference-selectors { grid-template-columns: 1fr; }
+  .cross-reference-symbol { display: none; }
+  .cross-reference-heading { flex-direction: column; }
+  .cross-reference-form { padding: 13px; }
+}
+html[data-theme="light"] .cross-reference-workbench,
+html[data-theme="light"] .cross-reference-form,
+html[data-theme="light"] .cross-reference-record {
+  background: #e7dfcd !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .cross-reference-workbench :is(h3,p,span,strong,small,label),
+html[data-theme="light"] .cross-reference-record :is(p,strong,span,small),
+html[data-theme="light"] .cross-reference-empty,
+html[data-theme="light"] .cross-reference-no-records {
+  color: #51452f !important;
+}
+html[data-theme="light"] .cross-reference-selectors select,
+html[data-theme="light"] .cross-reference-deduction-label textarea {
+  background: #f0e8d7 !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .cross-reference-save {
+  background: #c5a45d !important;
+  color: #211b10 !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .cross-reference-record-topline button {
+  color: #51452f !important;
+}

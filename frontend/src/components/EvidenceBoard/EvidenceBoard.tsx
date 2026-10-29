@@ -3,11 +3,21 @@ import type { Evidence, Suspect } from "../../types/case";
 
 type BoardFilter = "all" | "connected" | "unconnected";
 
+interface EvidenceCrossReference {
+  id: string;
+  firstEvidenceId: string;
+  secondEvidenceId: string;
+  deduction: string;
+}
+
 interface EvidenceBoardProps {
   evidence: Evidence[];
   suspects: Suspect[];
   found: string[];
   connections: [string, string][];
+  evidenceCrossReferences: EvidenceCrossReference[];
+  onAddEvidenceCrossReference: (firstEvidenceId: string, secondEvidenceId: string, deduction: string) => void;
+  onRemoveEvidenceCrossReference: (id: string) => void;
   onConnect: (evidenceId: string, suspectId: string) => void;
   onDisconnect: (evidenceId: string, suspectId: string) => void;
 }
@@ -17,6 +27,9 @@ export default function EvidenceBoard({
   suspects,
   found,
   connections,
+  evidenceCrossReferences,
+  onAddEvidenceCrossReference,
+  onRemoveEvidenceCrossReference,
   onConnect,
   onDisconnect,
 }: EvidenceBoardProps) {
@@ -24,6 +37,9 @@ export default function EvidenceBoard({
   const [feedback, setFeedback] = useState("");
   const [selectedEvidenceId, setSelectedEvidenceId] = useState("");
   const [selectedSuspectId, setSelectedSuspectId] = useState("");
+  const [crossReferenceFirstId, setCrossReferenceFirstId] = useState("");
+  const [crossReferenceSecondId, setCrossReferenceSecondId] = useState("");
+  const [crossReferenceDeduction, setCrossReferenceDeduction] = useState("");
 
   const discoveredEvidence = useMemo(
     () => evidence.filter((item) => found.includes(item.id)),
@@ -200,6 +216,113 @@ export default function EvidenceBoard({
             </div>
           </>
         )}
+      </section>
+
+      <section className="cross-reference-workbench" aria-labelledby="cross-reference-title">
+        <div className="cross-reference-heading">
+          <div>
+            <span className="toolbar-kicker">COMPARATIVE ANALYSIS</span>
+            <h3 id="cross-reference-title">Cross-reference evidence</h3>
+            <p>Compare two recovered clues and record the connection you believe they suggest.</p>
+          </div>
+          <span className="deduction-workbench-seal" aria-hidden="true">LC / 03</span>
+        </div>
+        {discoveredEvidence.length < 2 ? (
+          <div className="cross-reference-empty">Recover at least two clues to compare evidence against evidence.</div>
+        ) : (
+          <form
+            className="cross-reference-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const first = discoveredEvidence.some((item) => item.id === crossReferenceFirstId)
+                ? crossReferenceFirstId : discoveredEvidence[0].id;
+              const second = discoveredEvidence.some((item) => item.id === crossReferenceSecondId)
+                ? crossReferenceSecondId : discoveredEvidence[1].id;
+              const pairExists = evidenceCrossReferences.some((item) =>
+                (item.firstEvidenceId === first && item.secondEvidenceId === second)
+                || (item.firstEvidenceId === second && item.secondEvidenceId === first)
+              );
+              const deduction = crossReferenceDeduction.trim();
+              if (first === second || pairExists || !deduction) return;
+              onAddEvidenceCrossReference(first, second, deduction);
+              setCrossReferenceDeduction("");
+              setFeedback("Evidence cross-reference recorded. This is your deduction, not a confirmed case fact.");
+            }}
+          >
+            <div className="cross-reference-selectors">
+              <label>
+                <span>01 / FIRST CLUE</span>
+                <select
+                  value={discoveredEvidence.some((item) => item.id === crossReferenceFirstId) ? crossReferenceFirstId : discoveredEvidence[0].id}
+                  onChange={(event) => setCrossReferenceFirstId(event.target.value)}
+                >
+                  {discoveredEvidence.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                </select>
+              </label>
+              <span className="cross-reference-symbol" aria-hidden="true">＋</span>
+              <label>
+                <span>02 / SECOND CLUE</span>
+                <select
+                  value={discoveredEvidence.some((item) => item.id === crossReferenceSecondId) ? crossReferenceSecondId : discoveredEvidence[1].id}
+                  onChange={(event) => setCrossReferenceSecondId(event.target.value)}
+                >
+                  {discoveredEvidence.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                </select>
+              </label>
+            </div>
+            <label className="cross-reference-deduction-label">
+              <span>YOUR DEDUCTION</span>
+              <textarea
+                value={crossReferenceDeduction}
+                onChange={(event) => setCrossReferenceDeduction(event.target.value)}
+                placeholder="What do these two clues suggest when considered together?"
+                maxLength={600}
+                rows={3}
+                required
+              />
+            </label>
+            {(() => {
+              const first = discoveredEvidence.some((item) => item.id === crossReferenceFirstId) ? crossReferenceFirstId : discoveredEvidence[0].id;
+              const second = discoveredEvidence.some((item) => item.id === crossReferenceSecondId) ? crossReferenceSecondId : discoveredEvidence[1].id;
+              const duplicate = evidenceCrossReferences.some((item) =>
+                (item.firstEvidenceId === first && item.secondEvidenceId === second)
+                || (item.firstEvidenceId === second && item.secondEvidenceId === first)
+              );
+              return (
+                <button type="submit" className="cross-reference-save" disabled={first === second || duplicate || !crossReferenceDeduction.trim()}>
+                  {duplicate ? "PAIR ALREADY RECORDED" : first === second ? "SELECT TWO DIFFERENT CLUES" : "+ RECORD DEDUCTION"}
+                </button>
+              );
+            })()}
+          </form>
+        )}
+        <div className="cross-reference-records" aria-live="polite">
+          <div className="cross-reference-records-heading">
+            <span className="toolbar-kicker">RECORDED CONNECTIONS</span>
+            <span className="toolbar-count">{evidenceCrossReferences.length} DEDUCTION{evidenceCrossReferences.length === 1 ? "" : "S"}</span>
+          </div>
+          {evidenceCrossReferences.length === 0 ? (
+            <p className="cross-reference-no-records">No evidence-to-evidence deductions recorded yet.</p>
+          ) : (
+            <div className="cross-reference-list">
+              {evidenceCrossReferences.map((item, index) => (
+                <article className="cross-reference-record" key={item.id}>
+                  <div className="cross-reference-record-topline">
+                    <span>DEDUCTION {String(index + 1).padStart(2, "0")}</span>
+                    <button type="button" onClick={() => onRemoveEvidenceCrossReference(item.id)} aria-label="Remove evidence cross-reference">REMOVE</button>
+                  </div>
+                  <div className="cross-reference-pair">
+                    <strong>{getEvidenceName(item.firstEvidenceId)}</strong>
+                    <span aria-hidden="true">↔</span>
+                    <strong>{getEvidenceName(item.secondEvidenceId)}</strong>
+                  </div>
+                  <p>{item.deduction}</p>
+                  <small>PLAYER RECORDED · NOT VERIFIED FACT</small>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       <div className="suspect-dossier-strip" aria-label="Persons of interest">
