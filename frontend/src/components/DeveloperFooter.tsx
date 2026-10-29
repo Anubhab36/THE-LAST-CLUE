@@ -65,6 +65,9 @@ export default function DeveloperFooter({
       <div className="developer-credit">
         Developed by Anubhab Chakraborty
       </div>
+      <nav className="developer-legal-links" aria-label="Legal information">
+        <a href="/privacy-policy.html">Privacy Policy</a>
+      </nav>
 
       {social && (
         <nav
