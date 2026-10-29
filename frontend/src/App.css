@@ -3772,3 +3772,10 @@ html[data-theme="light"] .timeline-link-intro,html[data-theme="light"] .timeline
 html[data-theme="light"] .timeline-evidence-option{background:#f0e8d7!important;border-color:#cdbb91!important;color:#51452f!important}
 html[data-theme="light"] .timeline-evidence-option.is-linked{background:#d9c69b!important;border-color:#a88b4d!important;color:#302b21!important}
 html[data-theme="light"] .timeline-evidence-tag{color:#51452f!important;border-color:#cdbb91!important}
+
+
+/* Privacy link in the shared developer footer. */
+.developer-legal-links{margin-top:12px;display:flex;justify-content:center;gap:16px}
+.developer-legal-links a{color:#8f805d;font:10px "DM Mono",monospace;text-decoration:underline;text-underline-offset:3px}
+.developer-legal-links a:hover{color:#d4bc82}
+html[data-theme="light"] .developer-legal-links a{color:#66512c}
