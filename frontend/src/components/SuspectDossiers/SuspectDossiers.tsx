@@ -8,9 +8,10 @@ type Props = {
   connections: [string, string][];
   timeline: TimelineEvent[];
   interrogation: InterrogationProfile[];
+  onInterrogate: (suspect: Suspect) => void;
 };
 
-export default function SuspectDossiers({ suspects, evidence, found, connections, timeline, interrogation }: Props) {
+export default function SuspectDossiers({ suspects, evidence, found, connections, timeline, interrogation, onInterrogate }: Props) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "connected" | "unreviewed">("all");
   const discovered = useMemo(() => evidence.filter((item) => found.includes(item.id)), [evidence, found]);
@@ -79,6 +80,7 @@ export default function SuspectDossiers({ suspects, evidence, found, connections
                       ) : <p className="dossier-muted">No discovered evidence is linked to this person yet. Use the evidence board to record a connection when you have a reason to do so.</p>}
                     </div>
                     <p className="dossier-caution">This dossier summarizes case records and your explicit evidence-board links. It does not determine guilt or change your score.</p>
+                    <button type="button" className="primary dossier-interrogate-button" onClick={() => onInterrogate(suspect)}>INTERROGATE THIS SUSPECT</button>
                   </div>
                 )}
               </article>
