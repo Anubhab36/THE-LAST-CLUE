@@ -68,6 +68,7 @@ interface SessionLocalState {
   notes: NotebookNotes;
   interviewTranscripts: Record<string, InterviewEntry[]>;
   evidenceCrossReferences?: EvidenceCrossReference[];
+  timelineEvidenceLinks?: Record<string, string[]>;
 }
 
 const emptyNotes: NotebookNotes = {
@@ -196,6 +197,7 @@ export default function App() {
   const [connections, setConnections] = useState<[string, string][]>([]);
   const [evidenceCrossReferences, setEvidenceCrossReferences] = useState<EvidenceCrossReference[]>([]);
   const [important, setImportant] = useState<string[]>([]);
+  const [timelineEvidenceLinks, setTimelineEvidenceLinks] = useState<Record<string, string[]>>({});
   const [completedActions, setCompletedActions] = useState<string[]>([]);
   const [actionResults, setActionResults] = useState<Record<string, string>>(
     {},
@@ -345,6 +347,7 @@ export default function App() {
         setNotes(localState?.notes ?? { ...emptyNotes });
         setInterviewTranscripts(localState?.interviewTranscripts ?? {});
         setEvidenceCrossReferences(localState?.evidenceCrossReferences ?? []);
+        setTimelineEvidenceLinks(localState?.timelineEvidenceLinks ?? {});
         setGameCase(nextCase);
         setSessionId(session.session_id);
         setFound(progress.discovered_evidence ?? []);
@@ -385,7 +388,7 @@ export default function App() {
   useEffect(() => {
     if (screen !== "game" || !sessionId) return;
 
-    const localState: SessionLocalState = { notes, interviewTranscripts, evidenceCrossReferences };
+    const localState: SessionLocalState = { notes, interviewTranscripts, evidenceCrossReferences, timelineEvidenceLinks };
     try {
       window.localStorage.setItem(
         `${SESSION_LOCAL_KEY_PREFIX}${sessionId}`,
@@ -394,7 +397,7 @@ export default function App() {
     } catch {
       // A full or unavailable browser storage must not interrupt gameplay.
     }
-  }, [sessionId, screen, notes, interviewTranscripts, evidenceCrossReferences]);
+  }, [sessionId, screen, notes, interviewTranscripts, evidenceCrossReferences, timelineEvidenceLinks]);
 
   // Save evidence-board and timeline changes promptly, not only every 10 seconds.
   useEffect(() => {
@@ -466,6 +469,7 @@ export default function App() {
     setConnections([]);
     setEvidenceCrossReferences([]);
     setImportant([]);
+    setTimelineEvidenceLinks({});
     setCompletedActions([]);
     setActionResults({});
     setResult(null);
@@ -1003,6 +1007,20 @@ export default function App() {
           events={gameCase.timeline}
           suspects={gameCase.suspects}
           important={important}
+          evidence={gameCase.evidence}
+          found={found}
+          evidenceLinks={timelineEvidenceLinks}
+          onToggleEvidenceLink={(eventId, evidenceId) =>
+            setTimelineEvidenceLinks((current) => {
+              const linked = current[eventId] ?? [];
+              return {
+                ...current,
+                [eventId]: linked.includes(evidenceId)
+                  ? linked.filter((id) => id !== evidenceId)
+                  : [...linked, evidenceId],
+              };
+            })
+          }
           onImportant={(id) =>
             setImportant((current) =>
               current.includes(id)
