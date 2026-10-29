@@ -3542,3 +3542,11 @@ html[data-theme="light"] .action-bar > button {
   color: #211b10 !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Final light-theme fix: the actual timeline count uses .marker. */
+html[data-theme="light"] .timeline .marker {
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #b89a5b !important;
+}
