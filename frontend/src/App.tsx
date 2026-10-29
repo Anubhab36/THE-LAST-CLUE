@@ -987,7 +987,7 @@ export default function App() {
 
         <HintSystem gameCase={gameCase} found={found} completedActions={completedActions} />
 
-        <SuspectDossiers suspects={gameCase.suspects} evidence={gameCase.evidence} found={found} connections={connections} timeline={gameCase.timeline} interrogation={gameCase.interrogation} />
+        <SuspectDossiers suspects={gameCase.suspects} evidence={gameCase.evidence} found={found} connections={connections} timeline={gameCase.timeline} interrogation={gameCase.interrogation} onInterrogate={(selectedSuspect) => setInterrogating(selectedSuspect)} />
 
         <Notebook
           notes={notes}
