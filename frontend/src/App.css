@@ -3550,3 +3550,10 @@ html[data-theme="light"] .timeline .marker {
   color: #51401e !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Direct entry from a dossier into the existing interrogation flow. */
+.dossier-interrogate-button {
+  width: 100%;
+  margin-top: 14px;
+}
