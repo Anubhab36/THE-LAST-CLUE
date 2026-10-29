@@ -1086,7 +1086,7 @@ export default function App() {
               className="primary"
               onClick={() => setEvidence(null)}
             >
-              ADD TO CASE BOARD
+              {found.includes(evidence.id) ? "EVIDENCE ADDED TO CASE BOARD ✓" : "ADD TO CASE BOARD"}
             </button>
           </div>
         </div>
