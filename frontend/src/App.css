@@ -3439,3 +3439,183 @@ html[data-theme="light"] button[class*="accusation"] {
   color: #211b10 !important;
   border-color: #b89a5b !important;
 }
+
+
+/* Comprehensive light-theme pass: normalize remaining nested surfaces.
+   Keep selectors scoped to the light theme so the original dark palette is untouched. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --lc-light-surface: #e7dfcd;
+  --lc-light-surface-raised: #eee7d7;
+  --lc-light-surface-soft: #ddd2b9;
+  --lc-light-border: #cdbb91;
+  --lc-light-text: #302b21;
+  --lc-light-muted: #756a55;
+  --lc-light-gold: #b18c42;
+}
+html[data-theme="light"] body,
+html[data-theme="light"] .app,
+html[data-theme="light"] .loading-screen {
+  background: #e7dfcd !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .difficulty-select,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .board,
+html[data-theme="light"] .timeline-panel,
+html[data-theme="light"] .panel-heading,
+html[data-theme="light"] .section-head,
+html[data-theme="light"] .action-bar,
+html[data-theme="light"] .modal,
+html[data-theme="light"] .results,
+html[data-theme="light"] .results-card,
+html[data-theme="light"] .case-preparation,
+html[data-theme="light"] .preparation-screen,
+html[data-theme="light"] .prepare-investigation,
+html[data-theme="light"] .investigation-preparation {
+  background: #e7dfcd !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .panel *,
+html[data-theme="light"] .board *,
+html[data-theme="light"] .timeline-panel *,
+html[data-theme="light"] .action-bar *,
+html[data-theme="light"] .modal *,
+html[data-theme="light"] .results-card * {
+  border-color: #cdbb91;
+}
+html[data-theme="light"] .hint-system,
+html[data-theme="light"] .hint-system-body,
+html[data-theme="light"] .hint-reveal-row,
+html[data-theme="light"] .hint-level-button,
+html[data-theme="light"] .hint-reveal-button,
+html[data-theme="light"] .hint-level-button.active {
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .hint-level-button.active {
+  background: #d7c69f !important;
+}
+html[data-theme="light"] .notebook-stats > *,
+html[data-theme="light"] .notebook-stats > * > *,
+html[data-theme="light"] .notebook-summary > *,
+html[data-theme="light"] .notebook-summary-card,
+html[data-theme="light"] .notebook-panel .notebook-stat,
+html[data-theme="light"] .notebook-panel .notebook-stat-card,
+html[data-theme="light"] .notebook-panel .notebook-metric,
+html[data-theme="light"] .notebook-panel .notebook-summary-card {
+  background: #e7dfcd !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .game-footer,
+html[data-theme="light"] .game-footer > *,
+html[data-theme="light"] .action-bar,
+html[data-theme="light"] .action-bar > * {
+  background-color: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .game-footer .primary,
+html[data-theme="light"] .action-bar .primary,
+html[data-theme="light"] button[class*="accusation"] {
+  background: #c5a45d !important;
+  color: #211b10 !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .evidence-board,
+html[data-theme="light"] .evidence-board-heading,
+html[data-theme="light"] .evidence-board-stats > div,
+html[data-theme="light"] .evidence-board-toolbar,
+html[data-theme="light"] .evidence-board-filters button,
+html[data-theme="light"] .evidence-board .filters button,
+html[data-theme="light"] .suspect-dossier-strip,
+html[data-theme="light"] .suspect-dossier-strip button,
+html[data-theme="light"] .suspect-dossier-list button,
+html[data-theme="light"] .suspect-dossier,
+html[data-theme="light"] .suspect-dossier-heading {
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #cdbb91 !important;
+}
+html[data-theme="light"] .evidence-board-filters button[aria-pressed="true"],
+html[data-theme="light"] .evidence-board .filters button[aria-pressed="true"],
+html[data-theme="light"] .suspect-dossier-strip button[aria-pressed="true"] {
+  background: #d7c69f !important;
+  color: #302b21 !important;
+}
+html[data-theme="light"] .suspect-dossier-portrait,
+html[data-theme="light"] .suspect-dossier-monogram,
+html[data-theme="light"] .suspect-card .monogram,
+html[data-theme="light"] .suspect-card [class*="avatar"] {
+  background: #ddd2b9 !important;
+  color: #51401e !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .scene,
+html[data-theme="light"] .scene-view,
+html[data-theme="light"] .scene-view-panel,
+html[data-theme="light"] .crime-scene .scene,
+html[data-theme="light"] .crime-scene .scene-view,
+html[data-theme="light"] .crime-scene .scene-view-panel,
+html[data-theme="light"] .immersive-room,
+html[data-theme="light"] .scene-room,
+html[data-theme="light"] .scene-illustration,
+html[data-theme="light"] .scene-progress,
+html[data-theme="light"] .scene-status {
+  background-color: #ddd2b9 !important;
+  color: #51401e !important;
+  border-color: #bda775 !important;
+}
+html[data-theme="light"] .scene-object,
+html[data-theme="light"] .scene-caption,
+html[data-theme="light"] .scene-caption strong,
+html[data-theme="light"] .scene-caption span {
+  color: #51401e !important;
+  border-color: #bda775 !important;
+}
+html[data-theme="light"] .scene-object:hover,
+html[data-theme="light"] .scene-object.investigated {
+  background: #d7c69f !important;
+}
+html[data-theme="light"] .timeline .marker,
+html[data-theme="light"] .timeline .timeline-event-number,
+html[data-theme="light"] .timeline li::before,
+html[data-theme="light"] .timeline-marker,
+html[data-theme="light"] .timeline-node,
+html[data-theme="light"] .timeline-number,
+html[data-theme="light"] .timeline-time-marker {
+  background: #e7dfcd !important;
+  color: #51401e !important;
+  border-color: #b89a5b !important;
+}
+html[data-theme="light"] .case-header h1,
+html[data-theme="light"] .victim-name h3,
+html[data-theme="light"] .suspect-card,
+html[data-theme="light"] .suspect-card-main strong,
+html[data-theme="light"] .results-card h1,
+html[data-theme="light"] .modal h2 {
+  color: #302b21 !important;
+}
+html[data-theme="light"] .case-description,
+html[data-theme="light"] .victim-details strong,
+html[data-theme="light"] .modal p,
+html[data-theme="light"] .muted,
+html[data-theme="light"] .suspect-card-main > div > span {
+  color: #756a55 !important;
+}
+html[data-theme="light"] .overlay {
+  background: rgba(58, 47, 29, .35) !important;
+}
+html[data-theme="light"] input,
+html[data-theme="light"] textarea,
+html[data-theme="light"] select,
+html[data-theme="light"] .modal input,
+html[data-theme="light"] .modal select {
+  background: #eee7d7 !important;
+  color: #302b21 !important;
+  border-color: #cdbb91 !important;
+}
