@@ -42,6 +42,19 @@ export default function Interrogation({
   ).length ?? 0;
   const suspectMonogram = suspect.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("");
   const discoveredEvidence = gameCase.evidence.filter((item) => found.includes(item.id));
+  const availableQuestions = (profile?.questions ?? []).filter((question) =>
+    !asked.includes(question.id) &&
+    (question.requires_evidence_ids ?? []).every((id) => found.includes(id)) &&
+    (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
+  );
+  const recommendedQuestion = [...availableQuestions].sort((a, b) => {
+    const aRequirements = (a.requires_evidence_ids?.length ?? 0) + (a.requires_action_ids?.length ?? 0);
+    const bRequirements = (b.requires_evidence_ids?.length ?? 0) + (b.requires_action_ids?.length ?? 0);
+    return aRequirements - bRequirements;
+  })[0] ?? null;
+  const remainingLockedCount = (profile?.questions ?? []).filter((question) =>
+    !asked.includes(question.id) && !availableQuestions.some((available) => available.id === question.id),
+  ).length;
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
@@ -96,6 +109,21 @@ export default function Interrogation({
           <span>RECORDED EXCHANGES <strong>{transcript.length}</strong></span>
         </div>
         {errorMessage && <p className="welcome-error" role="alert">{errorMessage}</p>}
+        <section className="adaptive-interview-guide" aria-live="polite" aria-label="Adaptive interview guidance">
+          <div className="adaptive-interview-guide-copy">
+            <span className="eyebrow">INVESTIGATION-LED QUESTIONING</span>
+            <strong>{recommendedQuestion ? "Recommended next line of inquiry" : "No further questions available yet"}</strong>
+            <p>{recommendedQuestion
+              ? "This question is currently unlocked by the evidence and actions in your investigation. Use it as a suggested next step, or choose any other available question."
+              : remainingLockedCount > 0
+                ? "Continue examining evidence or completing investigation actions to unlock additional questions."
+                : "You have asked every available question for this subject."}</p>
+            {recommendedQuestion && <span className="adaptive-interview-question">{recommendedQuestion.text}</span>}
+            {!recommendedQuestion && remainingLockedCount > 0 && <span className="adaptive-interview-locked">{remainingLockedCount} question{remainingLockedCount === 1 ? "" : "s"} still locked</span>}
+          </div>
+          {recommendedQuestion && <button type="button" className="adaptive-interview-action" disabled={busy}
+            onClick={() => ask(recommendedQuestion.id)}>ASK RECOMMENDED QUESTION</button>}
+        </section>
         <div className="interrogation-question-heading">
           <span className="toolbar-kicker">QUESTION SELECTOR</span>
           <span className="toolbar-count">SELECT A LINE OF INQUIRY</span>
