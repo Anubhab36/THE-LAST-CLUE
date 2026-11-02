@@ -23,6 +23,30 @@ export default function SuspectDossiers({ suspects, evidence, found, connections
     return { suspect, linked, appearances, questionCount: interview?.questions.length ?? 0 };
   });
   const visible = rows.filter((row) => filter === "all" || (filter === "connected" ? row.linked.length > 0 : row.linked.length === 0));
+  const [compareFirstId, setCompareFirstId] = useState<string>("");
+  const [compareSecondId, setCompareSecondId] = useState<string>("");
+  const firstSuspect = suspects.find((item) => item.id === compareFirstId) ?? suspects[0];
+  const secondSuspect = suspects.find((item) => item.id === compareSecondId && item.id !== firstSuspect?.id)
+    ?? suspects.find((item) => item.id !== firstSuspect?.id);
+
+  const linkedEvidenceFor = (suspectId: string) => {
+    const linkedIds = new Set(connections.filter(([, linkedSuspectId]) => linkedSuspectId === suspectId).map(([evidenceId]) => evidenceId));
+    return discovered.filter((item) => linkedIds.has(item.id));
+  };
+  const firstLinked = firstSuspect ? linkedEvidenceFor(firstSuspect.id) : [];
+  const secondLinked = secondSuspect ? linkedEvidenceFor(secondSuspect.id) : [];
+  const firstLinkedIds = new Set(firstLinked.map((item) => item.id));
+  const secondLinkedIds = new Set(secondLinked.map((item) => item.id));
+  const sharedEvidence = firstLinked.filter((item) => secondLinkedIds.has(item.id));
+  const firstUnique = firstLinked.filter((item) => !secondLinkedIds.has(item.id));
+  const secondUnique = secondLinked.filter((item) => !firstLinkedIds.has(item.id));
+  const firstEvents = firstSuspect ? timeline.filter((event) => event.suspect_ids.includes(firstSuspect.id)) : [];
+  const secondEvents = secondSuspect ? timeline.filter((event) => event.suspect_ids.includes(secondSuspect.id)) : [];
+  const sharedEvents = firstEvents.filter((event) => event.suspect_ids.includes(secondSuspect?.id ?? ""));
+  const firstOnlyEvents = firstEvents.filter((event) => !event.suspect_ids.includes(secondSuspect?.id ?? ""));
+  const secondOnlyEvents = secondEvents.filter((event) => !event.suspect_ids.includes(firstSuspect?.id ?? ""));
+  const unlinkedEvidence = discovered.filter((item) => !firstLinkedIds.has(item.id) && !secondLinkedIds.has(item.id));
+
 
   return (
     <section className="suspect-dossiers panel" aria-labelledby="dossiers-title">
@@ -32,6 +56,83 @@ export default function SuspectDossiers({ suspects, evidence, found, connections
       </div>
       <div className="dossiers-body">
         <p className="dossiers-intro">Review each person's known background, timeline appearances, and evidence you have explicitly connected on the evidence board. Unverified suspicions remain unproven.</p>
+
+        <section className="suspect-comparison" aria-labelledby="suspect-comparison-title">
+          <div className="suspect-comparison-heading">
+            <div>
+              <span className="dossier-label">INVESTIGATIVE ANALYSIS · 01</span>
+              <h3 id="suspect-comparison-title">Suspect–Evidence Comparison</h3>
+              <p>Compare your recorded evidence links and the case timeline. This analysis does not establish guilt.</p>
+            </div>
+            <span className="suspect-comparison-count">{suspects.length} SUSPECTS</span>
+          </div>
+          {suspects.length < 2 ? (
+            <p className="dossier-muted">At least two suspects are required for a comparison.</p>
+          ) : (
+            <>
+              <div className="suspect-comparison-selectors">
+                <label>FIRST SUSPECT
+                  <select value={firstSuspect?.id ?? ""} onChange={(event) => setCompareFirstId(event.target.value)}>
+                    {suspects.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  </select>
+                </label>
+                <span className="suspect-comparison-vs">VS</span>
+                <label>SECOND SUSPECT
+                  <select value={secondSuspect?.id ?? ""} onChange={(event) => setCompareSecondId(event.target.value)}>
+                    {suspects.filter((item) => item.id !== firstSuspect?.id).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                  </select>
+                </label>
+              </div>
+              {firstSuspect && secondSuspect && (
+                <>
+                  <div className="suspect-comparison-stats">
+                    <div><strong>{sharedEvidence.length}</strong><span>SHARED CLUES</span></div>
+                    <div><strong>{firstUnique.length}</strong><span>{firstSuspect.name.toUpperCase()} ONLY</span></div>
+                    <div><strong>{secondUnique.length}</strong><span>{secondSuspect.name.toUpperCase()} ONLY</span></div>
+                    <div><strong>{unlinkedEvidence.length}</strong><span>UNLINKED CLUES</span></div>
+                  </div>
+                  <div className="suspect-comparison-grid">
+                    <section className="suspect-comparison-column">
+                      <h4>SHARED EVIDENCE</h4>
+                      {sharedEvidence.length ? <ul>{sharedEvidence.map((item) => <li key={item.id}><strong>{item.name}</strong><span>{item.description}</span></li>)}</ul> : <p className="dossier-muted">No discovered clues are currently linked to both suspects.</p>}
+                    </section>
+                    <section className="suspect-comparison-column">
+                      <h4>{firstSuspect.name.toUpperCase()} · UNIQUE</h4>
+                      {firstUnique.length ? <ul>{firstUnique.map((item) => <li key={item.id}><strong>{item.name}</strong><span>{item.description}</span></li>)}</ul> : <p className="dossier-muted">No unique evidence links recorded.</p>}
+                    </section>
+                    <section className="suspect-comparison-column">
+                      <h4>{secondSuspect.name.toUpperCase()} · UNIQUE</h4>
+                      {secondUnique.length ? <ul>{secondUnique.map((item) => <li key={item.id}><strong>{item.name}</strong><span>{item.description}</span></li>)}</ul> : <p className="dossier-muted">No unique evidence links recorded.</p>}
+                    </section>
+                  </div>
+                  <div className="suspect-comparison-timeline">
+                    <h4>TIMELINE APPEARANCES</h4>
+                    <div className="suspect-comparison-grid">
+                      <section className="suspect-comparison-column">
+                        <h5>SHARED EVENTS</h5>
+                        {sharedEvents.length ? <ul>{sharedEvents.map((event) => <li key={event.id}><strong>{event.time}</strong><span>{event.description}</span></li>)}</ul> : <p className="dossier-muted">No timeline events currently name both suspects.</p>}
+                      </section>
+                      <section className="suspect-comparison-column">
+                        <h5>{firstSuspect.name.toUpperCase()} ONLY</h5>
+                        {firstOnlyEvents.length ? <ul>{firstOnlyEvents.map((event) => <li key={event.id}><strong>{event.time}</strong><span>{event.description}</span></li>)}</ul> : <p className="dossier-muted">No exclusive timeline appearances.</p>}
+                      </section>
+                      <section className="suspect-comparison-column">
+                        <h5>{secondSuspect.name.toUpperCase()} ONLY</h5>
+                        {secondOnlyEvents.length ? <ul>{secondOnlyEvents.map((event) => <li key={event.id}><strong>{event.time}</strong><span>{event.description}</span></li>)}</ul> : <p className="dossier-muted">No exclusive timeline appearances.</p>}
+                      </section>
+                    </div>
+                  </div>
+                  <div className="suspect-comparison-unlinked">
+                    <h4>DISCOVERED EVIDENCE NOT LINKED TO EITHER SUSPECT</h4>
+                    {unlinkedEvidence.length ? <div className="suspect-comparison-unlinked-list">{unlinkedEvidence.map((item) => <span key={item.id}>{item.name}</span>)}</div> : <p className="dossier-muted">Every discovered clue is currently linked to at least one of these two suspects.</p>}
+                  </div>
+                  <p className="suspect-comparison-caution">Comparison reflects only evidence-board links you recorded and timeline data supplied by this case. Shared or unique associations are investigative leads, not proof of involvement.</p>
+                </>
+              )}
+            </>
+          )}
+        </section>
+
         <div className="dossiers-toolbar" role="group" aria-label="Filter suspect dossiers">
           {([
             ["all", "ALL SUSPECTS"],
