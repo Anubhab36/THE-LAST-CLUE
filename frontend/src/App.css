@@ -3931,3 +3931,28 @@ html[data-theme="light"] .investigation-lead-heading h3,html[data-theme="light"]
 html[data-theme="light"] .investigation-lead-heading p,html[data-theme="light"] .investigation-lead-footer{color:#51452f!important}
 html[data-theme="light"] .investigation-lead-form input,html[data-theme="light"] .investigation-lead-form select,html[data-theme="light"] .investigation-lead-status select,html[data-theme="light"] .investigation-lead-notes textarea,html[data-theme="light"] .investigation-lead-card{background:#e7dfcd!important;border-color:#cdbb91!important;color:#302b21!important}
 @media(max-width:650px){.investigation-lead-tracker{padding:14px}.investigation-lead-heading{flex-direction:column}.investigation-lead-form{grid-template-columns:1fr}.investigation-lead-list{grid-template-columns:1fr}}
+
+
+/* Progressive evidence examination levels in the Evidence Laboratory. */
+.evidence-examination{margin-top:22px;padding-top:18px;border-top:1px solid rgba(184,154,91,.3)}
+.evidence-examination-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.evidence-examination-heading h4{margin:5px 0;color:var(--text-primary,#e8e6df);font:400 21px Georgia,serif}
+.evidence-examination-heading p{max-width:560px;margin:0;color:var(--text-muted,#858d8c);font-size:11px;line-height:1.7}
+.evidence-examination-progress{flex-shrink:0;padding:8px 10px;border:1px solid rgba(184,154,91,.45);color:#b89a5b;font:9px "DM Mono",monospace}
+.evidence-examination-stages{display:grid;gap:10px}
+.evidence-examination-stage{padding:14px;border:1px solid var(--border-color,#343a3a);background:rgba(0,0,0,.08)}
+.evidence-examination-stage.complete{border-color:rgba(184,154,91,.55)}
+.evidence-examination-stage-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.evidence-examination-stage-title>span{color:#b89a5b;font:12px Georgia,serif}
+.evidence-examination-stage-title strong{color:var(--text-primary,#dedbd2);font-size:12px}
+.evidence-examination-stage-title small{margin-left:auto;color:#9b895f;font:8px "DM Mono",monospace;letter-spacing:.06em}
+.evidence-examination-stage>p{margin:9px 0;color:var(--text-muted,#858d8c);font-size:11px;line-height:1.65}
+.evidence-examination-stage textarea{width:100%;min-width:0;padding:11px;border:1px solid var(--border-color,#343a3a);border-radius:3px;background:var(--input-bg,#111717);color:var(--text-primary,#e8e5dc);font:12px/1.65 Inter,sans-serif;resize:vertical}
+.evidence-examination-stage textarea:disabled{opacity:.45;cursor:not-allowed}
+.evidence-examination-stage-footer{display:flex;justify-content:space-between;gap:10px;margin-top:7px;color:var(--text-muted,#858d8c);font:8px "DM Mono",monospace}
+.evidence-examination-disclaimer{margin:13px 0 0;color:var(--text-muted,#858d8c);font-size:10px;line-height:1.65}
+html[data-theme="light"] .evidence-examination-stage{background:#f6f0e4!important;border-color:#d6c8a8!important}
+html[data-theme="light"] .evidence-examination-heading h4,html[data-theme="light"] .evidence-examination-stage-title strong{color:#302b21!important}
+html[data-theme="light"] .evidence-examination-heading p,html[data-theme="light"] .evidence-examination-stage>p,html[data-theme="light"] .evidence-examination-disclaimer,html[data-theme="light"] .evidence-examination-stage-footer{color:#665a45!important}
+html[data-theme="light"] .evidence-examination-stage textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
+@media(max-width:600px){.evidence-examination-heading{flex-direction:column}.evidence-examination-stage-title small{width:100%;margin-left:22px}.evidence-examination-stage{padding:11px}}
