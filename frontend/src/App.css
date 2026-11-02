@@ -3979,3 +3979,30 @@ html[data-theme="light"] .statement-challenge-panel .statement-challenge-confirm
 /* Keep the expanded interrogation metrics balanced across viewport sizes. */
 .interrogation-progress{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:760px){.interrogation-progress{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Contextual Lead Discovery — live next steps derived from unlocked case state. */
+.lead-discovery-panel{margin:22px 0;padding:20px;border:1px solid rgba(184,154,91,.38);background:linear-gradient(145deg,rgba(184,154,91,.08),transparent 62%),#0e1213}
+.lead-discovery-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.lead-discovery-heading h3{margin:7px 0;color:#e8e6df;font:400 clamp(22px,3vw,28px) Georgia,serif}
+.lead-discovery-heading p{max-width:580px;margin:0;color:#858d8c;font-size:11px;line-height:1.7}
+.lead-discovery-count{display:grid;justify-items:center;gap:3px;min-width:66px;padding:8px;border:1px solid rgba(184,154,91,.45)}
+.lead-discovery-count strong{color:#d4bc82;font:400 23px Georgia,serif}
+.lead-discovery-count span{color:#858d8c;font:8px "DM Mono",monospace;letter-spacing:.06em}
+.lead-discovery-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:10px;margin-top:17px}
+.lead-discovery-card{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:14px;border:1px solid #343a3a;background:rgba(255,255,255,.018)}
+.lead-discovery-card-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:7px;width:100%;margin-bottom:12px}
+.lead-discovery-kind{color:#d4bc82;font:8px "DM Mono",monospace;letter-spacing:.08em}
+.lead-discovery-source{color:#7f8985;font:8px "DM Mono",monospace;letter-spacing:.06em}
+.lead-discovery-card>strong{color:#e0ddd4;font:400 17px Georgia,serif;line-height:1.35}
+.lead-discovery-card>p{flex:1;margin:8px 0 15px;color:#9ba39f;font-size:11px;line-height:1.7}
+.lead-discovery-card>button{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:10px 11px;border:1px solid #806c43;background:transparent;color:#d4bc82;font:8px "DM Mono",monospace;letter-spacing:.07em;text-align:left;cursor:pointer}
+.lead-discovery-card>button:hover:not(:disabled){background:rgba(184,154,91,.1);border-color:#b89a5b}
+.lead-discovery-card>button:disabled{opacity:.4;cursor:not-allowed}
+.lead-discovery-note{margin:15px 0 0;padding-top:11px;border-top:1px solid #292f2e;color:#737c79;font-size:9px;line-height:1.65}
+html[data-theme="light"] .lead-discovery-panel{background:#f0e8d7!important;border-color:#cdbb91!important}
+html[data-theme="light"] .lead-discovery-heading h3,html[data-theme="light"] .lead-discovery-card>strong{color:#302b21!important}
+html[data-theme="light"] .lead-discovery-heading p,html[data-theme="light"] .lead-discovery-card>p,html[data-theme="light"] .lead-discovery-note{color:#51452f!important}
+html[data-theme="light"] .lead-discovery-card{background:#e7dfcd!important;border-color:#cdbb91!important}
+html[data-theme="light"] .lead-discovery-source,html[data-theme="light"] .lead-discovery-count span{color:#665a45!important}
+@media(max-width:650px){.lead-discovery-panel{padding:14px}.lead-discovery-heading{flex-direction:column}.lead-discovery-list{grid-template-columns:1fr}.lead-discovery-card{padding:12px}}
