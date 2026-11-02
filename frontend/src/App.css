@@ -4006,3 +4006,40 @@ html[data-theme="light"] .lead-discovery-heading p,html[data-theme="light"] .lea
 html[data-theme="light"] .lead-discovery-card{background:#e7dfcd!important;border-color:#cdbb91!important}
 html[data-theme="light"] .lead-discovery-source,html[data-theme="light"] .lead-discovery-count span{color:#665a45!important}
 @media(max-width:650px){.lead-discovery-panel{padding:14px}.lead-discovery-heading{flex-direction:column}.lead-discovery-list{grid-template-columns:1fr}.lead-discovery-card{padding:12px}}
+
+
+/* In-game Field Guide */
+.field-guide-trigger{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(184,154,91,.55);background:rgba(184,154,91,.07);color:#d4bc82;font:10px "DM Mono",monospace;letter-spacing:.08em;cursor:pointer;white-space:nowrap}
+.field-guide-trigger>span{display:grid;place-items:center;width:16px;height:16px;border:1px solid currentColor;border-radius:50%;font-size:11px}
+.field-guide-trigger:hover{background:rgba(184,154,91,.16)}
+.field-guide-overlay{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:22px;background:rgba(3,5,6,.84);backdrop-filter:blur(7px)}
+.field-guide-dialog{width:min(980px,100%);max-height:min(88vh,900px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #655638;background:#101516;color:#e8e6df;box-shadow:0 24px 90px rgba(0,0,0,.55)}
+.field-guide-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:26px 30px 22px;border-bottom:1px solid #303536;background:linear-gradient(120deg,rgba(184,154,91,.12),transparent 65%)}
+.field-guide-header h2{margin:8px 0 5px;font:400 clamp(30px,4vw,42px) Georgia,serif}
+.field-guide-header p{margin:0;color:#92999a;font-size:12px;line-height:1.6}
+.field-guide-close{width:36px;height:36px;flex:0 0 auto;border:1px solid #424849;background:transparent;color:#d8d7d0;font-size:25px;cursor:pointer}
+.field-guide-content{overflow-y:auto;padding:22px 30px 26px}
+.field-guide-callout{display:flex;align-items:center;gap:18px;padding:14px 16px;margin-bottom:18px;border:1px solid rgba(184,154,91,.3);background:rgba(184,154,91,.06)}
+.field-guide-callout strong,.field-guide-tip strong{color:#cbb47c;font:9px "DM Mono",monospace;letter-spacing:.1em;white-space:nowrap}
+.field-guide-callout span{color:#e5e0d2;font:11px "DM Mono",monospace;letter-spacing:.04em;line-height:1.6}
+.field-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.field-guide-card{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:17px;border:1px solid #303738;background:#141a1b}
+.field-guide-number{color:#b89a5b;font:14px "DM Mono",monospace}
+.field-guide-card h3{margin:0 0 8px;color:#e8e6df;font:400 19px Georgia,serif}
+.field-guide-card p{margin:0;color:#a0a7a6;font-size:11px;line-height:1.75}
+.field-guide-tip{display:flex;gap:8px;margin-top:12px;padding-top:10px;border-top:1px solid #303738;color:#c0bba9;font-size:10px;line-height:1.6}
+.field-guide-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid #303738}
+.field-guide-footer>span{color:#737c7c;font:9px "DM Mono",monospace;letter-spacing:.07em}
+.field-guide-footer .primary{padding:12px 16px}
+@media(max-width:720px){.topbar{height:auto;min-height:72px;padding:12px 4%;gap:10px}.topbar-right{gap:9px;flex-wrap:wrap;justify-content:flex-end}.field-guide-trigger{padding:8px;font-size:9px}.field-guide-overlay{padding:10px}.field-guide-dialog{max-height:94vh}.field-guide-header{padding:20px 18px 16px}.field-guide-content{padding:16px 18px 20px}.field-guide-grid{grid-template-columns:1fr}.field-guide-callout{align-items:flex-start;flex-direction:column;gap:7px}.field-guide-footer{align-items:flex-start;flex-direction:column}.field-guide-footer .primary{width:100%}}
+@media(max-width:420px){.topbar .brand-subtitle{display:none}.topbar-right .active-case-difficulty{display:none}.field-guide-trigger{font-size:8px;letter-spacing:.04em}}
+[data-theme="light"] .field-guide-dialog{background:#f7f5ef;color:#242724;border-color:#b9a77e}
+[data-theme="light"] .field-guide-header{border-color:#ded8c9}
+[data-theme="light"] .field-guide-header p,[data-theme="light"] .field-guide-card p{color:#626a66}
+[data-theme="light"] .field-guide-close{color:#343a36;border-color:#c9c3b5}
+[data-theme="light"] .field-guide-card{background:#fffefa;border-color:#ded8c9}
+[data-theme="light"] .field-guide-card h3{color:#292e2a}
+[data-theme="light"] .field-guide-tip{border-color:#e2ddcf;color:#565e58}
+[data-theme="light"] .field-guide-callout{background:#f0eadb;border-color:#d8c9a5}
+[data-theme="light"] .field-guide-callout span{color:#363c35}
+[data-theme="light"] .field-guide-footer{border-color:#ded8c9}
