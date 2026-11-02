@@ -3975,3 +3975,7 @@ html[data-theme="light"] .statement-challenge-panel textarea{background:#fffaf0!
 html[data-theme="light"] .statement-challenge-footer{color:#665a45!important}
 html[data-theme="light"] .statement-challenge-panel .statement-challenge-confirmation{color:#51452f!important}
 @media(max-width:600px){.statement-challenge-panel{padding:11px}.statement-challenge-footer{align-items:flex-start;flex-direction:column}.statement-challenge-footer button{width:100%;min-height:40px}}
+
+/* Keep the expanded interrogation metrics balanced across viewport sizes. */
+.interrogation-progress{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.interrogation-progress{grid-template-columns:repeat(2,minmax(0,1fr))}}
