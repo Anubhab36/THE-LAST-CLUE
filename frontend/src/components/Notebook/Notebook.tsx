@@ -56,7 +56,12 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
   };
   const toggleTheoryEvidence = (kind: "supportingEvidenceIds" | "contradictingEvidenceIds", evidenceId: string) => {
     const currentIds = caseTheory[kind];
-    updateCaseTheory({ [kind]: currentIds.includes(evidenceId) ? currentIds.filter((id) => id !== evidenceId) : [...currentIds, evidenceId] });
+    const otherKind = kind === "supportingEvidenceIds" ? "contradictingEvidenceIds" : "supportingEvidenceIds";
+    const nextIds = currentIds.includes(evidenceId) ? currentIds.filter((id) => id !== evidenceId) : [...currentIds, evidenceId];
+    updateCaseTheory({
+      [kind]: nextIds,
+      [otherKind]: caseTheory[otherKind].filter((id) => id !== evidenceId),
+    });
   };
   const textValue = active === "suspects" ? "" : notes[active];
 
