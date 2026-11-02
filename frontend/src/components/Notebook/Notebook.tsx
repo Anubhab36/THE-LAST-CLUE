@@ -8,6 +8,7 @@ export type NotebookNotes = {
   suspectNotes?: Record<string, string>;
   linkedEvidence?: Record<string, string[]>;
   unresolvedQuestions?: { id: string; text: string; resolved: boolean }[];
+  investigationLeads?: { id: string; title: string; category: "person" | "location" | "object" | "record" | "other"; status: "new" | "investigating" | "pursued"; notes: string }[];
   contradictions?: { id: string; firstEvidenceId: string; secondEvidenceId: string; explanation: string; }[];
   caseTheory?: {
     suspectId: string;
@@ -43,6 +44,19 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
   const [filter, setFilter] = useState<"all" | "critical" | "supporting" | "red_herring">("all");
   const [newQuestion, setNewQuestion] = useState("");
   const unresolvedQuestions = notes.unresolvedQuestions ?? [];
+  const investigationLeads = notes.investigationLeads ?? [];
+  const [newLeadTitle, setNewLeadTitle] = useState("");
+  const [newLeadCategory, setNewLeadCategory] = useState<"person" | "location" | "object" | "record" | "other">("person");
+  const addLead = () => {
+    const title = newLeadTitle.trim();
+    if (!title) return;
+    onChange({ ...notes, investigationLeads: [...investigationLeads, { id: `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, title, category: newLeadCategory, status: "new", notes: "" }] });
+    setNewLeadTitle("");
+    setNewLeadCategory("person");
+  };
+  const updateLead = (id: string, patch: Partial<{ title: string; category: "person" | "location" | "object" | "record" | "other"; status: "new" | "investigating" | "pursued"; notes: string }>) =>
+    onChange({ ...notes, investigationLeads: investigationLeads.map((lead) => lead.id === id ? { ...lead, ...patch } : lead) });
+  const removeLead = (id: string) => onChange({ ...notes, investigationLeads: investigationLeads.filter((lead) => lead.id !== id) });
   const addQuestion = () => {
     const text = newQuestion.trim();
     if (!text) return;
@@ -223,6 +237,40 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
               <p className="contradiction-detector-note">Recorded contradictions are investigative notes only. They do not change case logic, hints, progression, or scoring.</p>
             </section>
             </>
+          )}
+          {active === "questions" && (
+            <section className="investigation-lead-tracker" aria-labelledby="investigation-lead-title">
+              <div className="investigation-lead-heading">
+                <div><span className="notebook-status">FIELD OPERATIONS</span><h3 id="investigation-lead-title">Investigation Lead Tracker</h3>
+                  <p>Turn promising people, places, objects, and records into leads you can actively pursue. Track progress without changing case outcomes.</p></div>
+                <div className="investigation-lead-count"><strong>{investigationLeads.filter((lead) => lead.status !== "pursued").length}</strong><span>ACTIVE</span></div>
+              </div>
+              <form className="investigation-lead-form" onSubmit={(event) => { event.preventDefault(); addLead(); }}>
+                <input value={newLeadTitle} onChange={(event) => setNewLeadTitle(event.target.value)} placeholder="Add a person, place, object, or record to investigate…" aria-label="New investigation lead" maxLength={160} />
+                <select aria-label="Lead category" value={newLeadCategory} onChange={(event) => setNewLeadCategory(event.target.value as typeof newLeadCategory)}>
+                  <option value="person">Person</option><option value="location">Location</option><option value="object">Object</option><option value="record">Record</option><option value="other">Other</option>
+                </select>
+                <button type="submit" disabled={!newLeadTitle.trim()}>ADD LEAD</button>
+              </form>
+              <div className="investigation-lead-list">
+                {investigationLeads.length === 0 ? <p className="notebook-empty">No leads added yet. Record a person to interview, location to inspect, or record to verify.</p> :
+                  investigationLeads.map((lead) => <article className="investigation-lead-card" key={lead.id}>
+                    <div className="investigation-lead-card-top">
+                      <div><span className="investigation-lead-category">{lead.category.toUpperCase()}</span><strong>{lead.title}</strong></div>
+                      <button type="button" onClick={() => removeLead(lead.id)} aria-label={`Remove lead: ${lead.title}`}>REMOVE</button>
+                    </div>
+                    <label className="investigation-lead-status">PROGRESS
+                      <select value={lead.status} onChange={(event) => updateLead(lead.id, { status: event.target.value as typeof lead.status })}>
+                        <option value="new">New lead</option><option value="investigating">Investigating</option><option value="pursued">Pursued</option>
+                      </select>
+                    </label>
+                    <label className="investigation-lead-notes">INVESTIGATION NOTES
+                      <textarea rows={2} maxLength={500} value={lead.notes} onChange={(event) => updateLead(lead.id, { notes: event.target.value })} placeholder="What needs checking? What did you learn?" />
+                    </label>
+                  </article>)}
+              </div>
+              {investigationLeads.length > 0 && <div className="investigation-lead-footer"><span>{investigationLeads.filter((lead) => lead.status === "new").length} new · {investigationLeads.filter((lead) => lead.status === "investigating").length} investigating · {investigationLeads.filter((lead) => lead.status === "pursued").length} pursued</span></div>}
+            </section>
           )}
           {active === "questions" && (
             <section className="unresolved-questions" aria-labelledby="unresolved-questions-title">
