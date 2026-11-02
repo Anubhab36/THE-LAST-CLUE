@@ -1041,6 +1041,12 @@ export default function App() {
           evidence={gameCase.evidence}
           discoveredEvidenceIds={found}
           suspects={gameCase.suspects}
+          investigationActions={gameCase.investigation_actions}
+          completedActions={completedActions}
+          interrogation={gameCase.interrogation}
+          askedQuestions={askedQuestions}
+          onRunAction={runAction}
+          onInterrogate={setInterrogating}
         />
 
         <section className="action-bar">
