@@ -3816,3 +3816,27 @@ html[data-theme="light"] .suspect-comparison-selectors select,html[data-theme="l
 html[data-theme="light"] .suspect-comparison-column li{border-color:#d6c8aa!important}
 html[data-theme="light"] .suspect-comparison-unlinked-list span{color:#51452f!important;border-color:#cdbb91!important}
 @media(max-width:760px){.suspect-comparison{margin:12px;padding:14px}.suspect-comparison-grid{grid-template-columns:1fr}.suspect-comparison-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.suspect-comparison-selectors{grid-template-columns:1fr;gap:9px}.suspect-comparison-vs{text-align:center}}
+
+
+/* Case Theory Builder */
+.case-theory-builder{margin:22px 0;padding:20px;border:1px solid rgba(184,154,91,.3);background:linear-gradient(145deg,rgba(184,154,91,.06),transparent 60%),#0e1213}
+.case-theory-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:18px}
+.case-theory-heading h3{margin:7px 0;font:400 clamp(22px,3vw,30px) Georgia,serif;color:#e8e6df}
+.case-theory-heading p,.case-theory-help{margin:0;color:#858d8c;font-size:11px;line-height:1.7}
+.case-theory-confidence{flex-shrink:0;padding:7px 9px;border:1px solid rgba(184,154,91,.35);color:#d4bc82;font:8px "DM Mono",monospace;letter-spacing:.08em}
+.case-theory-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.case-theory-fields label{display:grid;gap:7px;color:#b89a5b;font:9px "DM Mono",monospace;letter-spacing:.07em}
+.case-theory-fields label:nth-child(4){grid-column:1/-1}
+.case-theory-fields select,.case-theory-fields textarea{width:100%;min-width:0;padding:11px;border:1px solid #343a3a;border-radius:4px;background:#111717;color:#e8e5dc;font:12px/1.6 Inter,sans-serif;resize:vertical}
+.case-theory-fields select:focus,.case-theory-fields textarea:focus{outline:1px solid #b89a5b;border-color:#b89a5b}
+.case-theory-evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.case-theory-evidence-grid>div{min-width:0;padding:13px;border:1px solid #292f2e;background:rgba(255,255,255,.015)}
+.case-theory-evidence-grid .notebook-subhead{align-items:flex-start;gap:8px}
+.case-theory-help{margin:0 0 10px}
+.case-theory-disclaimer{margin:17px 0 0;padding-top:12px;border-top:1px solid #292f2e;color:#737c79;font-size:9px;line-height:1.7}
+html[data-theme="light"] .case-theory-builder{background:#f0e8d7!important;border-color:#cdbb91!important}
+html[data-theme="light"] .case-theory-heading h3{color:#302b21!important}
+html[data-theme="light"] .case-theory-heading p,html[data-theme="light"] .case-theory-help,html[data-theme="light"] .case-theory-disclaimer{color:#51452f!important}
+html[data-theme="light"] .case-theory-fields select,html[data-theme="light"] .case-theory-fields textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
+html[data-theme="light"] .case-theory-evidence-grid>div{background:#e7dfcd!important;border-color:#cdbb91!important}
+@media(max-width:650px){.case-theory-builder{padding:14px}.case-theory-heading{flex-direction:column}.case-theory-fields,.case-theory-evidence-grid{grid-template-columns:1fr}.case-theory-fields label:nth-child(4){grid-column:auto}}
