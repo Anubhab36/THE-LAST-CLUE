@@ -58,6 +58,29 @@ export default function EvidenceLaboratory({ caseId, evidence, found, completedA
     }
   }
 
+  function saveExamination(level: ExaminationLevel, value: string) {
+    if (!selected) return;
+    const next: ExaminationRecord = {
+      ...examinations,
+      [selected.id]: { ...(examinations[selected.id] ?? {}), [level]: value },
+    };
+    setExaminations(next);
+    try {
+      window.localStorage.setItem(examinationStorageKey, JSON.stringify(next));
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 1200);
+    } catch {
+      setSaved(false);
+    }
+  }
+
+  const selectedExamination = selected ? examinations[selected.id] ?? {} : {};
+  const examinationStages: { key: ExaminationLevel; number: string; title: string; prompt: string }[] = [
+    { key: "observation", number: "01", title: "Initial Observation", prompt: "Describe only what is directly observable. Note condition, material, markings, and anything unusual without jumping to conclusions." },
+    { key: "crossReference", number: "02", title: "Cross-Reference", prompt: "Compare this clue with other recovered evidence, statements, or timeline events. Record connections and inconsistencies." },
+    { key: "assessment", number: "03", title: "Forensic Assessment", prompt: "Write your current interpretation, explain the reasoning, and identify what remains uncertain or needs verification." },
+  ];
+
   return (
     <section className="board evidence-lab" aria-labelledby="evidence-lab-title">
       <div className="section-head evidence-lab-heading">
