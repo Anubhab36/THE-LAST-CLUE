@@ -37,6 +37,7 @@ import DeveloperFooter from "./components/DeveloperFooter";
 import HintSystem from "./components/HintSystem/HintSystem";
 import SuspectDossiers from "./components/SuspectDossiers/SuspectDossiers";
 import { recordDailyMysteryResult } from "./components/DailyMysteryChallenge";
+import FieldGuide from "./components/FieldGuide/FieldGuide";
 
 type Screen = "welcome" | "loading" | "game" | "results";
 
@@ -146,6 +147,7 @@ function getDisplayError(
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("welcome");
+  const [showFieldGuide, setShowFieldGuide] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     try {
       return window.localStorage.getItem("the-last-clue-theme") === "light" ? "light" : "dark";
@@ -813,6 +815,14 @@ export default function App() {
         </div>
 
         <div className="topbar-right">
+          <button
+            type="button"
+            className="field-guide-trigger"
+            onClick={() => setShowFieldGuide(true)}
+            aria-haspopup="dialog"
+          >
+            <span aria-hidden="true">?</span> HOW TO PLAY
+          </button>
           <span className="active-case-difficulty">
             {gameCase.difficulty.toUpperCase()} CASE
           </span>
@@ -1065,6 +1075,8 @@ export default function App() {
       </main>
 
       <DeveloperFooter />
+
+      {showFieldGuide && <FieldGuide onClose={() => setShowFieldGuide(false)} />}
 
       {suspect && (
         <div
