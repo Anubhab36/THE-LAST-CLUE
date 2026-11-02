@@ -3869,3 +3869,36 @@ html[data-theme="light"] .unresolved-question-form input{background:#fffaf0!impo
 html[data-theme="light"] .unresolved-question{background:#e7dfcd!important;border-color:#cdbb91!important}
 html[data-theme="light"] .unresolved-question label{color:#302b21!important}
 @media(max-width:600px){.unresolved-questions{padding:14px}.unresolved-question-form{flex-direction:column}.unresolved-question-form button{min-height:40px}.unresolved-question{align-items:flex-start}.unresolved-questions-footer{align-items:flex-start;flex-direction:column}}
+
+
+/* Contradiction Detector — manual, evidence-pair analysis within the notebook. */
+.contradiction-detector{margin:22px 0;padding:20px;border:1px solid rgba(184,154,91,.3);background:linear-gradient(145deg,rgba(184,154,91,.06),transparent 60%),#0e1213}
+.contradiction-detector-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.contradiction-detector-heading h3{margin:7px 0;color:#e8e6df;font:400 clamp(22px,3vw,28px) Georgia,serif}
+.contradiction-detector-heading p,.contradiction-detector-note{margin:0;color:#858d8c;font-size:11px;line-height:1.7}
+.contradiction-detector-count{display:grid;justify-items:center;gap:3px;padding:8px;border:1px solid #4b4432}
+.contradiction-detector-count strong{color:#d4bc82;font:400 22px Georgia,serif}
+.contradiction-detector-count span{color:#858d8c;font:8px "DM Mono",monospace}
+.contradiction-detector-form{margin-top:18px;padding:16px;border:1px solid #292f2e;background:rgba(0,0,0,.12)}
+.contradiction-detector-selectors{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:12px}
+.contradiction-detector-selectors label,.contradiction-detector-explanation{display:grid;gap:8px;color:#b89a5b;font:9px "DM Mono",monospace;letter-spacing:.07em}
+.contradiction-detector-selectors select,.contradiction-detector-explanation textarea{width:100%;min-width:0;padding:11px;border:1px solid #343a3a;border-radius:3px;background:#111717;color:#e8e5dc;font:12px/1.6 Inter,sans-serif}
+.contradiction-detector-explanation{margin-top:16px}
+.contradiction-detector-explanation textarea{resize:vertical}
+.contradiction-detector-symbol{padding-bottom:10px;color:#d4bc82;font:20px Georgia,serif}
+.contradiction-detector-add{margin-top:13px;padding:11px 14px;border:1px solid #806c43;background:transparent;color:#d4bc82;font:9px "DM Mono",monospace;letter-spacing:.07em;cursor:pointer}
+.contradiction-detector-add:disabled{opacity:.35;cursor:not-allowed}
+.contradiction-detector-list{display:grid;gap:10px;margin-top:16px}
+.contradiction-detector-record{padding:14px;border:1px solid #343a3a;background:rgba(255,255,255,.015)}
+.contradiction-detector-pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}
+.contradiction-detector-pair strong{color:#dedbd2;font-size:11px;overflow-wrap:anywhere}
+.contradiction-detector-pair span{color:#b89a5b;font:8px "DM Mono",monospace;text-align:center}
+.contradiction-detector-record p{margin:12px 0;color:#aeb5b1;font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.contradiction-detector-record>button{border:0;background:transparent;color:#a28c81;font:8px "DM Mono",monospace;cursor:pointer}
+.contradiction-detector-note{margin-top:16px;padding-top:12px;border-top:1px solid #292f2e}
+html[data-theme="light"] .contradiction-detector{background:#f0e8d7!important;border-color:#cdbb91!important}
+html[data-theme="light"] .contradiction-detector-heading h3,html[data-theme="light"] .contradiction-detector-pair strong{color:#302b21!important}
+html[data-theme="light"] .contradiction-detector-heading p,html[data-theme="light"] .contradiction-detector-note,html[data-theme="light"] .contradiction-detector-record p{color:#51452f!important}
+html[data-theme="light"] .contradiction-detector-form,html[data-theme="light"] .contradiction-detector-record{background:#e7dfcd!important;border-color:#cdbb91!important}
+html[data-theme="light"] .contradiction-detector-selectors select,html[data-theme="light"] .contradiction-detector-explanation textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
+@media(max-width:650px){.contradiction-detector{padding:14px}.contradiction-detector-heading{flex-direction:column}.contradiction-detector-selectors{grid-template-columns:1fr}.contradiction-detector-symbol{display:none}.contradiction-detector-pair{grid-template-columns:1fr;gap:7px}.contradiction-detector-pair span{text-align:left}}
