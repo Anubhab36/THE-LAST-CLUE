@@ -3902,3 +3902,32 @@ html[data-theme="light"] .contradiction-detector-heading p,html[data-theme="ligh
 html[data-theme="light"] .contradiction-detector-form,html[data-theme="light"] .contradiction-detector-record{background:#e7dfcd!important;border-color:#cdbb91!important}
 html[data-theme="light"] .contradiction-detector-selectors select,html[data-theme="light"] .contradiction-detector-explanation textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
 @media(max-width:650px){.contradiction-detector{padding:14px}.contradiction-detector-heading{flex-direction:column}.contradiction-detector-selectors{grid-template-columns:1fr}.contradiction-detector-symbol{display:none}.contradiction-detector-pair{grid-template-columns:1fr;gap:7px}.contradiction-detector-pair span{text-align:left}}
+
+
+/* Investigation Lead Tracker — scoped to the notebook's Open Questions tab. */
+.investigation-lead-tracker{margin:22px 0;padding:20px;border:1px solid rgba(184,154,91,.3);background:linear-gradient(145deg,rgba(184,154,91,.06),transparent 60%),#0e1213}
+.investigation-lead-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.investigation-lead-heading h3{margin:7px 0;color:#e8e6df;font:400 clamp(22px,3vw,28px) Georgia,serif}
+.investigation-lead-heading p{margin:0;color:#858d8c;font-size:11px;line-height:1.7}
+.investigation-lead-count{display:grid;justify-items:center;gap:3px;padding:8px;border:1px solid #4b4432}
+.investigation-lead-count strong{color:#d4bc82;font:400 22px Georgia,serif}
+.investigation-lead-count span{color:#858d8c;font:8px "DM Mono",monospace}
+.investigation-lead-form{display:grid;grid-template-columns:minmax(0,1fr) 145px auto;gap:9px;margin:18px 0}
+.investigation-lead-form input,.investigation-lead-form select,.investigation-lead-status select,.investigation-lead-notes textarea{width:100%;min-width:0;padding:11px;border:1px solid #343a3a;border-radius:3px;background:#111717;color:#e8e5dc;font:12px Inter,sans-serif}
+.investigation-lead-form button{padding:10px 13px;border:1px solid #806c43;background:transparent;color:#d4bc82;font:9px "DM Mono",monospace;letter-spacing:.07em;cursor:pointer}
+.investigation-lead-form button:disabled{opacity:.35;cursor:not-allowed}
+.investigation-lead-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:10px}
+.investigation-lead-card{min-width:0;padding:14px;border:1px solid #343a3a;background:rgba(255,255,255,.015)}
+.investigation-lead-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:13px}
+.investigation-lead-card-top>div{display:grid;gap:5px;min-width:0}
+.investigation-lead-category{color:#b89a5b;font:8px "DM Mono",monospace;letter-spacing:.09em}
+.investigation-lead-card-top strong{color:#dedbd2;font-size:12px;overflow-wrap:anywhere}
+.investigation-lead-card-top button{flex-shrink:0;border:0;background:transparent;color:#a28c81;font:8px "DM Mono",monospace;cursor:pointer}
+.investigation-lead-status,.investigation-lead-notes{display:grid;gap:7px;margin-top:11px;color:#b89a5b;font:8px "DM Mono",monospace;letter-spacing:.08em}
+.investigation-lead-notes textarea{resize:vertical;line-height:1.6}
+.investigation-lead-footer{margin-top:14px;padding-top:12px;border-top:1px solid #292f2e;color:#858d8c;font:9px "DM Mono",monospace}
+html[data-theme="light"] .investigation-lead-tracker{background:#f0e8d7!important;border-color:#cdbb91!important}
+html[data-theme="light"] .investigation-lead-heading h3,html[data-theme="light"] .investigation-lead-card-top strong{color:#302b21!important}
+html[data-theme="light"] .investigation-lead-heading p,html[data-theme="light"] .investigation-lead-footer{color:#51452f!important}
+html[data-theme="light"] .investigation-lead-form input,html[data-theme="light"] .investigation-lead-form select,html[data-theme="light"] .investigation-lead-status select,html[data-theme="light"] .investigation-lead-notes textarea,html[data-theme="light"] .investigation-lead-card{background:#e7dfcd!important;border-color:#cdbb91!important;color:#302b21!important}
+@media(max-width:650px){.investigation-lead-tracker{padding:14px}.investigation-lead-heading{flex-direction:column}.investigation-lead-form{grid-template-columns:1fr}.investigation-lead-list{grid-template-columns:1fr}}
