@@ -153,6 +153,7 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
             value={textValue} onChange={(event) => updateText(active, event.target.value)}
             placeholder={`Write your ${current.label.toLowerCase()} here...`} rows={7} />
           {active === "theories" && (
+            <>
             <section className="case-theory-builder" aria-labelledby="case-theory-title">
               <div className="case-theory-heading">
                 <div><span className="notebook-status">STRUCTURED DEDUCTION</span><h3 id="case-theory-title">Build Your Case Theory</h3><p>Form a working explanation from what you have discovered. Revise it as new clues emerge.</p></div>
@@ -221,6 +222,7 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
               </div>
               <p className="contradiction-detector-note">Recorded contradictions are investigative notes only. They do not change case logic, hints, progression, or scoring.</p>
             </section>
+            </>
           )}
           {active === "questions" && (
             <section className="unresolved-questions" aria-labelledby="unresolved-questions-title">
