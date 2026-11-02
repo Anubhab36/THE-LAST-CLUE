@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Evidence, Suspect } from "../../types/case";
+import type { Evidence, Suspect, InvestigationAction, InterrogationProfile } from "../../types/case";
 
 export type NotebookNotes = {
   findings: string;
@@ -28,6 +28,12 @@ interface NotebookProps {
   evidence?: Evidence[];
   discoveredEvidenceIds?: string[];
   suspects?: Suspect[];
+  investigationActions?: InvestigationAction[];
+  completedActions?: string[];
+  interrogation?: InterrogationProfile[];
+  askedQuestions?: string[];
+  onRunAction?: (action: InvestigationAction) => void;
+  onInterrogate?: (suspect: Suspect) => void;
 }
 
 type TabKey = "findings" | "theories" | "questions" | "suspects";
@@ -39,7 +45,7 @@ const tabs: { key: TabKey; label: string; hint: string }[] = [
   { key: "suspects", label: "Suspect tracker", hint: "Record your current assessment of each suspect. Suspicion is not proof." },
 ];
 
-export default function Notebook({ notes, onChange, discoveredCount, evidence = [], discoveredEvidenceIds = [], suspects = [] }: NotebookProps) {
+export default function Notebook({ notes, onChange, discoveredCount, evidence = [], discoveredEvidenceIds = [], suspects = [], investigationActions = [], completedActions = [], interrogation = [], askedQuestions = [], onRunAction, onInterrogate }: NotebookProps) {
   const [active, setActive] = useState<TabKey>("findings");
   const [filter, setFilter] = useState<"all" | "critical" | "supporting" | "red_herring">("all");
   const [newQuestion, setNewQuestion] = useState("");
@@ -74,6 +80,19 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
   );
   const linkedEvidence = notes.linkedEvidence ?? {};
   const suspectNotes = notes.suspectNotes ?? {};
+  const availableActionLeads = investigationActions.filter((action) =>
+    !completedActions.includes(action.id) &&
+    (action.requires_evidence_ids ?? []).every((id) => discoveredEvidenceIds.includes(id)) &&
+    (action.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
+  );
+  const availableQuestionLeads = suspects.flatMap((suspect) => {
+    const profile = interrogation.find((item) => item.suspect_id === suspect.id);
+    return (profile?.questions ?? []).filter((question) =>
+      !askedQuestions.includes(`${suspect.id}:${question.id}`) &&
+      (question.requires_evidence_ids ?? []).every((id) => discoveredEvidenceIds.includes(id)) &&
+      (question.requires_action_ids ?? []).every((id) => completedActions.includes(id)),
+    ).map((question) => ({ suspect, question }));
+  });
 
   const contradictions = notes.contradictions ?? [];
   const [firstConflictEvidence, setFirstConflictEvidence] = useState("");
@@ -237,6 +256,36 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
               <p className="contradiction-detector-note">Recorded contradictions are investigative notes only. They do not change case logic, hints, progression, or scoring.</p>
             </section>
             </>
+          )}
+          {active === "questions" && (
+            <section className="lead-discovery-panel" aria-labelledby="lead-discovery-title">
+              <div className="lead-discovery-heading">
+                <div><span className="notebook-status">INTELLIGENCE / NEXT STEPS</span><h3 id="lead-discovery-title">Lead Discovery</h3>
+                  <p>Actionable leads surfaced from evidence and investigation progress. New leads appear as you recover clues and complete follow-ups.</p></div>
+                <div className="lead-discovery-count"><strong>{availableActionLeads.length + availableQuestionLeads.length}</strong><span>AVAILABLE</span></div>
+              </div>
+              {availableActionLeads.length === 0 && availableQuestionLeads.length === 0 ? (
+                <p className="notebook-empty">No new leads are available right now. Recover more evidence or complete an investigation action to uncover the next steps.</p>
+              ) : (
+                <div className="lead-discovery-list">
+                  {availableActionLeads.map((action) => (
+                    <article className="lead-discovery-card" key={`action-${action.id}`}>
+                      <div className="lead-discovery-card-top"><span className="lead-discovery-kind">{action.category.replace("_", " ").toUpperCase()} LEAD</span><span className="lead-discovery-source">INVESTIGATION ACTION</span></div>
+                      <strong>{action.title}</strong><p>{action.description}</p>
+                      <button type="button" onClick={() => onRunAction?.(action)} disabled={!onRunAction}>START INVESTIGATION <span aria-hidden="true">↗</span></button>
+                    </article>
+                  ))}
+                  {availableQuestionLeads.map(({ suspect, question }) => (
+                    <article className="lead-discovery-card" key={`question-${suspect.id}-${question.id}`}>
+                      <div className="lead-discovery-card-top"><span className="lead-discovery-kind">PERSON OF INTEREST</span><span className="lead-discovery-source">INTERROGATION</span></div>
+                      <strong>{suspect.name}</strong><p>{question.text}</p>
+                      <button type="button" onClick={() => onInterrogate?.(suspect)} disabled={!onInterrogate}>OPEN INTERROGATION <span aria-hidden="true">↗</span></button>
+                    </article>
+                  ))}
+                </div>
+              )}
+              <p className="lead-discovery-note">Only currently unlocked actions and unanswered questions are shown. Hidden evidence and future case facts are not exposed.</p>
+            </section>
           )}
           {active === "questions" && (
             <section className="investigation-lead-tracker" aria-labelledby="investigation-lead-title">
