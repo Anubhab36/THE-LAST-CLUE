@@ -7,6 +7,7 @@ export type NotebookNotes = {
   questions: string;
   suspectNotes?: Record<string, string>;
   linkedEvidence?: Record<string, string[]>;
+  unresolvedQuestions?: { id: string; text: string; resolved: boolean }[];
   caseTheory?: {
     suspectId: string;
     motive: string;
@@ -39,6 +40,18 @@ const tabs: { key: TabKey; label: string; hint: string }[] = [
 export default function Notebook({ notes, onChange, discoveredCount, evidence = [], discoveredEvidenceIds = [], suspects = [] }: NotebookProps) {
   const [active, setActive] = useState<TabKey>("findings");
   const [filter, setFilter] = useState<"all" | "critical" | "supporting" | "red_herring">("all");
+  const [newQuestion, setNewQuestion] = useState("");
+  const unresolvedQuestions = notes.unresolvedQuestions ?? [];
+  const addQuestion = () => {
+    const text = newQuestion.trim();
+    if (!text) return;
+    onChange({ ...notes, unresolvedQuestions: [...unresolvedQuestions, { id: `question-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, text, resolved: false }] });
+    setNewQuestion("");
+  };
+  const updateQuestion = (id: string, patch: Partial<{ text: string; resolved: boolean }>) => {
+    onChange({ ...notes, unresolvedQuestions: unresolvedQuestions.map((item) => item.id === id ? { ...item, ...patch } : item) });
+  };
+  const removeQuestion = (id: string) => onChange({ ...notes, unresolvedQuestions: unresolvedQuestions.filter((item) => item.id !== id) });
   const current = tabs.find((tab) => tab.key === active)!;
   const discoveredEvidence = useMemo(
     () => evidence.filter((item) => discoveredEvidenceIds.includes(item.id)),
@@ -142,6 +155,27 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
                 </div>
               </div>
               <p className="case-theory-disclaimer">This is your working hypothesis, not a confirmed solution. Confidence is self-assessed and does not affect scoring or accusation results.</p>
+            </section>
+          )}
+          {active === "questions" && (
+            <section className="unresolved-questions" aria-labelledby="unresolved-questions-title">
+              <div className="unresolved-questions-heading">
+                <div><h3 id="unresolved-questions-title">Unresolved Questions Tracker</h3><p>Turn loose ends into actionable investigation tasks. Mark each question resolved when you have an answer.</p></div>
+                <div className="unresolved-questions-count"><strong>{unresolvedQuestions.filter((item) => !item.resolved).length}</strong><span>OPEN</span></div>
+              </div>
+              <form className="unresolved-question-form" onSubmit={(event) => { event.preventDefault(); addQuestion(); }}>
+                <input value={newQuestion} onChange={(event) => setNewQuestion(event.target.value)} placeholder="What still needs to be explained?" aria-label="New investigation question" maxLength={240} />
+                <button type="submit" disabled={!newQuestion.trim()}>ADD QUESTION</button>
+              </form>
+              <div className="unresolved-question-list">
+                {unresolvedQuestions.length === 0 ? <p className="notebook-empty">No questions tracked yet. Add an unanswered question, missing detail, or lead to investigate.</p> : unresolvedQuestions.map((item) => (
+                  <article className={item.resolved ? "unresolved-question resolved" : "unresolved-question"} key={item.id}>
+                    <label><input type="checkbox" checked={item.resolved} onChange={(event) => updateQuestion(item.id, { resolved: event.target.checked })} /><span>{item.text}</span></label>
+                    <button type="button" onClick={() => removeQuestion(item.id)} aria-label={`Remove question: ${item.text}`}>REMOVE</button>
+                  </article>
+                ))}
+              </div>
+              {unresolvedQuestions.length > 0 && <div className="unresolved-questions-footer"><span>{unresolvedQuestions.filter((item) => item.resolved).length} resolved · {unresolvedQuestions.filter((item) => !item.resolved).length} still open</span><button type="button" onClick={() => onChange({ ...notes, unresolvedQuestions: unresolvedQuestions.filter((item) => !item.resolved) })} disabled={!unresolvedQuestions.some((item) => item.resolved)}>CLEAR RESOLVED</button></div>}
             </section>
           )}
           {active !== "questions" && (
