@@ -9,6 +9,8 @@ interface Props {
 }
 
 type Filter = "all" | "critical" | "supporting" | "red_herring";
+type ExaminationLevel = "observation" | "crossReference" | "assessment";
+type ExaminationRecord = Record<string, Partial<Record<ExaminationLevel, string>>>;
 
 export default function EvidenceLaboratory({ caseId, evidence, found, completedActions }: Props) {
   const discovered = useMemo(() => evidence.filter((item) => found.includes(item.id)), [evidence, found]);
@@ -17,16 +19,21 @@ export default function EvidenceLaboratory({ caseId, evidence, found, completedA
   const [selectedId, setSelectedId] = useState("");
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+  const [examinations, setExaminations] = useState<ExaminationRecord>({});
 
   const storageKey = `the-last-clue-lab-notes:${caseId}`;
+  const examinationStorageKey = `the-last-clue-examinations:${caseId}`;
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(storageKey);
       setNotes(raw ? JSON.parse(raw) as Record<string, string> : {});
+      const examinationRaw = window.localStorage.getItem(examinationStorageKey);
+      setExaminations(examinationRaw ? JSON.parse(examinationRaw) as ExaminationRecord : {});
     } catch {
       setNotes({});
+      setExaminations({});
     }
-  }, [storageKey]);
+  }, [storageKey, examinationStorageKey]);
 
   const visible = discovered.filter((item) => {
     const matchesFilter = filter === "all" || item.importance === filter;
@@ -50,6 +57,29 @@ export default function EvidenceLaboratory({ caseId, evidence, found, completedA
       setSaved(false);
     }
   }
+
+  function saveExamination(level: ExaminationLevel, value: string) {
+    if (!selected) return;
+    const next: ExaminationRecord = {
+      ...examinations,
+      [selected.id]: { ...(examinations[selected.id] ?? {}), [level]: value },
+    };
+    setExaminations(next);
+    try {
+      window.localStorage.setItem(examinationStorageKey, JSON.stringify(next));
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 1200);
+    } catch {
+      setSaved(false);
+    }
+  }
+
+  const selectedExamination = selected ? examinations[selected.id] ?? {} : {};
+  const examinationStages: { key: ExaminationLevel; number: string; title: string; prompt: string }[] = [
+    { key: "observation", number: "01", title: "Initial Observation", prompt: "Describe only what is directly observable. Note condition, material, markings, and anything unusual without jumping to conclusions." },
+    { key: "crossReference", number: "02", title: "Cross-Reference", prompt: "Compare this clue with other recovered evidence, statements, or timeline events. Record connections and inconsistencies." },
+    { key: "assessment", number: "03", title: "Forensic Assessment", prompt: "Write your current interpretation, explain the reasoning, and identify what remains uncertain or needs verification." },
+  ];
 
   return (
     <section className="board evidence-lab" aria-labelledby="evidence-lab-title">
@@ -98,6 +128,27 @@ export default function EvidenceLaboratory({ caseId, evidence, found, completedA
                 <textarea value={notes[selected.id] ?? ""} onChange={(event) => saveNote(event.target.value)} placeholder="Record what this clue might mean, what it supports, and what remains uncertain…" rows={5} maxLength={2000} />
               </label>
               <div className="evidence-lab-note-footer"><span>Notes save in this browser for this case.</span><span role="status">{saved ? "SAVED" : `${(notes[selected.id] ?? "").length}/2000`}</span></div>
+              <section className="evidence-examination" aria-labelledby="evidence-examination-title">
+                <div className="evidence-examination-heading">
+                  <div><span className="eyebrow">THREE-STAGE REVIEW</span><h4 id="evidence-examination-title">Examination Levels</h4>
+                    <p>Build your analysis progressively. Each stage is a detective-authored note, not an automated forensic result.</p></div>
+                  <span className="evidence-examination-progress">{examinationStages.filter((stage) => (selectedExamination[stage.key] ?? "").trim()).length}/3 COMPLETE</span>
+                </div>
+                <div className="evidence-examination-stages">
+                  {examinationStages.map((stage, index) => {
+                    const value = selectedExamination[stage.key] ?? "";
+                    const priorComplete = index === 0 || examinationStages.slice(0, index).every((previous) => (selectedExamination[previous.key] ?? "").trim().length > 0);
+                    return <article className={value.trim() ? "evidence-examination-stage complete" : "evidence-examination-stage"} key={stage.key}>
+                      <div className="evidence-examination-stage-title"><span>{stage.number}</span><strong>{stage.title}</strong><small>{value.trim() ? "NOTE RECORDED" : priorComplete ? "READY FOR REVIEW" : "COMPLETE THE PREVIOUS LEVEL FIRST"}</small></div>
+                      <p>{stage.prompt}</p>
+                      <textarea value={value} disabled={!priorComplete} onChange={(event) => saveExamination(stage.key, event.target.value)} rows={3} maxLength={1500}
+                        placeholder={priorComplete ? "Record your findings for this examination level…" : "Complete the previous level to unlock this stage."} />
+                      <div className="evidence-examination-stage-footer"><span>{value.length}/1500 characters</span>{value.trim() && <span>✓ LEVEL RECORDED</span>}</div>
+                    </article>;
+                  })}
+                </div>
+                <p className="evidence-examination-disclaimer">Completing examination levels does not reveal hidden case facts, alter evidence classifications, or affect scoring. Your notes are saved in this browser for this case.</p>
+              </section>
             </article>
           )}
         </div>
