@@ -3956,3 +3956,26 @@ html[data-theme="light"] .evidence-examination-heading h4,html[data-theme="light
 html[data-theme="light"] .evidence-examination-heading p,html[data-theme="light"] .evidence-examination-stage>p,html[data-theme="light"] .evidence-examination-disclaimer,html[data-theme="light"] .evidence-examination-stage-footer{color:#665a45!important}
 html[data-theme="light"] .evidence-examination-stage textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
 @media(max-width:600px){.evidence-examination-heading{flex-direction:column}.evidence-examination-stage-title small{width:100%;margin-left:22px}.evidence-examination-stage{padding:11px}}
+
+
+/* Formal evidence-backed statement challenges. */
+.statement-challenge-panel{margin-top:14px;padding:14px;border:1px solid rgba(184,154,91,.38);background:linear-gradient(135deg,rgba(184,154,91,.07),transparent 65%),rgba(0,0,0,.12)}
+.statement-challenge-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.statement-challenge-status{padding:5px 7px;border:1px solid rgba(184,154,91,.45);color:#d4bc82;font:8px "DM Mono",monospace;letter-spacing:.07em}
+.statement-challenge-panel>p{margin:9px 0;color:#aeb5b1;font-size:11px;line-height:1.65}
+.statement-challenge-panel textarea{width:100%;min-width:0;padding:11px;border:1px solid #343a3a;border-radius:3px;background:#111717;color:#e8e5dc;font:12px/1.65 Inter,sans-serif;resize:vertical}
+.statement-challenge-panel textarea:focus-visible{outline:1px solid #b89a5b;outline-offset:1px}
+.statement-challenge-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:9px;color:#858d8c;font:8px "DM Mono",monospace}
+.statement-challenge-footer button{padding:9px 11px;border:1px solid #806c43;background:transparent;color:#d4bc82;font:8px "DM Mono",monospace;letter-spacing:.06em;cursor:pointer}
+.statement-challenge-footer button:disabled{opacity:.35;cursor:not-allowed}
+.statement-challenge-panel .statement-challenge-confirmation{margin:11px 0 0;padding-top:10px;border-top:1px solid rgba(184,154,91,.2);color:#9eaa9f;font-size:10px}
+html[data-theme="light"] .statement-challenge-panel{background:#eee4cf!important;border-color:#cdbb91!important}
+html[data-theme="light"] .statement-challenge-panel>p{color:#51452f!important}
+html[data-theme="light"] .statement-challenge-panel textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
+html[data-theme="light"] .statement-challenge-footer{color:#665a45!important}
+html[data-theme="light"] .statement-challenge-panel .statement-challenge-confirmation{color:#51452f!important}
+@media(max-width:600px){.statement-challenge-panel{padding:11px}.statement-challenge-footer{align-items:flex-start;flex-direction:column}.statement-challenge-footer button{width:100%;min-height:40px}}
+
+/* Keep the expanded interrogation metrics balanced across viewport sizes. */
+.interrogation-progress{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:760px){.interrogation-progress{grid-template-columns:repeat(2,minmax(0,1fr))}}

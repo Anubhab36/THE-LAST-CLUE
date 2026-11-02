@@ -6,6 +6,8 @@ export interface InterviewEntry {
   hasInconsistency: boolean;
   linkedEvidenceIds?: string[];
   assessment?: "unverified" | "supports" | "contradicts";
+  challengeNote?: string;
+  challengeFiledAt?: string;
 }
 import type { Case, Suspect } from "../../types/case";
 import { interrogateSession } from "../../services/api";
@@ -42,6 +44,7 @@ export default function Interrogation({
   ).length ?? 0;
   const suspectMonogram = suspect.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("");
   const discoveredEvidence = gameCase.evidence.filter((item) => found.includes(item.id));
+  const challengeCount = transcript.filter((entry) => Boolean(entry.challengeFiledAt)).length;
 
   async function ask(questionId: string) {
     if (busy || asked.includes(questionId)) return;
@@ -94,6 +97,7 @@ export default function Interrogation({
           <span>QUESTIONS ANSWERED <strong>{asked.length}</strong></span>
           <span>AVAILABLE NOW <strong>{unlockedCount}</strong></span>
           <span>RECORDED EXCHANGES <strong>{transcript.length}</strong></span>
+          <span>CHALLENGES FILED <strong>{challengeCount}</strong></span>
         </div>
         {errorMessage && <p className="welcome-error" role="alert">{errorMessage}</p>}
         <div className="interrogation-question-heading">
@@ -158,6 +162,36 @@ export default function Interrogation({
                   <option value="contradicts">Evidence contradicts statement</option>
                 </select>
               </label>
+              {entry.assessment === "contradicts" && (entry.linkedEvidenceIds ?? []).length > 0 && (
+                <section className="statement-challenge-panel" aria-label="Formal statement challenge">
+                  <div className="statement-challenge-heading">
+                    <span className="toolbar-kicker">FORMAL CONFRONTATION</span>
+                    {entry.challengeFiledAt && <span className="statement-challenge-status">CHALLENGE FILED</span>}
+                  </div>
+                  <p>You've identified evidence that contradicts this answer. State the precise discrepancy before filing the challenge.</p>
+                  <textarea
+                    value={entry.challengeNote ?? ""}
+                    onChange={(event) => {
+                      const next = transcript.map((row, rowIndex) => rowIndex === index ? { ...row, challengeNote: event.target.value } : row);
+                      setTranscript(next);
+                      onTranscriptChange(suspect.id, next);
+                    }}
+                    rows={3}
+                    maxLength={600}
+                    placeholder="Your evidence shows… but you stated… Explain the conflict clearly."
+                    aria-label={`Challenge explanation for ${entry.question}`}
+                  />
+                  <div className="statement-challenge-footer">
+                    <span>{(entry.challengeNote ?? "").length}/600</span>
+                    <button type="button" disabled={!entry.challengeNote?.trim()} onClick={() => {
+                      const next = transcript.map((row, rowIndex) => rowIndex === index ? { ...row, challengeFiledAt: new Date().toISOString() } : row);
+                      setTranscript(next);
+                      onTranscriptChange(suspect.id, next);
+                    }}>{entry.challengeFiledAt ? "UPDATE CHALLENGE" : "FILE STATEMENT CHALLENGE"}</button>
+                  </div>
+                  {entry.challengeFiledAt && <p className="statement-challenge-confirmation">Your challenge and selected evidence are recorded in this investigation's interview transcript. No automatic verdict has been assigned.</p>}
+                </section>
+              )}
             </div>
           </article>)}
           <p className="transcript-note">Compare statements with independent evidence before drawing conclusions.</p>
