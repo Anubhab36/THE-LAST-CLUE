@@ -7,6 +7,15 @@ export type NotebookNotes = {
   questions: string;
   suspectNotes?: Record<string, string>;
   linkedEvidence?: Record<string, string[]>;
+  caseTheory?: {
+    suspectId: string;
+    motive: string;
+    method: string;
+    sequence: string;
+    confidence: "low" | "medium" | "high";
+    supportingEvidenceIds: string[];
+    contradictingEvidenceIds: string[];
+  };
 };
 
 interface NotebookProps {
@@ -37,6 +46,18 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
   );
   const linkedEvidence = notes.linkedEvidence ?? {};
   const suspectNotes = notes.suspectNotes ?? {};
+
+  const caseTheory = notes.caseTheory ?? {
+    suspectId: "", motive: "", method: "", sequence: "",
+    confidence: "low" as const, supportingEvidenceIds: [], contradictingEvidenceIds: [],
+  };
+  const updateCaseTheory = (patch: Partial<NonNullable<NotebookNotes["caseTheory"]>>) => {
+    onChange({ ...notes, caseTheory: { ...caseTheory, ...patch } });
+  };
+  const toggleTheoryEvidence = (kind: "supportingEvidenceIds" | "contradictingEvidenceIds", evidenceId: string) => {
+    const currentIds = caseTheory[kind];
+    updateCaseTheory({ [kind]: currentIds.includes(evidenceId) ? currentIds.filter((id) => id !== evidenceId) : [...currentIds, evidenceId] });
+  };
   const textValue = active === "suspects" ? "" : notes[active];
 
   const updateText = (key: "findings" | "theories" | "questions", value: string) => {
@@ -86,6 +107,38 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
           <textarea id={`notebook-${active}`} className="notebook-textarea"
             value={textValue} onChange={(event) => updateText(active, event.target.value)}
             placeholder={`Write your ${current.label.toLowerCase()} here...`} rows={7} />
+          {active === "theories" && (
+            <section className="case-theory-builder" aria-labelledby="case-theory-title">
+              <div className="case-theory-heading">
+                <div><span className="notebook-status">STRUCTURED DEDUCTION</span><h3 id="case-theory-title">Build Your Case Theory</h3><p>Form a working explanation from what you have discovered. Revise it as new clues emerge.</p></div>
+                <span className="case-theory-confidence">{caseTheory.confidence.toUpperCase()} CONFIDENCE</span>
+              </div>
+              <div className="case-theory-fields">
+                <label>PRIMARY SUSPECT
+                  <select value={caseTheory.suspectId} onChange={(event) => updateCaseTheory({ suspectId: event.target.value })}>
+                    <option value="">Undecided</option>{suspects.map((suspect) => <option key={suspect.id} value={suspect.id}>{suspect.name}</option>)}
+                  </select>
+                </label>
+                <label>PROPOSED MOTIVE<textarea value={caseTheory.motive} onChange={(event) => updateCaseTheory({ motive: event.target.value })} placeholder="Why might the suspect have committed the crime?" rows={2} /></label>
+                <label>PROPOSED METHOD<textarea value={caseTheory.method} onChange={(event) => updateCaseTheory({ method: event.target.value })} placeholder="How do you think the crime was carried out?" rows={2} /></label>
+                <label>RECONSTRUCTED SEQUENCE OF EVENTS<textarea value={caseTheory.sequence} onChange={(event) => updateCaseTheory({ sequence: event.target.value })} placeholder="Arrange the events into your current explanation..." rows={4} /></label>
+                <label>CONFIDENCE IN THIS THEORY
+                  <select value={caseTheory.confidence} onChange={(event) => updateCaseTheory({ confidence: event.target.value as "low" | "medium" | "high" })}>
+                    <option value="low">Low — early hypothesis</option><option value="medium">Medium — some corroboration</option><option value="high">High — substantial corroboration</option>
+                  </select>
+                </label>
+              </div>
+              <div className="case-theory-evidence-grid">
+                <div><div className="notebook-subhead"><strong>Supporting evidence</strong><span>{caseTheory.supportingEvidenceIds.length} selected</span></div><p className="case-theory-help">Clues that strengthen your explanation.</p>
+                  {discoveredEvidence.length ? <div className="notebook-evidence-list">{discoveredEvidence.map((item) => <label className="notebook-evidence-option" key={item.id}><input type="checkbox" checked={caseTheory.supportingEvidenceIds.includes(item.id)} onChange={() => toggleTheoryEvidence("supportingEvidenceIds", item.id)} /><span><strong>{item.name}</strong><small>{item.importance.replace("_", " ").toUpperCase()}</small></span></label>)}</div> : <p className="notebook-empty">Discover evidence to attach it to your theory.</p>}
+                </div>
+                <div><div className="notebook-subhead"><strong>Contradicting evidence</strong><span>{caseTheory.contradictingEvidenceIds.length} selected</span></div><p className="case-theory-help">Clues that challenge or weaken your explanation.</p>
+                  {discoveredEvidence.length ? <div className="notebook-evidence-list">{discoveredEvidence.map((item) => <label className="notebook-evidence-option" key={item.id}><input type="checkbox" checked={caseTheory.contradictingEvidenceIds.includes(item.id)} onChange={() => toggleTheoryEvidence("contradictingEvidenceIds", item.id)} /><span><strong>{item.name}</strong><small>{item.importance.replace("_", " ").toUpperCase()}</small></span></label>)}</div> : <p className="notebook-empty">Discover evidence to attach it to your theory.</p>}
+                </div>
+              </div>
+              <p className="case-theory-disclaimer">This is your working hypothesis, not a confirmed solution. Confidence is self-assessed and does not affect scoring or accusation results.</p>
+            </section>
+          )}
           {active !== "questions" && (
             <div className="notebook-evidence-links">
               <div className="notebook-subhead"><strong>Attach recovered evidence</strong><span>{(linkedEvidence[active] ?? []).length} linked</span></div>
