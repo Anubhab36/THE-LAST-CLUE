@@ -8,6 +8,7 @@ export type NotebookNotes = {
   suspectNotes?: Record<string, string>;
   linkedEvidence?: Record<string, string[]>;
   unresolvedQuestions?: { id: string; text: string; resolved: boolean }[];
+  contradictions?: { id: string; firstEvidenceId: string; secondEvidenceId: string; explanation: string; }[];
   caseTheory?: {
     suspectId: string;
     motive: string;
@@ -59,6 +60,32 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
   );
   const linkedEvidence = notes.linkedEvidence ?? {};
   const suspectNotes = notes.suspectNotes ?? {};
+
+  const contradictions = notes.contradictions ?? [];
+  const [firstConflictEvidence, setFirstConflictEvidence] = useState("");
+  const [secondConflictEvidence, setSecondConflictEvidence] = useState("");
+  const [conflictExplanation, setConflictExplanation] = useState("");
+  const addContradiction = () => {
+    const explanation = conflictExplanation.trim();
+    if (!firstConflictEvidence || !secondConflictEvidence || firstConflictEvidence === secondConflictEvidence || !explanation) return;
+    const duplicate = contradictions.some((item) =>
+      (item.firstEvidenceId === firstConflictEvidence && item.secondEvidenceId === secondConflictEvidence) ||
+      (item.firstEvidenceId === secondConflictEvidence && item.secondEvidenceId === firstConflictEvidence)
+    );
+    if (duplicate) return;
+    onChange({ ...notes, contradictions: [...contradictions, {
+      id: `conflict-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      firstEvidenceId: firstConflictEvidence,
+      secondEvidenceId: secondConflictEvidence,
+      explanation,
+    }] });
+    setFirstConflictEvidence("");
+    setSecondConflictEvidence("");
+    setConflictExplanation("");
+  };
+  const removeContradiction = (id: string) =>
+    onChange({ ...notes, contradictions: contradictions.filter((item) => item.id !== id) });
+  const evidenceName = (id: string) => evidence.find((item) => item.id === id)?.name ?? "Evidence no longer available";
 
   const caseTheory = notes.caseTheory ?? {
     suspectId: "", motive: "", method: "", sequence: "",
@@ -126,6 +153,7 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
             value={textValue} onChange={(event) => updateText(active, event.target.value)}
             placeholder={`Write your ${current.label.toLowerCase()} here...`} rows={7} />
           {active === "theories" && (
+            <>
             <section className="case-theory-builder" aria-labelledby="case-theory-title">
               <div className="case-theory-heading">
                 <div><span className="notebook-status">STRUCTURED DEDUCTION</span><h3 id="case-theory-title">Build Your Case Theory</h3><p>Form a working explanation from what you have discovered. Revise it as new clues emerge.</p></div>
@@ -156,6 +184,45 @@ export default function Notebook({ notes, onChange, discoveredCount, evidence = 
               </div>
               <p className="case-theory-disclaimer">This is your working hypothesis, not a confirmed solution. Confidence is self-assessed and does not affect scoring or accusation results.</p>
             </section>
+            <section className="contradiction-detector" aria-labelledby="contradiction-detector-title">
+              <div className="contradiction-detector-heading">
+                <div><span className="notebook-status">EVIDENCE ANALYSIS</span><h3 id="contradiction-detector-title">Contradiction Detector</h3>
+                  <p>Flag two clues that appear inconsistent. You decide whether they conflict; the tracker does not invent or automatically judge contradictions.</p></div>
+                <div className="contradiction-detector-count"><strong>{contradictions.length}</strong><span>RECORDED</span></div>
+              </div>
+              {discoveredEvidence.length >= 2 ? (
+                <div className="contradiction-detector-form">
+                  <div className="contradiction-detector-selectors">
+                    <label>FIRST CLUE<select value={firstConflictEvidence} onChange={(event) => setFirstConflictEvidence(event.target.value)}>
+                      <option value="">Select evidence</option>{discoveredEvidence.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    </select></label>
+                    <span className="contradiction-detector-symbol">≠</span>
+                    <label>SECOND CLUE<select value={secondConflictEvidence} onChange={(event) => setSecondConflictEvidence(event.target.value)}>
+                      <option value="">Select evidence</option>{discoveredEvidence.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    </select></label>
+                  </div>
+                  <label className="contradiction-detector-explanation">WHY DO THEY CONFLICT?
+                    <textarea value={conflictExplanation} onChange={(event) => setConflictExplanation(event.target.value)} rows={3} maxLength={600}
+                      placeholder="Describe the specific inconsistency, and what each clue appears to establish..." />
+                  </label>
+                  <button type="button" className="contradiction-detector-add" onClick={addContradiction}
+                    disabled={!firstConflictEvidence || !secondConflictEvidence || firstConflictEvidence === secondConflictEvidence || !conflictExplanation.trim() ||
+                      contradictions.some((item) => (item.firstEvidenceId === firstConflictEvidence && item.secondEvidenceId === secondConflictEvidence) || (item.firstEvidenceId === secondConflictEvidence && item.secondEvidenceId === firstConflictEvidence))}>
+                    RECORD CONTRADICTION
+                  </button>
+                </div>
+              ) : <p className="notebook-empty">Discover at least two evidence items to compare them.</p>}
+              <div className="contradiction-detector-list">
+                {contradictions.length === 0 ? <p className="notebook-empty">No contradictions recorded. Compare discovered clues when details appear inconsistent.</p> :
+                  contradictions.map((item) => <article className="contradiction-detector-record" key={item.id}>
+                    <div className="contradiction-detector-pair"><strong>{evidenceName(item.firstEvidenceId)}</strong><span>CONFLICTS WITH</span><strong>{evidenceName(item.secondEvidenceId)}</strong></div>
+                    <p>{item.explanation}</p>
+                    <button type="button" onClick={() => removeContradiction(item.id)} aria-label="Remove recorded contradiction">REMOVE</button>
+                  </article>)}
+              </div>
+              <p className="contradiction-detector-note">Recorded contradictions are investigative notes only. They do not change case logic, hints, progression, or scoring.</p>
+            </section>
+            </>
           )}
           {active === "questions" && (
             <section className="unresolved-questions" aria-labelledby="unresolved-questions-title">
