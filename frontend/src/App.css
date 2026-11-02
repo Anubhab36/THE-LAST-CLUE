@@ -3956,3 +3956,20 @@ html[data-theme="light"] .evidence-examination-heading h4,html[data-theme="light
 html[data-theme="light"] .evidence-examination-heading p,html[data-theme="light"] .evidence-examination-stage>p,html[data-theme="light"] .evidence-examination-disclaimer,html[data-theme="light"] .evidence-examination-stage-footer{color:#665a45!important}
 html[data-theme="light"] .evidence-examination-stage textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
 @media(max-width:600px){.evidence-examination-heading{flex-direction:column}.evidence-examination-stage-title small{width:100%;margin-left:22px}.evidence-examination-stage{padding:11px}}
+
+
+/* Evidence-aware adaptive interview guide. */
+.adaptive-interview-guide{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:16px 0;padding:16px;border:1px solid rgba(184,154,91,.42);background:linear-gradient(120deg,rgba(184,154,91,.11),rgba(184,154,91,.025))}
+.adaptive-interview-guide-copy{display:grid;gap:7px;min-width:0}
+.adaptive-interview-guide-copy>strong{color:var(--text-primary,#e8e6df);font:400 19px Georgia,serif}
+.adaptive-interview-guide-copy>p{margin:0;color:var(--text-muted,#858d8c);font-size:11px;line-height:1.65}
+.adaptive-interview-question{color:#c7b17e;font-size:12px;line-height:1.6}
+.adaptive-interview-locked{color:#a99569;font:9px "DM Mono",monospace}
+.adaptive-interview-action{flex-shrink:0;padding:11px 14px;border:1px solid #9a8050;background:transparent;color:#d7c18f;font:9px "DM Mono",monospace;letter-spacing:.06em;cursor:pointer}
+.adaptive-interview-action:disabled{opacity:.45;cursor:not-allowed}
+html[data-theme="light"] .adaptive-interview-guide{background:#f0e8d7!important;border-color:#cdbb91!important}
+html[data-theme="light"] .adaptive-interview-guide-copy>strong{color:#302b21!important}
+html[data-theme="light"] .adaptive-interview-guide-copy>p{color:#51452f!important}
+html[data-theme="light"] .adaptive-interview-question{color:#705b32!important}
+html[data-theme="light"] .adaptive-interview-action{color:#705b32!important;border-color:#9f895d!important}
+@media(max-width:650px){.adaptive-interview-guide{align-items:stretch;flex-direction:column}.adaptive-interview-action{width:100%}}
