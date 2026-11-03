@@ -134,12 +134,14 @@ class AccusationRequest(BaseModel):
     evidence_connections: list[tuple[str, str]] = Field(default_factory=list)
     important_events: list[str] = Field(default_factory=list)
     interrogation_hits: int = 0
+    selected_evidence_ids: list[str] = Field(default_factory=list)
 
 class ScoreBreakdown(BaseModel):
     killer: int
     motive: int
     method: int
     evidence: int
+    evidence_selection: int = Field(default=0, ge=0, le=5)
     analysis: int
     interrogation: int
     time_bonus: int
