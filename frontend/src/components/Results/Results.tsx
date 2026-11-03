@@ -34,10 +34,12 @@ export default function Results({
     { label: "Killer identified", value: result.score.killer, kind: "positive" },
     { label: "Motive established", value: result.score.motive, kind: "positive" },
     { label: "Method established", value: result.score.method, kind: "positive" },
-    { label: "Evidence collected", value: result.score.evidence, kind: "positive" },
-    { label: "Deductions", value: result.score.deductions, kind: "neutral" },
-    { label: "Interrogation", value: result.score.interrogation, kind: "positive" },
-    { label: "Time bonus", value: result.score.time_bonus, kind: "positive" },
+    { label: "Evidence discovered", value: result.score.evidence, max: 10, kind: "positive" },
+    { label: "Evidence presented", value: result.score.evidence_selection, max: 5, kind: "positive" },
+    { label: "Deductions", value: result.score.deductions, max: 10, kind: "neutral" },
+    { label: "Analysis", value: result.score.analysis, max: 10, kind: "positive" },
+    { label: "Interrogation", value: result.score.interrogation, max: 10, kind: "positive" },
+    { label: "Time bonus", value: result.score.time_bonus, max: 5, kind: "positive" },
   ];
 
   const verdictItems = [
@@ -136,8 +138,7 @@ export default function Results({
             <h2>Score breakdown</h2>
           </div>
           <p className="results-section-description">
-            Your final score is made up of the following components. Deductions
-            are displayed as returned by the scoring engine.
+            Your score rewards both discovering critical clues and choosing strong exhibits for your final accusation. Critical exhibits receive full presentation credit, supporting exhibits receive partial credit, and red herrings receive none. Deductions are applied by the scoring engine.
           </p>
           <div className="results-score-breakdown">
             {scoreItems.map((item) => (
@@ -147,9 +148,7 @@ export default function Results({
                   <strong className={`score-value score-${item.kind}`}>
                     {item.kind === "neutral" && item.value > 0
                       ? `−${item.value}`
-                      : item.value > 0
-                        ? `+${item.value}`
-                        : item.value}
+                      : `+${item.value}`} / {item.max}
                   </strong>
                 </div>
                 <div className="results-component-track">
@@ -157,7 +156,7 @@ export default function Results({
                     style={{
                       width: `${Math.min(
                         100,
-                        Math.abs(item.value),
+                        (Math.abs(item.value) / item.max) * 100,
                       )}%`,
                     }}
                   />
