@@ -224,6 +224,8 @@ export async function accuseSession(
     killer_id: string;
     motive: string;
     method: string;
+    evidence_ids?: string[];
+    reasoning?: string;
   },
 ): Promise<AccusationResult> {
   return request<AccusationResult>(

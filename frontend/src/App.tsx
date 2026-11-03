@@ -211,6 +211,9 @@ export default function App() {
   const [submittingAccusation, setSubmittingAccusation] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [result, setResult] = useState<AccusationResult | null>(null);
+  const [accusationKillerId, setAccusationKillerId] = useState("");
+  const [accusationEvidenceIds, setAccusationEvidenceIds] = useState<string[]>([]);
+  const [accusationReasoning, setAccusationReasoning] = useState("");
   const [hits, setHits] = useState(0);
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
   const [elapsed, setElapsed] = useState(0);
@@ -475,6 +478,9 @@ export default function App() {
     setCompletedActions([]);
     setActionResults({});
     setResult(null);
+    setAccusationKillerId("");
+    setAccusationEvidenceIds([]);
+    setAccusationReasoning("");
     setAccusing(false);
     setSubmittingAccusation(false);
     setInterrogating(null);
@@ -666,6 +672,8 @@ export default function App() {
     killerId: string,
     motive: string,
     method: string,
+    evidenceIds: string[],
+    reasoning: string,
   ) => {
     if (!gameCase || !sessionId || submittingAccusation) {
       return;
@@ -690,7 +698,13 @@ export default function App() {
         killer_id: killerId,
         motive,
         method,
+        evidence_ids: evidenceIds,
+        reasoning,
       });
+
+      setAccusationKillerId(killerId);
+      setAccusationEvidenceIds(evidenceIds);
+      setAccusationReasoning(reasoning);
 
       setResult(response);
       setAccusing(false);
@@ -795,6 +809,9 @@ export default function App() {
           result={result}
           gameCase={gameCase}
           found={found}
+          accusationKillerId={accusationKillerId}
+          accusationEvidenceIds={accusationEvidenceIds}
+          accusationReasoning={accusationReasoning}
           timedOut={timedOut}
           onRestart={leaveToWelcome}
         />
@@ -1191,6 +1208,7 @@ export default function App() {
       {accusing && (
         <Accusation
           gameCase={gameCase}
+          found={found}
           canCancel={!timedOut}
           submitting={submittingAccusation}
           onCancel={() => {

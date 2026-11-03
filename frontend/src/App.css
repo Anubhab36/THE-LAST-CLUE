@@ -4043,3 +4043,45 @@ html[data-theme="light"] .lead-discovery-source,html[data-theme="light"] .lead-d
 [data-theme="light"] .field-guide-callout{background:#f0eadb;border-color:#d8c9a5}
 [data-theme="light"] .field-guide-callout span{color:#363c35}
 [data-theme="light"] .field-guide-footer{border-color:#ded8c9}
+
+
+/* Structured accusation: evidence-backed final case submission. */
+.accusation-modal{width:min(760px,100%);max-height:90vh;overflow-y:auto}
+.accusation-intro{margin:8px 0 20px;color:#9ba39f;font-size:12px;line-height:1.7}
+.accusation-step{margin-top:15px;padding:16px;border:1px solid #343a3a;background:rgba(255,255,255,.018)}
+.accusation-step-heading{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.accusation-step-heading>span{display:grid;place-items:center;width:27px;height:27px;flex:0 0 auto;border:1px solid rgba(184,154,91,.55);color:#d4bc82;font:10px "DM Mono",monospace}
+.accusation-step-heading>div{display:grid;gap:4px;min-width:0}
+.accusation-step-heading strong{color:#e8e6df;font:400 17px Georgia,serif}
+.accusation-step-heading small{color:#858d8c;font-size:10px;line-height:1.5}
+.accusation-selected-count{margin-left:auto;color:#d4bc82;font:8px "DM Mono",monospace;white-space:nowrap}
+.accusation-field{display:grid;gap:7px;margin-top:12px;color:#b89a5b;font:8px "DM Mono",monospace;letter-spacing:.08em}
+.accusation-field select,.accusation-field textarea{width:100%;min-width:0;padding:11px;border:1px solid #343a3a;border-radius:3px;background:#111717;color:#e8e5dc;font:12px/1.6 Inter,sans-serif;letter-spacing:normal;resize:vertical}
+.accusation-evidence-list{display:grid;gap:8px}
+.accusation-evidence{display:grid;grid-template-columns:18px minmax(0,1fr) 22px;align-items:start;gap:10px;padding:12px;border:1px solid #343a3a;background:rgba(0,0,0,.1);cursor:pointer}
+.accusation-evidence.selected{border-color:#9b8250;background:rgba(184,154,91,.09)}
+.accusation-evidence input{margin:3px 0 0;accent-color:#b89a5b}
+.accusation-evidence-copy{display:grid;gap:5px;min-width:0}
+.accusation-evidence-copy strong{color:#dedbd2;font-size:12px}
+.accusation-evidence-copy small{color:#929b97;font-size:10px;line-height:1.55}
+.accusation-evidence-copy em{color:#b89a5b;font:8px "DM Mono",monospace;font-style:normal}
+.accusation-evidence-check{display:grid;place-items:center;width:21px;height:21px;border:1px solid #655638;color:#d4bc82}
+.accusation-no-evidence,.accusation-validation{padding:11px;border:1px solid rgba(184,154,91,.3);color:#b9aa87;font-size:11px;line-height:1.6}
+.accusation-validation{margin:12px 0 0;border-color:#8b6746;color:#d9b58a}
+.accusation-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;flex-wrap:wrap}
+.accusation-actions button{min-height:42px}
+.accusation-disclaimer{margin:13px 0 0;color:#77817d;font-size:9px;line-height:1.6}
+.results-submitted-suspect,.results-submitted-reasoning{display:grid;gap:7px;padding:13px;border:1px solid #343a3a;background:rgba(255,255,255,.02)}
+.results-submitted-suspect>span,.results-submitted-exhibits>span,.results-submitted-reasoning>span{color:#b89a5b;font:8px "DM Mono",monospace;letter-spacing:.08em}
+.results-submitted-suspect strong{color:#e8e6df;font:400 19px Georgia,serif}
+.results-submitted-exhibits{display:grid;gap:8px;margin-top:12px}
+.results-submitted-exhibits>div{display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid #343a3a}
+.results-submitted-exhibits strong{color:#dedbd2;font-size:11px}
+.results-submitted-exhibits small{color:#b89a5b;font:8px "DM Mono",monospace}
+.results-submitted-exhibits p,.results-submitted-reasoning p{margin:0;color:#9ba39f;font-size:11px;line-height:1.7}
+.results-submitted-reasoning{margin-top:12px}
+html[data-theme="light"] .accusation-intro,html[data-theme="light"] .accusation-step-heading small,html[data-theme="light"] .accusation-evidence-copy small,html[data-theme="light"] .accusation-disclaimer,html[data-theme="light"] .results-submitted-exhibits p,html[data-theme="light"] .results-submitted-reasoning p{color:#5d655e!important}
+html[data-theme="light"] .accusation-step,html[data-theme="light"] .accusation-evidence,html[data-theme="light"] .results-submitted-suspect,html[data-theme="light"] .results-submitted-reasoning,html[data-theme="light"] .results-submitted-exhibits>div{background:#f2ecdf!important;border-color:#d4c7aa!important}
+html[data-theme="light"] .accusation-step-heading strong,html[data-theme="light"] .accusation-evidence-copy strong,html[data-theme="light"] .results-submitted-suspect strong,html[data-theme="light"] .results-submitted-exhibits strong{color:#302b21!important}
+html[data-theme="light"] .accusation-field select,html[data-theme="light"] .accusation-field textarea{background:#fffaf0!important;color:#302b21!important;border-color:#cdbb91!important}
+@media(max-width:600px){.accusation-modal{max-height:94vh;padding:17px}.accusation-step{padding:12px}.accusation-step-heading{align-items:flex-start}.accusation-selected-count{font-size:7px}.accusation-actions{flex-direction:column-reverse}.accusation-actions button{width:100%}.results-submitted-exhibits>div{flex-direction:column;gap:5px}}

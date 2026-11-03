@@ -5,6 +5,9 @@ interface ResultsProps {
   result: AccusationResult;
   gameCase: Case;
   found: string[];
+  accusationKillerId?: string;
+  accusationEvidenceIds?: string[];
+  accusationReasoning?: string;
   timedOut: boolean;
   onRestart: () => void;
 }
@@ -13,6 +16,9 @@ export default function Results({
   result,
   gameCase,
   found,
+  accusationKillerId = "",
+  accusationEvidenceIds = [],
+  accusationReasoning = "",
   timedOut,
   onRestart,
 }: ResultsProps) {
@@ -101,6 +107,27 @@ export default function Results({
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="results-section results-submitted-case">
+          <div className="results-section-heading">
+            <span className="panel-number">CASE FILE</span>
+            <h2>Your submitted accusation</h2>
+          </div>
+          <div className="results-submitted-suspect">
+            <span>ACCUSED SUSPECT</span>
+            <strong>{gameCase.suspects.find((suspect) => suspect.id === accusationKillerId)?.name ?? "Not recorded"}</strong>
+          </div>
+          <div className="results-submitted-exhibits">
+            <span>SUPPORTING EXHIBITS · {accusationEvidenceIds.length}</span>
+            {accusationEvidenceIds.length ? (
+              gameCase.evidence.filter((item) => accusationEvidenceIds.includes(item.id)).map((item) => (
+                <div key={item.id}><strong>{item.name}</strong><small>{item.importance.replace(/_/g, " ").toUpperCase()}</small></div>
+              ))
+            ) : <p>No supporting exhibits were selected.</p>}
+          </div>
+          {accusationReasoning && <div className="results-submitted-reasoning"><span>DETECTIVE'S REASONING</span><p>{accusationReasoning}</p></div>}
+          <p className="results-section-description">These are the exhibits and reasoning you submitted. The official score remains based on the server's existing evidence, deduction, interrogation, and answer scoring.</p>
         </section>
 
         <section className="results-section">
