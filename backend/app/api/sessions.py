@@ -119,6 +119,12 @@ def accuse(session_id: str, request: FinalAccusationRequest):
 
     case = get_case_data(session_data["case_id"])
     progress = session_data["progress"]
+    valid_evidence_ids = {item.id for item in case.evidence}
+    discovered_evidence_ids = set(progress.get("discovered_evidence", []))
+    selected_evidence_ids = list(dict.fromkeys(
+        evidence_id for evidence_id in request.evidence_ids
+        if evidence_id in valid_evidence_ids and evidence_id in discovered_evidence_ids
+    ))
     trusted_request = AccusationRequest(
         killer_id=request.killer_id,
         motive=request.motive,
@@ -137,13 +143,9 @@ def accuse(session_id: str, request: FinalAccusationRequest):
         evidence_connections=[tuple(pair) for pair in progress["evidence_connections"]],
         important_events=progress["important_events"],
         interrogation_hits=progress["interrogation_hits"],
+        selected_evidence_ids=selected_evidence_ids,
     )
     result = score_case(case, trusted_request)
-    valid_evidence_ids = {item.id for item in case.evidence}
-    selected_evidence_ids = list(dict.fromkeys(
-        evidence_id for evidence_id in request.evidence_ids
-        if evidence_id in valid_evidence_ids and evidence_id in progress["discovered_evidence"]
-    ))
     close_session(
         session_id,
         initial_score_result=result.model_dump(mode="json"),
