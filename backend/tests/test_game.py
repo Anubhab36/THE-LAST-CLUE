@@ -249,3 +249,69 @@ def test_score_result_includes_motive_and_method_feedback(monkeypatch):
     assert refined.motive_feedback.explanation == "Your answer captures part of the relevant idea but omits a key detail."
     assert refined.method_feedback is not None
     assert refined.method_feedback.points == refined.score.method
+
+
+def test_evidence_presentation_scoring_rewards_relevant_exhibits_and_rejects_invalid_ids():
+    case = get_case("easy")
+    assert len(case.evidence) >= 3
+
+    # Use a controlled evidence mix so this test is stable across case-content edits.
+    controlled_evidence = [
+        case.evidence[0].model_copy(update={"importance": "critical"}),
+        case.evidence[1].model_copy(update={"importance": "supporting"}),
+        case.evidence[2].model_copy(update={"importance": "red_herring"}),
+        *[
+            item.model_copy(update={"importance": "supporting"})
+            for item in case.evidence[3:]
+        ],
+    ]
+    controlled_case = case.model_copy(update={"evidence": controlled_evidence})
+    discovered_ids = [item.id for item in controlled_evidence[:3]]
+
+    def score_selected(selected_ids):
+        return score_case(
+            controlled_case,
+            AccusationRequest(
+                killer_id=controlled_case.solution.killer_id,
+                motive=controlled_case.solution.motive,
+                method=controlled_case.solution.method,
+                elapsed_seconds=controlled_case.target_minutes * 60,
+                discovered_evidence=discovered_ids,
+                selected_evidence_ids=selected_ids,
+            ),
+        )
+
+    critical_only = score_selected([discovered_ids[0]])
+    supporting_only = score_selected([discovered_ids[1]])
+    red_herring_only = score_selected([discovered_ids[2]])
+    mixed = score_selected(discovered_ids)
+    invalid_only = score_selected(["not-real-evidence"])
+
+    assert critical_only.score.evidence_selection == 5
+    assert supporting_only.score.evidence_selection == 4
+    assert red_herring_only.score.evidence_selection == 0
+    assert mixed.score.evidence_selection == 3
+    assert invalid_only.score.evidence_selection == 0
+
+    # The 15-point evidence allocation is redistributed, not expanded.
+    assert critical_only.score.evidence == 10
+    assert critical_only.score.evidence + critical_only.score.evidence_selection == 15
+    assert critical_only.score.total <= 100
+
+
+def test_legacy_score_breakdown_defaults_evidence_selection_to_zero():
+    from app.schemas.case import ScoreBreakdown
+
+    legacy = ScoreBreakdown(
+        killer=30,
+        motive=15,
+        method=15,
+        evidence=15,
+        analysis=10,
+        interrogation=10,
+        time_bonus=5,
+        deductions=0,
+        total=100,
+        grade="S",
+    )
+    assert legacy.evidence_selection == 0

@@ -163,9 +163,27 @@ def score_case(case: Case, req: AccusationRequest) -> AccusationResult:
 
     discovered = set(req.discovered_evidence) & valid_evidence
     critical_found = len(critical & discovered)
+    # Preserve the existing 15-point evidence budget, but split it between
+    # investigation coverage (10) and the quality of the final exhibits (5).
     evidence_points = round(
-        15 * critical_found / max(1, len(critical))
+        10 * critical_found / max(1, len(critical))
     )
+
+    selected_evidence_ids = set(req.selected_evidence_ids) & discovered
+    evidence_by_id = {item.id: item for item in case.evidence}
+    selection_weights = {
+        "critical": 1.0,
+        "supporting": 0.7,
+        "red_herring": 0.0,
+    }
+    if selected_evidence_ids:
+        selection_quality = sum(
+            selection_weights[evidence_by_id[evidence_id].importance]
+            for evidence_id in selected_evidence_ids
+        ) / len(selected_evidence_ids)
+        evidence_selection_points = round(5 * selection_quality)
+    else:
+        evidence_selection_points = 0
 
     connections = {
         (evidence_id, suspect_id)
@@ -197,6 +215,7 @@ def score_case(case: Case, req: AccusationRequest) -> AccusationResult:
         "motive": 15 if motive_correct else 0,
         "method": 15 if method_correct else 0,
         "evidence": evidence_points,
+        "evidence_selection": evidence_selection_points,
         "analysis": analysis_points,
         "interrogation": interrogation_points,
         "time_bonus": time_bonus,
