@@ -93,15 +93,18 @@ export default function Accusation({
             <b className="accusation-selected-count">{selectedEvidence.length} SELECTED</b>
           </div>
           {discoveredEvidence.length ? (
+            <>
+            <p className="accusation-selection-guidance">Choose the strongest exhibits for your theory. Selecting every clue is not necessarily the strongest case.</p>
             <div className="accusation-evidence-list">
               {discoveredEvidence.map((item) => (
                 <label key={item.id} className={selectedEvidence.includes(item.id) ? "accusation-evidence selected" : "accusation-evidence"}>
                   <input type="checkbox" checked={selectedEvidence.includes(item.id)} onChange={() => toggleEvidence(item.id)} disabled={submitting} />
-                  <span className="accusation-evidence-copy"><strong>{item.name}</strong><small>{item.description}</small><em>{item.importance.replace(/_/g, " ").toUpperCase()}</em></span>
+                  <span className="accusation-evidence-copy"><strong>{item.name}</strong><small>{item.description}</small></span>
                   <span className="accusation-evidence-check" aria-hidden="true">{selectedEvidence.includes(item.id) ? "✓" : "+"}</span>
                 </label>
               ))}
             </div>
+            </>
           ) : (
             <p className="accusation-no-evidence">No evidence has been discovered. You can still submit an accusation, but it will have no selected exhibits.</p>
           )}
@@ -127,7 +130,7 @@ export default function Accusation({
             {submitting ? "REVIEWING YOUR CASE…" : "SUBMIT FINAL ACCUSATION"}
           </button>
         </div>
-        <p className="accusation-disclaimer">Your selected exhibits and reasoning are saved with this accusation. The existing scoring engine continues to calculate points from the case answers and investigation progress.</p>
+        <p className="accusation-disclaimer">Your evidence selection contributes to your final investigation score. Choose exhibits that genuinely support your conclusion; irrelevant selections can weaken your presentation.</p>
       </div>
     </div>
   );
