@@ -31,10 +31,10 @@ export default function Results({
   ).length;
 
   const scoreItems = [
-    { label: "Killer identified", value: result.score.killer, kind: "positive" },
-    { label: "Motive established", value: result.score.motive, kind: "positive" },
-    { label: "Method established", value: result.score.method, kind: "positive" },
-    { label: "Evidence discovered", value: result.score.evidence, max: 10, kind: "positive" },
+    { label: "Killer identified", value: result.score.killer, max: 30, kind: "positive" },
+    { label: "Motive established", value: result.score.motive, max: 15, kind: "positive" },
+    { label: "Method established", value: result.score.method, max: 15, kind: "positive" },
+    { label: "Evidence discovered", value: result.score.evidence, max: result.score.evidence > 10 ? 15 : 10, kind: "positive" },
     { label: "Evidence presented", value: result.score.evidence_selection, max: 5, kind: "positive" },
     { label: "Deductions", value: result.score.deductions, max: 10, kind: "neutral" },
     { label: "Analysis", value: result.score.analysis, max: 10, kind: "positive" },
