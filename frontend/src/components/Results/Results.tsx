@@ -146,8 +146,8 @@ export default function Results({
                 <div className="results-score-row-label">
                   <span>{item.label}</span>
                   <strong className={`score-value score-${item.kind}`}>
-                    {item.kind === "neutral" && item.value > 0
-                      ? `−${item.value}`
+                    {item.kind === "neutral"
+                      ? item.value > 0 ? `−${item.value}` : item.value
                       : `+${item.value}`} / {item.max}
                   </strong>
                 </div>
