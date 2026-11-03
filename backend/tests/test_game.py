@@ -260,7 +260,10 @@ def test_evidence_presentation_scoring_rewards_relevant_exhibits_and_rejects_inv
         case.evidence[0].model_copy(update={"importance": "critical"}),
         case.evidence[1].model_copy(update={"importance": "supporting"}),
         case.evidence[2].model_copy(update={"importance": "red_herring"}),
-        *case.evidence[3:],
+        *[
+            item.model_copy(update={"importance": "supporting"})
+            for item in case.evidence[3:]
+        ],
     ]
     controlled_case = case.model_copy(update={"evidence": controlled_evidence})
     discovered_ids = [item.id for item in controlled_evidence[:3]]
